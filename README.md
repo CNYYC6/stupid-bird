@@ -195,7 +195,7 @@ godot --headless --path . res://scenes/_final.tscn --fixed-fps 60
 
 | 双人合作（一人倒地，队友来救） | 皮肤 |
 |---|---|
-| ![双人](docs/screenshots/06_coop.png) | ![皮肤](docs/screenshots/07_dressup.png) |
+| ![双人](docs/screenshots/06_coop.png) | ![皮肤](docs/screenshots/07_skins_panel.png) |
 
 | 道具与连击 | 撞毁结算 |
 |---|---|

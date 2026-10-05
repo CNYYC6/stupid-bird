@@ -1,7 +1,7 @@
-[gd_scene load_steps=19 format=3 uid="uid://cdressup000001"]
+[gd_scene load_steps=19 format=3 uid="uid://cskinspanel0001"]
 
-[ext_resource type="Script" path="res://scripts/dressup.gd" id="1_dress"]
-[ext_resource type="Texture2D" path="res://art/ui/en/ui_dress_title.png" id="2_title"]
+[ext_resource type="Script" path="res://scripts/skins_panel.gd" id="1_skin"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_skin_title.png" id="2_title"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_label_aircraft.png" id="3_air"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_label_pilot.png" id="4_pilot"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_close.png" id="5_close"]
@@ -15,7 +15,7 @@
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_p2_hover.png" id="13_p2h"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_p2_pressed.png" id="14_p2p"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dress"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_skin"]
 content_margin_left = 40.0
 content_margin_top = 22.0
 content_margin_right = 40.0
@@ -27,13 +27,13 @@ border_width_right = 5
 border_width_bottom = 5
 border_color = Color(1, 0.69, 0.878, 0.9)
 
-[node name="Dressup" type="Control"]
+[node name="SkinsPanel" type="Control"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_dress")
+script = ExtResource("1_skin")
 
 [node name="Dim" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -55,7 +55,7 @@ offset_right = 500.0
 offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dress")
+theme_override_styles/panel = SubResource("StyleBoxFlat_skin")
 
 [node name="Layout" type="VBoxContainer" parent="Panel"]
 layout_mode = 2

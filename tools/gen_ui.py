@@ -266,7 +266,7 @@ STRINGS: dict = {
         "over_title": "CRASHED!",
         "btn_retry": "RETRY", "btn_menu": "MAIN MENU",
         "btn_lv0": "ROOKIE", "btn_lv1": "REGULAR", "btn_lv2": "ACE",
-        "btn_dress": "SKINS", "dress_title": "SKINS",
+        "btn_skins": "SKINS", "skin_title": "SKINS",
         "label_aircraft": "AIRCRAFT", "label_pilot": "PILOT",
         "label_editing": "EDITING",
         "btn_p1": "PLAYER 1", "btn_p2": "PLAYER 2",
@@ -310,7 +310,7 @@ STRINGS: dict = {
         "btn_retry": "\u518d\u6765\u4e00\u6b21", "btn_menu": "\u8fd4\u56de\u4e3b\u83dc\u5355",
         "btn_lv0": "\u81ed\u4eba\u673a", "btn_lv1": "\u666e\u901a\u4eba\u673a",
         "btn_lv2": "\u673a\u54e5",
-        "btn_dress": "\u76ae\u80a4", "dress_title": "\u76ae\u80a4",
+        "btn_skins": "\u76ae\u80a4", "skin_title": "\u76ae\u80a4",
         "label_aircraft": "\u98de\u884c\u5668", "label_pilot": "\u9a7e\u9a76\u5458",
         "label_editing": "\u6b63\u5728\u7f16\u8f91",
         "btn_p1": "\u73a9\u5bb6 1", "btn_p2": "\u73a9\u5bb6 2",
@@ -375,10 +375,10 @@ def emit(t: dict, lang: str) -> None:
         save(make_button(t[f"btn_{tag}"], size=12, pressed=True), f"ui_btn_{tag}_pressed.png", lang)
 
     # 皮肤面板
-    save(make_button(t["btn_dress"]), "ui_btn_dress.png", lang)
-    save(make_button(t["btn_dress"], hover=True), "ui_btn_dress_hover.png", lang)
-    save(make_button(t["btn_dress"], pressed=True), "ui_btn_dress_pressed.png", lang)
-    save(make_label(t["dress_title"], 26, "#FFB0E0", pad=6, outline=2), "ui_dress_title.png", lang)
+    save(make_button(t["btn_skins"]), "ui_btn_skins.png", lang)
+    save(make_button(t["btn_skins"], hover=True), "ui_btn_skins_hover.png", lang)
+    save(make_button(t["btn_skins"], pressed=True), "ui_btn_skins_pressed.png", lang)
+    save(make_label(t["skin_title"], 26, "#FFB0E0", pad=6, outline=2), "ui_skin_title.png", lang)
     save(make_label(t["label_aircraft"], 12, "#FBF236"), "ui_label_aircraft.png", lang)
     save(make_label(t["label_pilot"], 12, "#9FF8FF"), "ui_label_pilot.png", lang)
     save(make_label(t["label_editing"], 12), "ui_label_editing.png", lang)

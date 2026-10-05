@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b38rhwhwi3ohg"
-path="res://.godot/imported/ui_btn_dress_pressed.png-e9be061b46faa1ec5432f9fd0498ad8e.ctex"
+uid="uid://dm08mxg8af02s"
+path="res://.godot/imported/ui_btn_skins.png-78b60231420e3f25f61ba8db7533d1f6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/ui/zh/ui_btn_dress_pressed.png"
-dest_files=["res://.godot/imported/ui_btn_dress_pressed.png-e9be061b46faa1ec5432f9fd0498ad8e.ctex"]
+source_file="res://art/ui/zh/ui_btn_skins.png"
+dest_files=["res://.godot/imported/ui_btn_skins.png-78b60231420e3f25f61ba8db7533d1f6.ctex"]
 
 [params]
 

@@ -26,10 +26,10 @@
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_solo.png" id="24_solo"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_solo_hover.png" id="25_solo_h"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_solo_pressed.png" id="26_solo_p"]
-[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_dress.png" id="27_dress"]
-[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_dress_hover.png" id="28_dress_h"]
-[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_dress_pressed.png" id="29_dress_p"]
-[ext_resource type="PackedScene" path="res://scenes/dressup.tscn" id="30_dressup"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_skins.png" id="27_skins"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_skins_hover.png" id="28_skins_h"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_skins_pressed.png" id="29_skins_p"]
+[ext_resource type="PackedScene" path="res://scenes/skins_panel.tscn" id="30_skins"]
 [ext_resource type="PackedScene" path="res://scenes/settings.tscn" id="34_settings"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings.png" id="35_set"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings_hover.png" id="36_seth"]
@@ -227,14 +227,14 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 18
 
-[node name="DressButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+[node name="SkinsButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
 custom_minimum_size = Vector2(330, 124)
 layout_mode = 2
 ignore_texture_size = true
 stretch_mode = 5
-texture_normal = ExtResource("27_dress")
-texture_hover = ExtResource("28_dress_h")
-texture_pressed = ExtResource("29_dress_p")
+texture_normal = ExtResource("27_skins")
+texture_hover = ExtResource("28_skins_h")
+texture_pressed = ExtResource("29_skins_p")
 
 [node name="SettingsButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
 custom_minimum_size = Vector2(330, 124)
@@ -322,7 +322,7 @@ stretch_mode = 5
 [node name="Overlay" type="CanvasLayer" parent="."]
 layer = 30
 
-[node name="Dressup" parent="Overlay" instance=ExtResource("30_dressup")]
+[node name="SkinsPanel" parent="Overlay" instance=ExtResource("30_skins")]
 visible = false
 
 [node name="Settings" parent="Overlay" instance=ExtResource("34_settings")]

@@ -16,10 +16,10 @@ extends Control
 @onready var _best_coins: HBoxContainer = $UI/Best/CoinBest/Digits
 @onready var _mode_button: TextureButton = $UI/Buttons/TopRow/ModeButton
 @onready var _level_button: TextureButton = $UI/Buttons/TopRow/LevelButton
-@onready var _dress_button: TextureButton = $UI/Buttons/BottomRow/DressButton
+@onready var _skins_button: TextureButton = $UI/Buttons/BottomRow/SkinsButton
 @onready var _settings_button: TextureButton = $UI/Buttons/BottomRow/SettingsButton
 @onready var _settings: Control = $Overlay/Settings
-@onready var _dressup: Control = $Overlay/Dressup
+@onready var _skins_panel: Control = $Overlay/SkinsPanel
 
 ## 每种模式对应的一整套按钮贴图（normal / hover / pressed）
 const MODE_TEX: Array[Array] = [
@@ -60,12 +60,12 @@ func _ready() -> void:
 	_refresh_mode()
 	_mode_button.pressed.connect(_on_mode_pressed)
 	_level_button.pressed.connect(_on_level_pressed)
-	_dress_button.pressed.connect(_on_dress_pressed)
+	_skins_button.pressed.connect(_on_skins_pressed)
 	_settings_button.pressed.connect(_on_settings_pressed)
 	_settings.closed.connect(_start_button.grab_focus)
 	# 换了语言，模式/难度按钮上的文字也要跟着重刷（它们是代码赋的贴图）
 	_settings.changed.connect(_refresh_mode)
-	_dressup.closed.connect(func() -> void: _start_button.grab_focus())
+	_skins_panel.closed.connect(func() -> void: _start_button.grab_focus())
 	_start_button.grab_focus()
 	_best_distance.set_value(RunRecord.load_best())
 	_best_coins.set_value(RunRecord.load_best_coins())
@@ -96,9 +96,9 @@ func _on_level_pressed() -> void:
 
 ## 打开皮肤面板。菜单背景里那 25 只小鸟不跟着换 —— 它们只是氛围，
 ## 真正的换肤效果在开局之后才看得到（免得每点一下就要重建 25 份贴图）。
-func _on_dress_pressed() -> void:
+func _on_skins_pressed() -> void:
 	Audio.play("ui")
-	_dressup.open()
+	_skins_panel.open()
 
 
 func _refresh_mode() -> void:
