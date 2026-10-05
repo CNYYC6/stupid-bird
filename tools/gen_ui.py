@@ -269,6 +269,11 @@ def main() -> None:
     save(make_label("换装间", 26, "#FFB0E0", pad=6, outline=2), "ui_dress_title.png")
     save(make_label("飞行器", 12, "#FBF236"), "ui_label_aircraft.png")
     save(make_label("驾驶员", 12, "#9FF8FF"), "ui_label_pilot.png")
+    save(make_label("正在编辑", 12), "ui_label_editing.png")
+    for tag, text in (("p1", "玩家 1"), ("p2", "玩家 2")):
+        save(make_button(text, size=12), f"ui_btn_{tag}.png")
+        save(make_button(text, size=12, hover=True), f"ui_btn_{tag}_hover.png")
+        save(make_button(text, size=12, pressed=True), f"ui_btn_{tag}_pressed.png")
     save(make_button("返回"), "ui_btn_close.png")
     save(make_button("返回", hover=True), "ui_btn_close_hover.png")
     save(make_button("返回", pressed=True), "ui_btn_close_pressed.png")

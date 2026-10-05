@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cdressup000001"]
+[gd_scene load_steps=19 format=3 uid="uid://cdressup000001"]
 
 [ext_resource type="Script" path="res://scripts/dressup.gd" id="1_dress"]
 [ext_resource type="Texture2D" path="res://art/ui_dress_title.png" id="2_title"]
@@ -7,6 +7,13 @@
 [ext_resource type="Texture2D" path="res://art/ui_btn_close.png" id="5_close"]
 [ext_resource type="Texture2D" path="res://art/ui_btn_close_hover.png" id="6_close_h"]
 [ext_resource type="Texture2D" path="res://art/ui_btn_close_pressed.png" id="7_close_p"]
+[ext_resource type="Texture2D" path="res://art/ui_label_editing.png" id="8_edit"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_p1.png" id="9_p1"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_p1_hover.png" id="10_p1h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_p1_pressed.png" id="11_p1p"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_p2.png" id="12_p2"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_p2_hover.png" id="13_p2h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_p2_pressed.png" id="14_p2p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dress"]
 content_margin_left = 48.0
@@ -59,6 +66,28 @@ alignment = 1
 layout_mode = 2
 size_flags_horizontal = 4
 texture = ExtResource("2_title")
+
+[node name="PlayerRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="Editing" type="TextureRect" parent="Panel/Layout/PlayerRow"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("8_edit")
+
+[node name="P1" type="TextureButton" parent="Panel/Layout/PlayerRow"]
+layout_mode = 2
+texture_normal = ExtResource("9_p1")
+texture_hover = ExtResource("10_p1h")
+texture_pressed = ExtResource("11_p1p")
+
+[node name="P2" type="TextureButton" parent="Panel/Layout/PlayerRow"]
+layout_mode = 2
+texture_normal = ExtResource("12_p2")
+texture_hover = ExtResource("13_p2h")
+texture_pressed = ExtResource("14_p2p")
 
 [node name="AirLabel" type="TextureRect" parent="Panel/Layout"]
 layout_mode = 2

@@ -38,6 +38,16 @@ static func clamp_pilot(i: int) -> int:
 	return clampi(i, 0, PILOTS.size() - 1)
 
 
+## 存档里默认值要按玩家号给不同初始皮肤（一号机经典蓝鸟、二号机胖企鹅），
+## 这样双人模式一开局就能看出是两个人。
+static func default_for(player_index: int) -> int:
+	return clampi(player_index, 0, AIRCRAFT.size() - 1)
+
+
+static func aircraft_id(i: int) -> String:
+	return str(AIRCRAFT[clamp_aircraft(i)]["id"])
+
+
 static func aircraft_name(i: int) -> String:
 	return str(AIRCRAFT[clamp_aircraft(i)]["name"])
 

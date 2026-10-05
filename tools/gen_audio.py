@@ -332,6 +332,86 @@ def sfx_dash() -> np.ndarray:
     return crush(np.tanh(x * 1.8) * 0.85, 5) * 0.9
 
 
+
+
+def loopify(x: np.ndarray, fade: int) -> np.ndarray:
+    """把尾巴交叉淡入到开头，做成无缝循环。
+
+    纯噪声的引擎声没法靠"整数周期"做到无缝（噪声没有周期），
+    所以老老实实做一次交叉淡化：尾部 fade 个采样和头部 fade 个采样按权重混合。
+    """
+    if fade <= 0 or len(x) <= fade * 2:
+        return x
+    head = x[:fade].copy()
+    tail = x[-fade:].copy()
+    t = np.linspace(0.0, 1.0, fade)
+    x = x[:-fade]
+    x[:fade] = tail * (1.0 - t) + head * t
+    return x
+
+
+# ------------------------------------------------------------------ 阵亡
+def sfx_death() -> np.ndarray:
+    """阵亡：一段往下掉的方波琶音 + 噪声爆裂，比 sfx_hit 更"结束"。"""
+    notes = [(523.25, 0.10), (415.30, 0.10), (329.63, 0.12), (246.94, 0.14), (164.81, 0.30)]
+    total = sum(int(d * SR) for _, d in notes) + int(0.08 * SR)
+    buf = np.zeros(total)
+    pos = 0
+    for f, d in notes:
+        n = int(d * SR)
+        buf[pos:pos + n] += pulse(f, n, 0.5) * env(n, 0.004, 0.05, 0.7, 0.03) * 0.45
+        pos += n
+    rng = np.random.default_rng(77)
+    nz = noise(total, rng, lp=0.35) * env(total, 0.002, 0.18, 0.25, 0.30) * 0.30
+    x = np.tanh((buf + nz) * 1.7) * 0.8
+    return crush(x, 5) * 0.95
+
+
+# ------------------------------------------------------------------ 飞行音效
+def engine(kind: str, dur: float = 0.62) -> np.ndarray:
+    """每种飞行器一个循环的飞行声。
+
+    全部刻意做得"闷"一点：这是**长时间循环播放**的背景层，
+    音量再高一点就会把金币音和 BGM 盖掉，所以这里峰值都压得比较低，
+    真正的音量由 audio.gd 里的 ENGINE_DB（-22 dB）控制。
+    """
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    rng = np.random.default_rng(abs(hash(kind)) % (2 ** 31))
+    fade = int(0.045 * SR)
+
+    if kind == "classic":
+        # 轻柔的风：低通噪声 + 一点点低频脉动
+        x = noise(n, rng, lp=0.16) * 0.55
+        x += triangle(72.0, n) * 0.18 * (0.7 + 0.3 * np.sin(2 * np.pi * 3.0 * t))
+    elif kind == "penguin":
+        # 摇摆：低频方波 + 慢速颤音，像一摇一摆地走
+        x = pulse(96.0 * (1.0 + 0.06 * np.sin(2 * np.pi * 4.0 * t)), n, 0.5) * 0.30
+        x += noise(n, rng, lp=0.10) * 0.22
+    elif kind == "rocket":
+        # 喷气：宽噪声 + 低频轰鸣
+        x = noise(n, rng, lp=0.45) * 0.50
+        x += triangle(58.0, n) * 0.30
+        x *= 0.85 + 0.15 * np.sin(2 * np.pi * 9.0 * t)
+    elif kind == "bat":
+        # 尖啸：高频颤音，音量刻意压最低（最刺耳）
+        x = pulse(880.0 * (1.0 + 0.10 * np.sin(2 * np.pi * 7.0 * t)), n, 0.25) * 0.16
+        x += noise(n, rng, hp=0.5) * 0.10
+    elif kind == "paper":
+        # 纸的沙沙声：高通噪声 + 轻微抖动
+        x = noise(n, rng, hp=0.28) * 0.30
+        x *= 0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 5.5 * t))
+    else:  # ufo
+        # 电子嗡鸣：两个失谐方波 + 慢速颤音
+        x = pulse(150.0, n, 0.5) * 0.22
+        x += pulse(150.0 * 1.013, n, 0.5) * 0.22
+        x *= 0.75 + 0.25 * np.sin(2 * np.pi * 6.0 * t)
+
+    x = loopify(x, fade)
+    x /= max(np.abs(x).max(), 1e-9)
+    return crush(x * 0.62, 6)
+
+
 def main() -> None:
     os.makedirs(OUT, exist_ok=True)
     print("生成 8bit 音频：")
@@ -342,6 +422,9 @@ def main() -> None:
     write_wav("sfx_ui.wav", sfx_ui())
     write_wav("sfx_wow.wav", sfx_wow())
     write_wav("sfx_dash.wav", sfx_dash())
+    write_wav("sfx_death.wav", sfx_death())
+    for kind in ("classic", "penguin", "rocket", "bat", "paper", "ufo"):
+        write_wav(f"engine_{kind}.wav", engine(kind))
 
 
 if __name__ == "__main__":

@@ -39,7 +39,6 @@ func _ready() -> void:
 	_mode_button.pressed.connect(_on_mode_pressed)
 	_dress_button.pressed.connect(_on_dress_pressed)
 	_dressup.closed.connect(func() -> void: _start_button.grab_focus())
-	_dressup.skin_changed.connect(_on_skin_changed)
 	_start_button.grab_focus()
 	_best_distance.set_value(RunRecord.load_best())
 	_best_coins.set_value(RunRecord.load_best_coins())
@@ -63,12 +62,7 @@ func _on_mode_pressed() -> void:
 ## 真正的换装效果在开局之后才看得到（免得每点一下就要重建 25 份贴图）。
 func _on_dress_pressed() -> void:
 	Audio.play("ui")
-	_dressup.open(RunRecord.load_setting("aircraft", 0), RunRecord.load_setting("pilot", 0))
-
-
-func _on_skin_changed(aircraft: int, pilot: int) -> void:
-	RunRecord.save_setting("aircraft", aircraft)
-	RunRecord.save_setting("pilot", pilot)
+	_dressup.open()
 
 
 func _refresh_mode() -> void:

@@ -24,8 +24,9 @@ const REBASE_STEP: float = 262144.0
 
 @export_file("*.tscn") var start_menu_scene: String = "res://scenes/start_menu.tscn"
 @export var spawn_point: Vector2 = Vector2(91.0, 657.0)
-## 二号机的出生偏移（一号机在左前，二号机在右后一点，画面里不重叠）
-@export var coop_offset: Vector2 = Vector2(-150.0, -140.0)
+## 双人模式的初始位置偏移。默认同一点 —— 两人横向速度完全一致，
+## 区别只在于各自按自己的键，所以垂直高度会自然分开。
+@export var coop_offset: Vector2 = Vector2.ZERO
 ## 双人模式里倒地后队友要撑住多少秒才能把人拉起来
 @export var coop_revive_seconds: float = 5.0
 
@@ -84,7 +85,7 @@ func _ready() -> void:
 ## 单人玩家不为它付任何代价（少一个 CharacterBody2D + 一套碰撞）。
 func _setup_players() -> void:
 	players.clear()
-	_player.configure(0, spawn_point)
+	_player.configure(0, spawn_point, mode == 1)
 	players.append(_player)
 	if mode == 1:
 		var p2 := PLAYER_SCENE.instantiate() as CharacterBody2D
@@ -93,13 +94,14 @@ func _setup_players() -> void:
 		# 代码实例化出来的二号机必须手动抄过来，否则会是一只 1 倍大的迷你鸟。
 		p2.scale = _player.scale
 		add_child(p2)
-		p2.configure(1, spawn_point + coop_offset)
+		p2.configure(1, spawn_point + coop_offset, true)
 		players.append(p2)
-	# 换装：菜单里选好的飞行器和驾驶员，开局套给所有玩家
-	var aircraft: int = RunRecord.load_setting("aircraft", 0)
-	var pilot: int = RunRecord.load_setting("pilot", 0)
-	for p in players:
-		p.apply_skin(aircraft, pilot)
+	# 换装：两名玩家分别读各自的存档（菜单里是分开编辑的）
+	for i in players.size():
+		var aircraft: int = RunRecord.load_setting("aircraft%d" % (i + 1), i)
+		var pilot: int = RunRecord.load_setting("pilot%d" % (i + 1), 0)
+		players[i].apply_skin(aircraft, pilot)
+		players[i].apply_engine(Skins.aircraft_id(aircraft))
 	_camera.set_targets(players)
 
 
@@ -270,14 +272,14 @@ func _on_player_hit(who: Node2D = null) -> void:
 	# 双人模式：只要还有队友活着，被撞的人只是"倒地"，等队友来救
 	if players.size() > 1 and _alive_count() > 1:
 		victim.go_down(coop_revive_seconds)
-		Audio.play("hit", 0.0, 1.4)
+		Audio.play("death", 0.0, 1.15)
 		return
 
 	alive = false
 	for p in players:
 		if is_instance_valid(p) and p.is_alive():
 			p.die()
-	Audio.play("hit", 2.0)
+	Audio.play("death", 0.0, 1.0)
 	_commit_record()
 	_game_over.show_result(distance_px * METERS_PER_PIXEL, coins)
 	# 冻结整棵树；GameOver 的 process_mode = ALWAYS，仍然能响应按钮和按键

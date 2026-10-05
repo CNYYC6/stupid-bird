@@ -18,7 +18,22 @@ const SFX: Dictionary = {
 	"dash": preload("res://audio/sfx_dash.wav"),
 	# 想换成 TTS 念的那版"哇哦"，把下面这行改成 sfx_wow_tts.wav
 	"wow": preload("res://audio/sfx_wow.wav"),
+	# 阵亡 / 倒地
+	"death": preload("res://audio/sfx_death.wav"),
 }
+
+## 每种飞行器的循环飞行声。音量刻意压得很低 —— 这是**一直响着**的底噪，
+## 再响一点就会把金币音和 BGM 盖掉。
+const ENGINE_PATHS: Dictionary = {
+	"classic": "res://audio/engine_classic.wav",
+	"penguin": "res://audio/engine_penguin.wav",
+	"rocket": "res://audio/engine_rocket.wav",
+	"bat": "res://audio/engine_bat.wav",
+	"paper": "res://audio/engine_paper.wav",
+	"ufo": "res://audio/engine_ufo.wav",
+}
+## 飞行声的音量。比音效（-6 dB）低 16 dB，双人叠两个也还是很轻。
+const ENGINE_DB: float = -22.0
 
 const POOL_SIZE: int = 6
 const MUSIC_DB: float = -13.0
@@ -27,6 +42,8 @@ const SFX_DB: float = -6.0
 var _music: AudioStreamPlayer
 var _pool: Array[AudioStreamPlayer] = []
 var _next: int = 0
+## 飞行声流（已经设好循环点），按飞行器 id 缓存
+var _engines: Dictionary = {}
 
 
 func _ready() -> void:
@@ -40,6 +57,15 @@ func _ready() -> void:
 		player.volume_db = SFX_DB
 		add_child(player)
 		_pool.append(player)
+	for id in ENGINE_PATHS:
+		var st := load(ENGINE_PATHS[id]) as AudioStreamWAV
+		if st == null:
+			continue
+		# 循环点同样必须用「时长 × 采样率」，不能用 data.size()（WAV 默认被压成 ADPCM）
+		st.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		st.loop_begin = 0
+		st.loop_end = int(st.get_length() * st.mix_rate)
+		_engines[id] = st
 
 
 ## 开始播放背景音乐（已在播就什么都不做，所以各场景都能放心调用）
@@ -87,6 +113,11 @@ func _quit_cleanly() -> void:
 		player.stop()
 	await tree.create_timer(0.15).timeout
 	tree.quit()
+
+
+## 取某种飞行器的循环飞行声（给玩家自己的 AudioStreamPlayer 用，双人模式互不干扰）
+func engine_stream(id: String) -> AudioStream:
+	return _engines.get(id)
 
 
 ## 停止背景音乐

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bnwuwhmr01eke"]
+[gd_scene load_steps=6 format=3 uid="uid://bnwuwhmr01eke"]
 
 [ext_resource type="Script" uid="uid://815pkl7802y4" path="res://scripts/player.gd" id="1_t5u2c"]
 [ext_resource type="SpriteFrames" path="res://art/bird_frames.tres" id="2_frames"]
 [ext_resource type="ShaderMaterial" path="res://scenes/gold_material.tres" id="3_gold"]
 [ext_resource type="Texture2D" path="res://art/fx_shield.png" id="4_shield"]
+[ext_resource type="Texture2D" path="res://art/badge_p1.png" id="5_badge"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(26, 12.25)
@@ -27,6 +28,14 @@ use_parent_material = true
 scale = Vector2(0.75, 0.75)
 position = Vector2(0, -11)
 visible = false
+
+[node name="Badge" type="Sprite2D" parent="."]
+position = Vector2(0, -25)
+texture = ExtResource("5_badge")
+visible = false
+
+[node name="Engine" type="AudioStreamPlayer" parent="."]
+volume_db = -22.0
 
 [node name="Shield" type="Sprite2D" parent="."]
 scale = Vector2(0.58, 0.58)

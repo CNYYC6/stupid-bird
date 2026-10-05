@@ -224,6 +224,25 @@ def preview(src: np.ndarray, pad: int = 2) -> np.ndarray:
     return out
 
 
+BADGE = 16
+
+
+def make_badge(label: str, fill: str, edge: str) -> np.ndarray:
+    """头顶的玩家标志：一个圆牌 + P1/P2 字样（用自带的 5x7 点阵字体）。"""
+    from gen_ui import pixel_mask
+    img = blank(BADGE, BADGE)
+    ell(img, 7.5, 7.5, 7.4, 7.4, edge)          # 外圈
+    ell(img, 7.5, 7.5, 6.1, 6.1, fill)          # 内芯
+    ell(img, 6.0, 5.5, 2.6, 2.0, "#FFFFFF")     # 高光
+    m = pixel_mask(label, 1)                     # 11x7
+    oy, ox = 4, (BADGE - m.shape[1]) // 2
+    for y in range(m.shape[0]):
+        for x in range(m.shape[1]):
+            if m[y, x]:
+                put(img, ox + x, oy + y, "#101728")
+    return img
+
+
 def main() -> None:
     os.makedirs(ART, exist_ok=True)
     from gen_backgrounds import PROJ
@@ -240,6 +259,10 @@ def main() -> None:
                        dtype=np.float32)
     save(preview(classic[0:CELL, 0:CELL]), "skin_bird_classic.png", ART)
     print("  （经典蓝鸟沿用现成图集）")
+
+    print("玩家标志：")
+    save_raw(make_badge("P1", "#5AE0FF", "#1B4A63"), "badge_p1.png")
+    save_raw(make_badge("P2", "#FFB04A", "#6B3A10"), "badge_p2.png")
 
     print("驾驶员：")
     for name in PILOTS:

@@ -74,9 +74,12 @@ var revive_left: float = 0.0
 ## 倒地复活的基准时长（revive_progress 用它做分母）
 var revive_seconds: float = 5.0
 
-## 本机实际监听的动作名（一号机是空格，二号机是 W / ↑）
+## 本机实际监听的动作名。
+## 单人：空格。双人：一号机 W、二号机 ↑（空格只在单人模式生效）。
 var _act_up: StringName = &"pull_up"
 var _act_dash: StringName = &"dash"
+## 是否处于双人模式（决定头顶要不要挂 P1/P2 标志）
+var _coop: bool = false
 
 var _dash_left: float = 0.0
 ## 「无敌狂飙」事件送的免费冲刺剩余时间：这段时间里冲刺不耗能、不进冷却
@@ -90,18 +93,49 @@ var _golden: bool = false
 @onready var _pilot: Sprite2D = $AnimatedSprite2D/Pilot
 ## 护盾生效时罩在身上的泡泡（挂在根节点上，所以不会跟着俯仰一起转）
 @onready var _bubble: Sprite2D = $Shield
+## 头顶的玩家编号牌
+@onready var _badge: Sprite2D = $Badge
+## 这台飞行器自己的循环飞行声
+@onready var _engine: AudioStreamPlayer = $Engine
 
 var _tilt: float = 0.0
 
 
 ## 由主场景在生成时调用：指定自己是几号机、出生在哪
-func configure(index: int, spawn: Vector2) -> void:
+func configure(index: int, spawn: Vector2, coop: bool = false) -> void:
 	player_index = index
-	if index == 1:
-		_act_up = &"pull_up_p2"
-		# 冲刺两人共用 ENTER —— 双人模式里一起冲刺反而更有合作感
-		_act_dash = &"dash"
+	_coop = coop
+	if coop:
+		# 双人：空格让出来，一号机 W、二号机 ↑
+		_act_up = &"pull_up_p1" if index == 0 else &"pull_up_p2"
+	else:
+		_act_up = &"pull_up"
+	# 冲刺两人共用 ENTER —— 双人模式里一起冲刺反而更有合作感
+	_act_dash = &"dash"
+	if _badge != null:
+		_badge.visible = coop
+		if coop:
+			_badge.texture = load("res://art/badge_p%d.png" % (index + 1))
 	reset_run(spawn)
+
+
+## 换飞行器时顺便换飞行声
+func apply_engine(aircraft_id: String) -> void:
+	if _engine == null:
+		return
+	_engine.stream = Audio.engine_stream(aircraft_id)
+	_sync_engine()
+
+
+## 让飞行声跟着状态走：死了/倒地就停，活着且拿到速度就播
+func _sync_engine() -> void:
+	if _engine == null or _engine.stream == null:
+		return
+	var should_play: bool = alive and not downed
+	if should_play and not _engine.playing:
+		_engine.play()
+	elif not should_play and _engine.playing:
+		_engine.stop()
 
 
 func is_alive() -> bool:
@@ -152,6 +186,9 @@ func _physics_process(delta: float) -> void:
 	_apply_input(delta)
 	_apply_attitude(delta)
 	move_and_slide()
+	# 飞行声跟着速度微微变调，低速时听起来像快要熄火
+	if _engine != null and _engine.playing:
+		_engine.pitch_scale = clampf(absf(velocity.x) / maxf(cruise_speed, 1.0), 0.82, 1.35)
 
 
 # ------------------------------------------------------------------ 无敌冲刺
@@ -334,6 +371,7 @@ func go_down(revive_seconds: float) -> void:
 	collision_layer = 0
 	if _sprite != null:
 		_sprite.modulate = Color(0.45, 0.45, 0.5, 0.85)
+	_sync_engine()
 
 
 ## 倒地中：只受重力往下掉，不响应输入
@@ -363,6 +401,7 @@ func revive(at: Vector2) -> void:
 	# 复活后给一小段无敌，免得刚站起来就又被同一根柱子撞死
 	_grace_left = 1.6
 	_tilt = 0.0
+	_sync_engine()
 
 
 ## 倒地复活的进度（0 = 刚倒地，1 = 马上复活）
@@ -382,6 +421,7 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	if _sprite != null:
 		_sprite.modulate = Color(0.6, 0.6, 0.6, 0.9)
+	_sync_engine()
 
 
 func reset_run(spawn: Vector2) -> void:
