@@ -88,7 +88,7 @@ func show_world_banner(id: String) -> void:
 
 ## 随机事件的横幅
 func show_event_banner(id: String) -> void:
-	show_banner("res://art/ev_title_%s.png" % id, "res://art/ev_sub_%s.png" % id)
+	show_banner(UiLang.path("ev_title_%s.png" % id), UiLang.path("ev_sub_%s.png" % id))
 
 
 func show_banner(title_path: String, sub_path: String) -> void:

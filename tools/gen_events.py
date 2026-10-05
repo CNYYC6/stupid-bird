@@ -96,20 +96,8 @@ def main() -> None:
         save(make_portal_frame(i), f"ev_portal_{i}.png", ART)
     save(make_meteor(), "ev_meteor.png", ART)
 
-    print("事件横幅：")
-    for eid, title, sub, color in (
-        ("portal", "传送门！", "钻进去，全是金币", "#C9A8FF"),
-        ("coin_rain", "金币雨！", "张嘴接住", "#FBF236"),
-        ("low_g", "月球重力！", "整个人飘起来", "#9FF8FF"),
-        ("high_g", "重力暴涨！", "往下掉吧", "#FF9A6A"),
-        ("turbo", "无敌狂飙！", "免费冲刺送你了", "#FFE070"),
-        ("meteor", "陨石雨！", "快躲开", "#FF7A5A"),
-        ("double", "金币双倍！", "赚翻了", "#B9F06A"),
-        ("fever", "金币维度！", "20 秒，随便吃！", "#FFFBD0"),
-    ):
-        save(make_label(title, 26, color, pad=7, outline=2), f"ev_title_{eid}.png", ART)
-        save(make_label(sub, 12, "#E4EDF5"), f"ev_sub_{eid}.png", ART)
-    save(make_label("秒", 12, "#FBF236"), "ev_sec_label.png", ART)
+    # 事件横幅已挪到 gen_ui.py —— 它们带文字，要按语言出两套
+    print("事件横幅： 见 gen_ui.py")
 
 
 if __name__ == "__main__":

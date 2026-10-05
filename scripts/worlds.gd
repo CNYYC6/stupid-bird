@@ -132,9 +132,10 @@ static func find(id: String) -> int:
 	return 0
 
 
+## 换场横幅是带文字的贴图，路径要按当前语言取（见 scripts/ui_lang.gd）
 static func title_path(id: String) -> String:
-	return "res://art/w_title_%s.png" % id
+	return UiLang.path("w_title_%s.png" % id)
 
 
 static func sub_path(id: String) -> String:
-	return "res://art/w_sub_%s.png" % id
+	return UiLang.path("w_sub_%s.png" % id)

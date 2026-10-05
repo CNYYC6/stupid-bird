@@ -283,6 +283,22 @@ STRINGS: dict = {
         "dash_active": "ACTIVE", "dash_cool": "COOLING",
         "combo_label": "COMBO", "pu_magnet": "MAGNET", "pu_shield": "SHIELD",
         "pu_burst": "COIN BURST", "shield_ready": "SHIELD ON",
+        # 事件横幅与换场横幅也是带文字的，同样要出两套
+        "ev_portal_t": "PORTAL!", "ev_portal_s": "Jump in - it's all coins",
+        "ev_coin_rain_t": "COIN RAIN!", "ev_coin_rain_s": "Catch them all",
+        "ev_low_g_t": "MOON GRAVITY!", "ev_low_g_s": "Float away",
+        "ev_high_g_t": "HEAVY GRAVITY!", "ev_high_g_s": "Hold on tight",
+        "ev_turbo_t": "FREE DASH!", "ev_turbo_s": "It's on the house",
+        "ev_meteor_t": "METEOR SHOWER!", "ev_meteor_s": "Dodge!",
+        "ev_double_t": "DOUBLE COINS!", "ev_double_s": "Cha-ching",
+        "ev_fever_t": "COIN REALM!", "ev_fever_s": "20 seconds - go wild!",
+        "ev_sec": "S",
+        "w_sky_t": "CLEAR SKIES", "w_sky_s": "Warm up",
+        "w_space_t": "OUTER SPACE", "w_space_s": "Low gravity - float",
+        "w_jungle_t": "JUNGLE", "w_jungle_s": "Dense trees ahead",
+        "w_dream_t": "DREAM WORLD", "w_dream_s": "Physics optional",
+        "w_upside_t": "UPSIDE DOWN", "w_upside_s": "Trust nothing",
+        "w_coin_t": "COIN REALM", "w_coin_s": "20 seconds - go wild!",
     },
     "zh": {
         "title": "STUPID BIRD",
@@ -314,6 +330,21 @@ STRINGS: dict = {
         "combo_label": "\u8fde\u51fb", "pu_magnet": "\u78c1\u94c1",
         "pu_shield": "\u62a4\u76fe", "pu_burst": "\u91d1\u5e01\u7206\u53d1",
         "shield_ready": "\u62a4\u76fe\u5df2\u88c5\u5907",
+        "ev_portal_t": "\u4f20\u9001\u95e8\uff01", "ev_portal_s": "\u94bb\u8fdb\u53bb\uff0c\u5168\u662f\u91d1\u5e01",
+        "ev_coin_rain_t": "\u91d1\u5e01\u96e8\uff01", "ev_coin_rain_s": "\u5f20\u5634\u63a5\u4f4f",
+        "ev_low_g_t": "\u6708\u7403\u91cd\u529b\uff01", "ev_low_g_s": "\u6574\u4e2a\u4eba\u98d8\u8d77\u6765",
+        "ev_high_g_t": "\u91cd\u529b\u66b4\u6da8\uff01", "ev_high_g_s": "\u5f80\u4e0b\u6389\u5427",
+        "ev_turbo_t": "\u65e0\u654c\u72c2\u98d9\uff01", "ev_turbo_s": "\u514d\u8d39\u51b2\u523a\u9001\u4f60\u4e86",
+        "ev_meteor_t": "\u9668\u77f3\u96e8\uff01", "ev_meteor_s": "\u5feb\u8eb2\u5f00",
+        "ev_double_t": "\u91d1\u5e01\u53cc\u500d\uff01", "ev_double_s": "\u8d5a\u7ffb\u4e86",
+        "ev_fever_t": "\u91d1\u5e01\u7ef4\u5ea6\uff01", "ev_fever_s": "20 \u79d2\uff0c\u968f\u4fbf\u5403\uff01",
+        "ev_sec": "\u79d2",
+        "w_sky_t": "\u6674\u7a7a\u4e07\u91cc", "w_sky_s": "\u5148\u70ed\u70ed\u8eab",
+        "w_space_t": "\u592a\u7a7a", "w_space_s": "\u4f4e\u91cd\u529b\uff0c\u98d8\u4e00\u70b9",
+        "w_jungle_t": "\u539f\u59cb\u68ee\u6797", "w_jungle_s": "\u6811\u5f88\u5bc6\uff0c\u522b\u649e\u4e0a",
+        "w_dream_t": "\u68a6\u5e7b\u4e16\u754c", "w_dream_s": "\u8fd9\u91cc\u4e0d\u8bb2\u7269\u7406",
+        "w_upside_t": "\u4e0a\u4e0b\u98a0\u5012", "w_upside_s": "\u808c\u8089\u8bb0\u5fc6\u5931\u6548",
+        "w_coin_t": "\u91d1\u5e01\u7ef4\u5ea6", "w_coin_s": "20 \u79d2\uff0c\u968f\u4fbf\u5403\uff01",
     },
 }
 
@@ -396,6 +427,17 @@ def emit(t: dict, lang: str) -> None:
     save(make_label(t["pu_shield"], 12, "#9FE8FF"), "ui_pu_shield.png", lang)
     save(make_label(t["pu_burst"], 12, "#FFF6C0"), "ui_pu_burst.png", lang)
     save(make_label(t["shield_ready"], 12, "#9FE8FF"), "ui_shield_ready.png", lang)
+
+    # 事件横幅 / 换场横幅（原本在 gen_events.py 与 gen_worlds.py 里，
+    # 但它们是带文字的，必须跟着语言出两套）
+    for eid, col in {'portal': '#C9A8FF', 'coin_rain': '#FBF236', 'low_g': '#9FF8FF', 'high_g': '#FF9A6A', 'turbo': '#FFE070', 'meteor': '#FF7A5A', 'double': '#B9F06A', 'fever': '#FFFBD0'}.items():
+        save(make_label(t["ev_%s_t" % eid], 26, col, pad=7, outline=2), "ev_title_%s.png" % eid, lang)
+        save(make_label(t["ev_%s_s" % eid], 12, "#E4EDF5"), "ev_sub_%s.png" % eid, lang)
+    save(make_label(t["ev_sec"], 12, "#FBF236"), "ev_sec_label.png", lang)
+    for wid, col in {'sky': '#FBF236', 'space': '#9FF8FF', 'jungle': '#B9F06A', 'dream': '#FFB0E0', 'upside': '#FF9A6A', 'coin': '#FFFBD0'}.items():
+        save(make_label(t["w_%s_t" % wid], 26, col, pad=7, outline=2), "w_title_%s.png" % wid, lang)
+        save(make_label(t["w_%s_s" % wid], 12, "#E4EDF5"), "w_sub_%s.png" % wid, lang)
+
     # 数字和道具图标与语言无关，但为了路径规则统一，两套都放一份
     for d in range(10):
         save(make_digit(d), f"ui_digit_{d}.png", lang)

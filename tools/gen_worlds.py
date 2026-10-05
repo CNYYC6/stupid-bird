@@ -580,17 +580,8 @@ def make_obstacle_set(tag: str, colors, cap_colors, seed: int = 7) -> None:
 def make_banners() -> None:
     """换世界时飞进来的横幅文字（中文必须烘成贴图，Godot 默认字体没有中文字形）。"""
     from gen_ui import make_label
-    print("世界横幅：")
-    for wid, text, sub, color in (
-        ("sky", "晴空万里", "先热热身", "#FBF236"),
-        ("space", "太空", "低重力，飘一点", "#9FF8FF"),
-        ("jungle", "原始森林", "树很密，别撞上", "#B9F06A"),
-        ("dream", "梦幻世界", "这里不讲物理", "#FFB0E0"),
-        ("upside", "上下颠倒", "肌肉记忆失效", "#FF9A6A"),
-        ("coin", "金币维度", "20 秒，随便吃！", "#FFFBD0"),
-    ):
-        save(make_label(text, 26, color, pad=7, outline=2), f"w_title_{wid}.png", ART)
-        save(make_label(sub, 12, "#E4EDF5"), f"w_sub_{wid}.png", ART)
+    # 换场横幅已挪到 gen_ui.py —— 它们带文字，要按语言出两套
+    print("世界横幅： 见 gen_ui.py")
 
 
 # ---------------------------------------------------------------- 第四层
