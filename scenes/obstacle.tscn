@@ -1,0 +1,42 @@
+[gd_scene load_steps=8 format=3 uid="uid://b1obstacle0road"]
+
+[ext_resource type="Script" path="res://gd/obstacle.gd" id="1_obs"]
+[ext_resource type="Texture2D" path="res://pic/obs_pillar.png" id="2_pillar"]
+[ext_resource type="Texture2D" path="res://pic/obs_cap_top.png" id="3_cap_top"]
+[ext_resource type="Texture2D" path="res://pic/obs_cap_hang.png" id="4_cap_hang"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom"]
+size = Vector2(384, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
+size = Vector2(384, 200)
+
+[node name="Obstacle" type="Node2D"]
+script = ExtResource("1_obs")
+
+[node name="Bottom" type="Node2D" parent="."]
+
+[node name="Shaft" type="Sprite2D" parent="Bottom"]
+texture = ExtResource("2_pillar")
+
+[node name="Cap" type="Sprite2D" parent="Bottom"]
+texture = ExtResource("3_cap_top")
+
+[node name="Top" type="Node2D" parent="."]
+
+[node name="Shaft" type="Sprite2D" parent="Top"]
+texture = ExtResource("2_pillar")
+
+[node name="Cap" type="Sprite2D" parent="Top"]
+texture = ExtResource("4_cap_hang")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 1
+monitorable = false
+
+[node name="BottomShape" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_bottom")
+
+[node name="TopShape" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_top")

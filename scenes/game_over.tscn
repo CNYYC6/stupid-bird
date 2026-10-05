@@ -1,0 +1,125 @@
+[gd_scene load_steps=13 format=3 uid="uid://d3gameover0panel"]
+
+[ext_resource type="Script" path="res://gd/game_over.gd" id="1_over"]
+[ext_resource type="Script" path="res://gd/digit_row.gd" id="2_digits"]
+[ext_resource type="Texture2D" path="res://pic/ui_over_title.png" id="3_title"]
+[ext_resource type="Texture2D" path="res://pic/ui_dist_label.png" id="4_dist"]
+[ext_resource type="Texture2D" path="res://pic/ui_meter_label.png" id="5_meter"]
+[ext_resource type="Texture2D" path="res://pic/ui_coin_label.png" id="6_coin"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_retry.png" id="7_retry"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_retry_hover.png" id="8_retry_h"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_retry_pressed.png" id="9_retry_p"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_menu.png" id="10_menu"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_menu_hover.png" id="11_menu_h"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_menu_pressed.png" id="12_menu_p"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 64.0
+content_margin_top = 40.0
+content_margin_right = 64.0
+content_margin_bottom = 48.0
+bg_color = Color(0.063, 0.094, 0.153, 0.88)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.859, 0.804, 0.239, 0.85)
+
+[node name="GameOver" type="CanvasLayer"]
+process_mode = 3
+layer = 20
+script = ExtResource("1_over")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.031, 0.047, 0.078, 0.55)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = -320.0
+offset_right = 420.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Layout" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 26
+alignment = 1
+
+[node name="Title" type="TextureRect" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("3_title")
+
+[node name="DistanceRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Label" type="TextureRect" parent="Panel/Layout/DistanceRow"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_dist")
+
+[node name="Digits" type="HBoxContainer" parent="Panel/Layout/DistanceRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 6
+
+[node name="Unit" type="TextureRect" parent="Panel/Layout/DistanceRow"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("5_meter")
+
+[node name="CoinRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Label" type="TextureRect" parent="Panel/Layout/CoinRow"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("6_coin")
+
+[node name="Digits" type="HBoxContainer" parent="Panel/Layout/CoinRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 4
+
+[node name="Buttons" type="VBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="RetryButton" type="TextureButton" parent="Panel/Layout/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("7_retry")
+texture_hover = ExtResource("8_retry_h")
+texture_pressed = ExtResource("9_retry_p")
+texture_focused = ExtResource("8_retry_h")
+
+[node name="MenuButton" type="TextureButton" parent="Panel/Layout/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("10_menu")
+texture_hover = ExtResource("11_menu_h")
+texture_pressed = ExtResource("12_menu_p")
+texture_focused = ExtResource("11_menu_h")

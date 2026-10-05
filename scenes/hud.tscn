@@ -1,0 +1,83 @@
+[gd_scene load_steps=8 format=3 uid="uid://depd38vm2vkvm"]
+
+[ext_resource type="Script" uid="uid://dd2mfnwednfi" path="res://gd/hud.gd" id="1_c18ak"]
+[ext_resource type="Script" path="res://gd/digit_row.gd" id="2_digits"]
+[ext_resource type="Texture2D" path="res://pic/ui_dist_label.png" id="3_dist"]
+[ext_resource type="Texture2D" path="res://pic/ui_coin_label.png" id="4_coin"]
+[ext_resource type="Texture2D" path="res://pic/ui_meter_label.png" id="5_meter"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
+content_margin_left = 22.0
+content_margin_top = 10.0
+content_margin_right = 22.0
+content_margin_bottom = 10.0
+bg_color = Color(0.047, 0.071, 0.125, 0.66)
+
+[node name="Hud" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_c18ak")
+
+[node name="Root" type="MarginContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 210.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_right = 48
+
+[node name="Bar" type="HBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="DistancePlate" type="PanelContainer" parent="Root/Bar"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_plate")
+
+[node name="Distance" type="HBoxContainer" parent="Root/Bar/DistancePlate"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="TextureRect" parent="Root/Bar/DistancePlate/Distance"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_dist")
+
+[node name="Digits" type="HBoxContainer" parent="Root/Bar/DistancePlate/Distance"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 6
+
+[node name="Unit" type="TextureRect" parent="Root/Bar/DistancePlate/Distance"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("5_meter")
+
+[node name="Spacer" type="Control" parent="Root/Bar"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="CoinPlate" type="PanelContainer" parent="Root/Bar"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_plate")
+
+[node name="Coin" type="HBoxContainer" parent="Root/Bar/CoinPlate"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="TextureRect" parent="Root/Bar/CoinPlate/Coin"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_coin")
+
+[node name="Digits" type="HBoxContainer" parent="Root/Bar/CoinPlate/Coin"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 4

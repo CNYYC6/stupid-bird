@@ -1,0 +1,223 @@
+[gd_scene load_steps=24 format=3 uid="uid://c8kq3vbn2mstart"]
+
+[ext_resource type="Script" path="res://gd/start_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" path="res://pic/bg_sky.png" id="2_sky"]
+[ext_resource type="Texture2D" path="res://pic/bg_clouds.png" id="3_clouds"]
+[ext_resource type="Texture2D" path="res://pic/bg_mountains_far.png" id="4_mtn"]
+[ext_resource type="Texture2D" path="res://pic/bg_hills_mid.png" id="5_hills"]
+[ext_resource type="Texture2D" path="res://pic/bg_trees_near.png" id="6_trees"]
+[ext_resource type="Texture2D" path="res://pic/bg_ground.png" id="7_ground"]
+[ext_resource type="Script" path="res://gd/parallax_strip.gd" id="8_strip"]
+[ext_resource type="SpriteFrames" path="res://pic/bird_frames.tres" id="9_frames"]
+[ext_resource type="Texture2D" path="res://pic/ui_shade.png" id="10_shade"]
+[ext_resource type="Texture2D" path="res://pic/ui_title.png" id="11_title"]
+[ext_resource type="Texture2D" path="res://pic/ui_tip.png" id="12_tip"]
+[ext_resource type="Texture2D" path="res://pic/ui_hint.png" id="13_hint"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_start.png" id="14_start"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_start_hover.png" id="15_start_hover"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_start_pressed.png" id="16_start_press"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_quit.png" id="17_quit"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_quit_hover.png" id="18_quit_hover"]
+[ext_resource type="Texture2D" path="res://pic/ui_btn_quit_pressed.png" id="19_quit_press"]
+[ext_resource type="Script" path="res://gd/digit_row.gd" id="20_digits"]
+[ext_resource type="Texture2D" path="res://pic/ui_best_label.png" id="21_best"]
+[ext_resource type="Texture2D" path="res://pic/ui_meter_label.png" id="22_meter"]
+[ext_resource type="Texture2D" path="res://pic/ui_coin_label.png" id="23_coin"]
+
+[node name="StartMenu" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_menu")
+
+[node name="Sky" type="CanvasLayer" parent="."]
+layer = -100
+
+[node name="Texture" type="TextureRect" parent="Sky"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_sky")
+expand_mode = 1
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Clouds" type="Node2D" parent="World"]
+position = Vector2(0, 60)
+script = ExtResource("8_strip")
+texture = ExtResource("3_clouds")
+auto_speed = 8.0
+
+[node name="MountainsFar" type="Node2D" parent="World"]
+position = Vector2(0, 220)
+script = ExtResource("8_strip")
+texture = ExtResource("4_mtn")
+auto_speed = 16.0
+
+[node name="HillsMid" type="Node2D" parent="World"]
+position = Vector2(0, 424)
+script = ExtResource("8_strip")
+texture = ExtResource("5_hills")
+auto_speed = 28.0
+
+[node name="TreesNear" type="Node2D" parent="World"]
+position = Vector2(0, 520)
+script = ExtResource("8_strip")
+texture = ExtResource("6_trees")
+auto_speed = 46.0
+
+[node name="Ground" type="Node2D" parent="World"]
+position = Vector2(0, 700)
+script = ExtResource("8_strip")
+texture = ExtResource("7_ground")
+scroll_factor = 1.0
+auto_speed = 70.0
+
+[node name="Bird" type="AnimatedSprite2D" parent="World"]
+position = Vector2(1640, 620)
+scale = Vector2(6, 6)
+sprite_frames = ExtResource("9_frames")
+animation = &"fly_bird"
+autoplay = "fly_bird"
+
+[node name="Shade" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Texture" type="TextureRect" parent="Shade"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("10_shade")
+expand_mode = 1
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Title" type="TextureRect" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -657.0
+offset_top = 40.0
+offset_right = 657.0
+offset_bottom = 310.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("11_title")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Tip" type="TextureRect" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -620.0
+offset_top = 322.0
+offset_right = 620.0
+offset_bottom = 424.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("12_tip")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Buttons" type="VBoxContainer" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -330.0
+offset_top = 450.0
+offset_right = 330.0
+offset_bottom = 870.0
+grow_horizontal = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="StartButton" type="TextureButton" parent="UI/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("14_start")
+texture_hover = ExtResource("15_start_hover")
+texture_pressed = ExtResource("16_start_press")
+texture_focused = ExtResource("15_start_hover")
+
+[node name="QuitButton" type="TextureButton" parent="UI/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("17_quit")
+texture_hover = ExtResource("18_quit_hover")
+texture_pressed = ExtResource("19_quit_press")
+texture_focused = ExtResource("18_quit_hover")
+
+[node name="Best" type="HBoxContainer" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -790.0
+offset_top = 892.0
+offset_right = 790.0
+offset_bottom = 1000.0
+grow_horizontal = 2
+theme_override_constants/separation = 48
+alignment = 1
+
+[node name="DistanceBest" type="HBoxContainer" parent="UI/Best"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 12
+
+[node name="Label" type="TextureRect" parent="UI/Best/DistanceBest"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("21_best")
+
+[node name="Digits" type="HBoxContainer" parent="UI/Best/DistanceBest"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("20_digits")
+digits = 6
+
+[node name="Unit" type="TextureRect" parent="UI/Best/DistanceBest"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("22_meter")
+
+[node name="CoinBest" type="HBoxContainer" parent="UI/Best"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 12
+
+[node name="Label" type="TextureRect" parent="UI/Best/CoinBest"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("23_coin")
+
+[node name="Digits" type="HBoxContainer" parent="UI/Best/CoinBest"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("20_digits")
+digits = 4
+
+[node name="Hint" type="TextureRect" parent="UI"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("13_hint")
+expand_mode = 1
+stretch_mode = 5

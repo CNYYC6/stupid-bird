@@ -1,0 +1,115 @@
+[gd_scene load_steps=16 format=3 uid="uid://cpoyeyl0d4urf"]
+
+[ext_resource type="Script" uid="uid://bwxeh2ecck51s" path="res://gd/main.gd" id="1_main"]
+[ext_resource type="Texture2D" path="res://pic/bg_sky.png" id="2_sky"]
+[ext_resource type="Texture2D" path="res://pic/bg_clouds.png" id="3_clouds"]
+[ext_resource type="Texture2D" path="res://pic/bg_mountains_far.png" id="4_mtn"]
+[ext_resource type="Texture2D" path="res://pic/bg_hills_mid.png" id="5_hills"]
+[ext_resource type="Texture2D" path="res://pic/bg_trees_near.png" id="6_trees"]
+[ext_resource type="Texture2D" path="res://pic/bg_ground.png" id="7_ground"]
+[ext_resource type="Script" path="res://gd/parallax_strip.gd" id="8_strip"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="9_player"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="10_hud"]
+[ext_resource type="Script" path="res://gd/road.gd" id="11_road"]
+[ext_resource type="Script" path="res://gd/camera.gd" id="12_camera"]
+[ext_resource type="Script" path="res://gd/course.gd" id="13_course"]
+[ext_resource type="PackedScene" path="res://scenes/game_over.tscn" id="14_over"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(1936, 420)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Sky" type="CanvasLayer" parent="."]
+layer = -100
+
+[node name="Texture" type="TextureRect" parent="Sky"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_sky")
+expand_mode = 1
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Clouds" type="Node2D" parent="Background"]
+position = Vector2(0, 0)
+script = ExtResource("8_strip")
+texture = ExtResource("3_clouds")
+scroll_factor = 0.08
+auto_speed = 10.0
+
+[node name="MountainsFar" type="Node2D" parent="Background"]
+position = Vector2(0, 213)
+script = ExtResource("8_strip")
+texture = ExtResource("4_mtn")
+scroll_factor = 0.18
+
+[node name="HillsMid" type="Node2D" parent="Background"]
+position = Vector2(0, 417)
+script = ExtResource("8_strip")
+texture = ExtResource("5_hills")
+scroll_factor = 0.38
+
+[node name="TreesNear" type="Node2D" parent="Background"]
+position = Vector2(0, 513)
+script = ExtResource("8_strip")
+texture = ExtResource("6_trees")
+scroll_factor = 0.65
+
+[node name="Ground" type="Node2D" parent="."]
+position = Vector2(0, 693)
+script = ExtResource("8_strip")
+texture = ExtResource("7_ground")
+scroll_factor = 1.0
+
+[node name="Road" type="Node2D" parent="."]
+script = ExtResource("11_road")
+
+[node name="Chunk0" type="StaticBody2D" parent="Road"]
+
+[node name="Shape" type="CollisionShape2D" parent="Road/Chunk0"]
+position = Vector2(960, 903)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="Chunk1" type="StaticBody2D" parent="Road"]
+position = Vector2(1920, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="Road/Chunk1"]
+position = Vector2(960, 903)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="Chunk2" type="StaticBody2D" parent="Road"]
+position = Vector2(3840, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="Road/Chunk2"]
+position = Vector2(960, 903)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="Chunk3" type="StaticBody2D" parent="Road"]
+position = Vector2(5760, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="Road/Chunk3"]
+position = Vector2(960, 903)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="Player" parent="." instance=ExtResource("9_player")]
+position = Vector2(91, 657)
+scale = Vector2(6, 6)
+
+[node name="Course" type="Node2D" parent="."]
+script = ExtResource("13_course")
+
+[node name="Camera" type="Camera2D" parent="."]
+process_priority = -100
+script = ExtResource("12_camera")
+target_path = NodePath("../Player")
+fixed_vertical = true
+fixed_y = 330.0
+
+[node name="Hud" parent="." instance=ExtResource("10_hud")]
+
+[node name="GameOver" parent="." instance=ExtResource("14_over")]

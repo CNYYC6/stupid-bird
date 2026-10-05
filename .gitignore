@@ -1,0 +1,20 @@
+# Godot 4 缓存与导入产物（引擎会自动重建）
+.godot/
+/android/
+
+# 导出成品：体积过大，不纳入版本库
+# Windows 单文件 exe 约 100 MB，已超过 GitHub 单文件 100 MiB 硬上限
+build/
+*.exe
+*.pck
+*.apk
+*.aab
+*.zip
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# Python（tools/ 下的素材生成脚本）
+__pycache__/
+*.pyc
