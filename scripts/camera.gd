@@ -35,20 +35,19 @@ var _target: Node2D
 var _targets: Array[Node2D] = []
 var _y: float = 0.0
 
-## 目标集合发生"跳变"的判定阈值（像素/帧）。
-## 双人模式里一个人倒地时，重心会从两人平均瞬间变成只剩活着的那个 ——
-## 那是几百像素的瞬移，必须平滑掉；而正常飞行时重心每帧只挪十几像素，
-## 不会被误判，所以日常跟随仍然是零滞后的硬跟随。
-const FOCUS_JUMP: float = 150.0
-## 跳变后的过渡速度（越大越快追平）
-const FOCUS_BLEND: float = 6.5
-## 过渡最多持续多久
-const FOCUS_BLEND_MAX: float = 0.9
+## 重心平滑速度（越大跟得越紧）。
+##
+## 这里**始终**对重心做指数平滑，而不是"检测到跳变才平滑"。原因是阈值法很脆：
+## 双人模式下两台飞行器本来就有一个 x 偏移，一个人倒地时重心只会挪半个偏移量
+## （比如 85 像素），刚好落在阈值以下 —— 于是照样瞬移。
+##
+## 平滑的是**目标点**而不是相机自身，所以稳态只是一个固定的小偏移
+## （最高速时 v / FOCUS_SMOOTH ≈ 76 像素），不会像早期版本那样累积成几千像素的滞后。
+## 那个坑是 position_smoothing_speed = 2.0 配 10000 像素/秒的速度，完全不是一回事。
+const FOCUS_SMOOTH: float = 13.0
 
-var _raw_prev: Vector2 = Vector2.ZERO
-var _has_prev: bool = false
-var _blend_left: float = 0.0
 var _focus_pos: Vector2 = Vector2.ZERO
+var _has_focus: bool = false
 
 
 ## 双人模式：改成跟随一组目标。传空数组则退回单目标 target_path。
@@ -92,27 +91,27 @@ func _ready() -> void:
 func reset_to(target_position: Vector2) -> void:
 	_y = fixed_y if fixed_vertical else target_position.y + follow_offset.y
 	global_position = Vector2(target_position.x + follow_offset.x, _y)
+	# 平滑器的内部状态也要一起归零，否则初始那段会从旧位置慢慢爬过来
+	_focus_pos = target_position
+	_has_focus = true
 
 
-## 目标集合变化时给出一个平滑过的重心。
-## 平时直接返回真值（零滞后），只在检测到跳变后的 FOCUS_BLEND_MAX 秒内做指数过渡。
+## 重心的一阶低通。任何变化（有人倒地退出重心、复活加入重心、两台分开）
+## 都会走这里，所以视角永远是滑过去的，不会瞬移。
 func _smooth_focus(focus: Vector2, delta: float) -> Vector2:
-	if not _has_prev:
-		_raw_prev = focus
-		_has_prev = true
+	if not _has_focus:
 		_focus_pos = focus
+		_has_focus = true
 		return focus
-	if focus.distance_to(_raw_prev) > FOCUS_JUMP:
-		_blend_left = FOCUS_BLEND_MAX
-	_raw_prev = focus
-	if _blend_left > 0.0:
-		_blend_left = maxf(_blend_left - delta, 0.0)
-		_focus_pos = _focus_pos.lerp(focus, 1.0 - exp(-FOCUS_BLEND * delta))
-		if _blend_left <= 0.0:
-			_focus_pos = focus
-		return _focus_pos
-	_focus_pos = focus
-	return focus
+	_focus_pos = _focus_pos.lerp(focus, 1.0 - exp(-FOCUS_SMOOTH * delta))
+	return _focus_pos
+
+
+## 世界坐标重定基时跟着一起平移内部状态。
+## 否则平滑器会以为目标瞬移了 26 万像素，要花很久才追回来。
+func shift_x(dx: float) -> void:
+	global_position.x -= dx
+	_focus_pos.x -= dx
 
 
 func _physics_process(delta: float) -> void:

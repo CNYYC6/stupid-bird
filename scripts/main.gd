@@ -24,9 +24,10 @@ const REBASE_STEP: float = 262144.0
 
 @export_file("*.tscn") var start_menu_scene: String = "res://scenes/start_menu.tscn"
 @export var spawn_point: Vector2 = Vector2(91.0, 657.0)
-## 双人模式的初始位置偏移。默认同一点 —— 两人横向速度完全一致，
-## 区别只在于各自按自己的键，所以垂直高度会自然分开。
-@export var coop_offset: Vector2 = Vector2.ZERO
+## 双人模式的初始位置偏移：二号机在一号机后面一个身位。
+## 两人横向速度完全一致，所以这个间距会一直保持；垂直高度各自按键各自飞。
+## 取 170 是因为飞行器可视宽度约 174 像素，刚好不重叠又能同屏看全。
+@export var coop_offset: Vector2 = Vector2(-170.0, 0.0)
 ## 双人模式里倒地后队友要撑住多少秒才能把人拉起来
 @export var coop_revive_seconds: float = 5.0
 
@@ -218,7 +219,8 @@ func _rebase_world() -> void:
 		return
 	var dx: float = steps * REBASE_STEP
 	_player.global_position.x -= dx
-	_camera.global_position.x -= dx
+	# 走相机自己的 shift：它会连平滑器的内部状态一起平移
+	_camera.shift_x(dx)
 	for node in [_road, _course]:
 		for child in node.get_children():
 			if child is Node2D:
