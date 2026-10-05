@@ -3,6 +3,9 @@
 ![Godot](https://img.shields.io/badge/Godot-4.6.2-478CBF?logo=godot-engine&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)
+![Status](https://img.shields.io/badge/%E7%8A%B6%E6%80%81-%E5%BC%80%E5%8F%91%E4%B8%AD-orange)
+
+> **开发中，尚未发布。** 逐版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
 
 > 8bit 像素风反应型跑酷。**三种玩法**：单人闯关、双人合作（离得远了自动分屏）、
 > 以及「机哥带你飞」—— 让 AI 顶二号机，三档难度从「臭人机」到「机哥」。
