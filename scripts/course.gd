@@ -12,7 +12,7 @@ extends Node2D
 
 ## 带上撞到的是哪个玩家
 signal player_hit(body: Node2D)
-signal coin_collected
+signal coin_collected(who: Node2D)
 ## 玩家吃到道具（kind 见 powerup.gd 的 Kind 枚举）
 signal powerup_picked(kind: int)
 
@@ -138,7 +138,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _fill(center_x: float) -> void:
-	var right: float = center_x + get_viewport_rect().size.x * 0.5 + spawn_margin
+	var right: float = center_x + _half_view() + spawn_margin
 	while _cursor_x < right:
 		if coin_fever:
 			_spawn_fever_row(_cursor_x)
@@ -170,8 +170,18 @@ func _next_spacing() -> float:
 	return clampf(speed * pattern_interval, spacing_min, spacing_max)
 
 
+## 半屏宽度 + 分屏时玩家偏离相机的距离。
+## 不分屏时 spread 是 0，行为和以前完全一致。
+func _half_view() -> float:
+	var spread: float = 0.0
+	var cam := get_viewport().get_camera_2d()
+	if cam != null and "view_spread" in cam:
+		spread = cam.view_spread
+	return get_viewport_rect().size.x * 0.5 + spread
+
+
 func _recycle(center_x: float) -> void:
-	var cutoff: float = center_x - get_viewport_rect().size.x * 0.5 - 800.0
+	var cutoff: float = center_x - _half_view() - 800.0
 	for child in get_children():
 		if child is Node2D and (child as Node2D).position.x < cutoff:
 			child.queue_free()
@@ -281,5 +291,5 @@ func _on_obstacle_hit(body: Node2D) -> void:
 	player_hit.emit(body)
 
 
-func _on_coin_collected() -> void:
-	coin_collected.emit()
+func _on_coin_collected(who: Node2D = null) -> void:
+	coin_collected.emit(who)

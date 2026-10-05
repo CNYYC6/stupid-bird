@@ -51,6 +51,11 @@ const FOCUS_SMOOTH: float = 13.0
 ## 主相机用 false —— 有人倒地时视角应该让给还活着的人。
 @export var follow_dead: bool = false
 
+## 分屏时两名玩家相对相机的最大横向偏离（世界像素）。
+## 关卡生成和视差铺砖都要按它加宽 —— 否则靠后的那名玩家会看到
+## 空掉的背景、以及身后已经被回收掉的柱子。
+var view_spread: float = 0.0
+
 var _focus_pos: Vector2 = Vector2.ZERO
 var _has_focus: bool = false
 

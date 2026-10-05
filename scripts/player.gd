@@ -224,6 +224,10 @@ func dash_ready() -> bool:
 
 ## 能量条进度 0~1：冲刺时从满放到空，冷却时从空回满，其余时间恒为满
 func dash_ratio() -> float:
+	# 狂飙（事件白送的冲刺）期间能量条要显示满的 —— 它是免费的，
+	# 条子要是往下掉，看起来就像在消耗能量，和"免费"自相矛盾。
+	if _turbo_left > 0.0:
+		return 1.0
 	if dash_active:
 		return clampf(_dash_left / maxf(dash_duration, 0.001), 0.0, 1.0)
 	if _cooldown_left > 0.0:
@@ -250,6 +254,14 @@ func start_dash() -> bool:
 	return true
 
 
+## 吃金币给冲刺冷却减一点。只作用于**捡到那枚金币的玩家**。
+## 正在冲刺时不用减（冷却本来就是 0），免得把一段冲刺"续"成两段。
+func reduce_dash_cooldown(seconds: float) -> void:
+	if dash_active or _cooldown_left <= 0.0:
+		return
+	_cooldown_left = maxf(_cooldown_left - seconds, 0.0)
+
+
 ## 事件用：白送一段无敌冲刺（能量条不算数）
 func grant_turbo(seconds: float) -> void:
 	_turbo_left = maxf(_turbo_left, seconds)
@@ -268,7 +280,15 @@ func _tick_dash(delta: float) -> void:
 		if _turbo_left > 0.0:
 			_refresh_gold()
 			return
+		# 狂飙刚刚结束：干净地退出冲刺，**不进冷却**。
+		# 以前这里直接往下走，落到普通的冲刺结算里 —— 于是"免费送的冲刺"
+		# 一结束就立刻开始转冷却，等于白送了个寂寞。
+		dash_active = false
+		_dash_left = 0.0
+		_cooldown_left = 0.0
 		_grace_left = maxf(_grace_left, 0.6)
+		_refresh_gold()
+		return
 	if dash_active:
 		_dash_left -= delta
 		if _dash_left <= 0.0:

@@ -25,6 +25,7 @@ script = ExtResource("1_main")
 
 [node name="Sky" type="Node2D" parent="."]
 script = ExtResource("8_strip")
+coverage_margin = 3000.0
 texture = ExtResource("2_sky")
 scroll_factor = 0.0
 auto_speed = 0.0
@@ -38,6 +39,7 @@ coverage_margin = 2400.0
 [node name="Clouds" type="Node2D" parent="Background"]
 position = Vector2(0, 0)
 script = ExtResource("8_strip")
+coverage_margin = 3000.0
 texture = ExtResource("3_clouds")
 scroll_factor = 0.08
 auto_speed = 10.0
@@ -45,24 +47,28 @@ auto_speed = 10.0
 [node name="MountainsFar" type="Node2D" parent="Background"]
 position = Vector2(0, 213)
 script = ExtResource("8_strip")
+coverage_margin = 3000.0
 texture = ExtResource("4_mtn")
 scroll_factor = 0.18
 
 [node name="HillsMid" type="Node2D" parent="Background"]
 position = Vector2(0, 417)
 script = ExtResource("8_strip")
+coverage_margin = 3000.0
 texture = ExtResource("5_hills")
 scroll_factor = 0.38
 
 [node name="TreesNear" type="Node2D" parent="Background"]
 position = Vector2(0, 513)
 script = ExtResource("8_strip")
+coverage_margin = 3000.0
 texture = ExtResource("6_trees")
 scroll_factor = 0.65
 
 [node name="Ground" type="Node2D" parent="."]
 position = Vector2(0, 693)
 script = ExtResource("8_strip")
+coverage_margin = 3000.0
 texture = ExtResource("7_ground")
 scroll_factor = 1.0
 

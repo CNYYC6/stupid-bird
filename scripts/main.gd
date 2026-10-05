@@ -8,6 +8,8 @@ const METERS_PER_PIXEL: float = 0.1
 const WOW_EVERY: int = 30
 
 ## 连击：连着吃金币不断档，倍率阶梯上升；撞一次或断档 3 秒清零
+## 每吃一枚金币，为捡到它的玩家减少多少秒冲刺冷却
+const COIN_DASH_RELIEF: float = 0.5
 const COMBO_TIMEOUT: float = 3.0
 const COMBO_STEPS: Array[int] = [10, 25, 50]      # 达到这些数量，倍率 +1
 const COMBO_MAX: int = 4
@@ -214,6 +216,7 @@ func _setup_split() -> void:
 	_split_behind = 0
 	for slot in 2:
 		_split_cams[slot].set_targets([players[slot]])
+	_camera.view_spread = 0.0
 
 
 ## 每帧检查两人距离，决定开不开分屏。
@@ -222,12 +225,17 @@ func _tick_split() -> void:
 	if _split_layer == null or players.size() < 2:
 		return
 	var sep: float = absf(players[0].global_position.x - players[1].global_position.x)
-	if not _split_on and sep > SPLIT_ON:
+	# 有人倒下时不分屏：那半屏只剩一具往下掉的尸体，没有任何意义。
+	# 视角直接交给主相机，它会跟住还活着的那个人。
+	var both_alive: bool = _alive_count() >= 2
+	if not _split_on and both_alive and sep > SPLIT_ON:
 		_split_on = true
 		_split_layer.visible = true
-	elif _split_on and sep < SPLIT_OFF:
+	elif _split_on and (not both_alive or sep < SPLIT_OFF):
 		_split_on = false
 		_split_layer.visible = false
+	# 关卡生成 / 视差铺砖要按"最远那个人离相机有多远"加宽
+	_camera.view_spread = sep * 0.5 if _split_on else 0.0
 	if not _split_on:
 		return
 	var behind: int = 0 if players[0].global_position.x <= players[1].global_position.x else 1
@@ -352,7 +360,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		retry()
 
 
-func _on_coin_collected() -> void:
+func _on_coin_collected(who: Node2D = null) -> void:
+	# 吃金币给**捡到它的那个玩家**减 0.5 秒冲刺冷却
+	if who is CharacterBody2D and who in players:
+		(who as CharacterBody2D).reduce_dash_cooldown(COIN_DASH_RELIEF)
 	combo += 1
 	_combo_left = COMBO_TIMEOUT
 	var mult: int = _events.coin_multiplier() * combo_multiplier()

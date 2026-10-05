@@ -3,7 +3,7 @@ extends Area2D
 ##
 ## 帧贴图放在 static 数组里，所有金币实例共享，不会每个都重新 load。
 
-signal collected
+signal collected(who: Node2D)
 
 const FRAME_PATHS: Array[String] = [
 	"res://art/coin_0.png", "res://art/coin_1.png",
@@ -40,5 +40,5 @@ func _process(delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("player"):
 		return
-	collected.emit()
+	collected.emit(body)
 	queue_free()

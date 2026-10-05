@@ -54,8 +54,12 @@ func _physics_process(_delta: float) -> void:
 
 	var center: Vector2 = cam.get_screen_center_position()
 	var half_view: float = get_viewport_rect().size.x * 0.5 / maxf(cam.zoom.x, 0.001)
-	var need_left: float = center.x - half_view - margin
-	var need_right: float = center.x + half_view + margin
+	# 分屏时靠后的玩家可能离相机很远，地面得多铺一截
+	var spread: float = 0.0
+	if "view_spread" in cam:
+		spread = cam.view_spread
+	var need_left: float = center.x - half_view - margin - spread
+	var need_right: float = center.x + half_view + margin + spread
 
 	# 总覆盖 = n * chunk_width，必须大于 need_right - need_left + chunk_width，
 	# 否则会在左右之间来回搬运而抖动。主场景放了 4 块。
