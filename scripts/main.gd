@@ -82,6 +82,9 @@ func _ready() -> void:
 	_hud.set_distance(0.0)
 	_hud.set_coins(0)
 	_hud.setup_players(players.size())
+	if mode == 2:
+		# 二号机是机哥代打，能量条前面挂 AI 牌而不是 P2
+		_hud.set_bar_tag(1, "res://art/badge_bot.png")
 
 
 ## 按存档里的模式摆好玩家。双人时二号机是运行时实例化的，

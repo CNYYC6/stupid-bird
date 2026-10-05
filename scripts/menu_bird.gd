@@ -12,6 +12,19 @@ const MAX_SPEED: float = 1400.0
 const MAX_SPIN: float = 14.0
 
 
+## 开始界面那只鸟也换装：飞行器换整套 SpriteFrames，驾驶员换贴图。
+## 和 player.gd 的 apply_skin 是同一套 Skins 数据，所以菜单里看到的
+## 就是游戏里能选到的样子。
+func apply_skin(aircraft: int, pilot: int) -> void:
+	var sprite: AnimatedSprite2D = get_node("AnimatedSprite2D")
+	sprite.sprite_frames = Skins.frames(aircraft)
+	sprite.play("fly_bird")
+	var pilot_node: Sprite2D = sprite.get_node("Pilot")
+	var tex: Texture2D = Skins.pilot_texture(pilot)
+	pilot_node.texture = tex
+	pilot_node.visible = tex != null
+
+
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	var v: Vector2 = state.linear_velocity
 	var speed: float = v.length()

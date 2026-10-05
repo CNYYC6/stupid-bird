@@ -28,6 +28,7 @@ const ENERGY_STACK: float = 190.0
 @onready var _track: Panel = $Energy/Plate/Layout/Track
 @onready var _fill: ColorRect = $Energy/Plate/Layout/Track/Fill
 @onready var _state: TextureRect = $Energy/Plate/Layout/Head/State
+@onready var _tag: TextureRect = $Energy/Plate/Layout/Head/Tag
 @onready var _energy: Control = $Energy
 @onready var _banner: Control = $Banner
 @onready var _banner_title: TextureRect = $Banner/Title
@@ -56,6 +57,8 @@ func _ready() -> void:
 	_track.resized.connect(_refresh_fill)
 	_refresh_fill()
 	_bars = [{"track": _track, "fill": _fill, "state": _state, "ratio": 1.0, "index": -1}]
+	# 单人模式不挂编号牌，双人模式由 setup_players 补上
+	_tag.visible = false
 	_banner.visible = false
 	_fever.visible = false
 	_combo.visible = false
@@ -159,20 +162,41 @@ func set_coins(count: int) -> void:
 ## 双人模式：把右下角的能量条复制一份往上摞，标成 P2。
 ## 用 duplicate() 而不是在 .tscn 里再搭一遍 —— 单人玩家完全看不到第二个控件。
 func setup_players(count: int) -> void:
-	if count < 2 or _bars.size() >= 2:
+	if count < 2:
 		return
+	# 两条能量条各挂一个 P1 / P2 圆牌，不然双人时根本分不清哪条是谁的
+	_tag.visible = true
+	_tag.texture = load("res://art/badge_p1.png")
+	if _bars.size() >= 2:
+		return
+	# 先把原控件复制一份留在原位（它会成为 P2 那条），
+	# 再把原控件往上挪（它是 P1）—— 这样 P1 在上、P2 在下，和玩家编号顺序一致。
 	var second := _energy.duplicate() as Control
 	second.name = "Energy2"
-	# 往上摞一条，两条之间留 14 像素
-	second.offset_top -= ENERGY_STACK
-	second.offset_bottom -= ENERGY_STACK
 	add_child(second)
+	_energy.offset_top -= ENERGY_STACK
+	_energy.offset_bottom -= ENERGY_STACK
 	var t: Panel = second.get_node("Plate/Layout/Track")
 	var f: ColorRect = second.get_node("Plate/Layout/Track/Fill")
 	var st: TextureRect = second.get_node("Plate/Layout/Head/State")
+	var tag: TextureRect = second.get_node("Plate/Layout/Head/Tag")
+	tag.visible = true
+	# 机哥模式下的二号机玩家还是 P2 的键位，但实际操控者不是人 —— 由 main 覆盖
+	tag.texture = load("res://art/badge_p2.png")
 	t.resized.connect(func() -> void: _refresh_bar(_bars[1]))
 	_bars.append({"track": t, "fill": f, "state": st, "ratio": 1.0, "index": -1})
 	_refresh_bar(_bars[1])
+
+
+## 把某一条能量条的编号牌换成别的图（机哥模式把二号机换成 AI 标志）
+func set_bar_tag(index: int, path: String) -> void:
+	if index < 0 or index >= _bars.size():
+		return
+	var bar: Dictionary = _bars[index]
+	var head: Node = (bar["state"] as Node).get_parent()
+	var tag: TextureRect = head.get_node("Tag")
+	tag.visible = true
+	tag.texture = load(path)
 
 
 ## 第 index 个玩家的能量条。ratio 0~1，state 取 player.gd 的 DashState

@@ -27,6 +27,10 @@ sprite_frames = ExtResource("2_frames")
 animation = &"fly_bird"
 autoplay = "fly_bird"
 
+[node name="Pilot" type="Sprite2D" parent="AnimatedSprite2D"]
+position = Vector2(0, -11)
+visible = false
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(3, 4.5)
 shape = SubResource("RectangleShape2D_mbird")

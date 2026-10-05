@@ -32,11 +32,15 @@ const GROUND_GROUP: StringName = &"menu_ground"
 var _ground_layers: Array[Node] = []
 var _time: float = 0.0
 var _rng := RandomNumberGenerator.new()
+## 洗好的 (飞行器, 驾驶员) 组合表
+var _deck: Array[Vector2i] = []
+var _deck_index: int = 0
 
 
 func _ready() -> void:
 	_rng.randomize()
 	_ground_layers = get_tree().get_nodes_in_group(GROUND_GROUP)
+	_build_deck()
 	_spawn_flock()
 	_place_floor(0.0, 0.0)
 
@@ -59,6 +63,20 @@ func _place_floor(offset: float, velocity: float) -> void:
 			layer.y_offset = offset
 
 
+## 把所有 飞行器 x 驾驶员 组合洗牌。数量不够时循环取用（会重复，但尽量晚）。
+func _build_deck() -> void:
+	_deck.clear()
+	for a in Skins.AIRCRAFT.size():
+		for p in Skins.PILOTS.size():
+			_deck.append(Vector2i(a, p))
+	# Fisher-Yates
+	for i in range(_deck.size() - 1, 0, -1):
+		var j: int = _rng.randi_range(0, i)
+		var tmp: Vector2i = _deck[i]
+		_deck[i] = _deck[j]
+		_deck[j] = tmp
+
+
 func _spawn_flock() -> void:
 	var view_w: float = get_viewport_rect().size.x
 	for i in bird_count:
@@ -73,6 +91,11 @@ func _spawn_flock() -> void:
 				_rng.randf_range(-40.0, 140.0))
 		bird.angular_velocity = _rng.randf_range(-6.0, 6.0)
 		add_child(bird)
+		# 每只随机一套飞行器 + 驾驶员。6x6 = 36 种组合，25 只可以做到完全不重样，
+		# 所以先洗牌整个组合表再依次发，比"每次随机"更不容易撞车。
+		var pair: Vector2i = _deck[_deck_index % _deck.size()]
+		_deck_index += 1
+		bird.apply_skin(pair.x, pair.y)
 		# 25 只鸟共用同一份 SpriteFrames，如果都从第 0 帧同速播，看起来像复制粘贴
 		var anim: AnimatedSprite2D = bird.get_node("AnimatedSprite2D")
 		anim.frame = _rng.randi_range(0, 3)

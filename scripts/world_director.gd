@@ -22,10 +22,13 @@ signal banner_requested(id: String)
 @export var layer_paths: Array[NodePath] = []
 
 @export_group("节奏")
-## 出发后多少米换第一个世界
-@export var first_switch_meters: float = 420.0
-## 之后每隔多少米换一次
-@export var switch_every_meters: float = 560.0
+## 出发后多少**秒**换第一个世界
+@export var first_switch_seconds: float = 30.0
+## 之后每隔多少**秒**换一次
+##
+## 按时间而不是按距离：玩家加速/冲刺时距离涨得快得多（660 → 990 像素/秒），
+## 用距离当间隔会导致"跑得越快换得越勤"，同一段世界待的时长飘忽不定。
+@export var switch_every_seconds: float = 30.0
 
 var index: int = 0
 
@@ -37,6 +40,8 @@ var _course: Node2D
 var _player: Node2D
 
 var _step: int = 0
+## 本局已经跑了多少秒（世界轮换用）
+var _elapsed: float = 0.0
 var _next_at: float = 0.0
 ## 事件强制占用世界时记下原来的索引，事件结束后恢复
 var _borrowed: bool = false
@@ -52,17 +57,17 @@ func _ready() -> void:
 		var n := get_node_or_null(p) as ParallaxStrip
 		if n != null:
 			_layers.append(n)
-	_next_at = first_switch_meters
+	_next_at = first_switch_seconds
 	apply(0, false)
 
 
-func _physics_process(_delta: float) -> void:
-	if _borrowed or _course == null:
+func _physics_process(delta: float) -> void:
+	if _borrowed:
 		return
-	var meters: float = _course.traveled_meters
-	if meters < _next_at:
+	_elapsed += delta
+	if _elapsed < _next_at:
 		return
-	_next_at = meters + switch_every_meters
+	_next_at = _elapsed + switch_every_seconds
 	_step += 1
 	apply(Worlds.rotation_index(_step), true)
 

@@ -57,5 +57,6 @@ func _on_body_entered(body: Node2D) -> void:
 	if used or not body.is_in_group("player"):
 		return
 	used = true
-	monitoring = false
+	# 必须 deferred：Godot 不允许在 Area2D 的信号回调里直接改 monitoring
+	set_deferred("monitoring", false)
 	entered.emit()

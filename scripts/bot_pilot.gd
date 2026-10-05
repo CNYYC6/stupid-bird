@@ -17,25 +17,30 @@ const LEVELS: Array[Dictionary] = [
 		"name": "臭人机",
 		"miss_gap": Vector2(1.3, 2.6),    # 两次失误之间的间隔（秒），越小越常失误
 		"miss_len": Vector2(0.50, 1.00),  # 每次僵住多久
-		"react": 0.24,                    # 反应延迟：隔多久才重新看一眼该往哪飞
+		"react": 0.22,                    # 反应延迟：隔多久才重新看一眼该往哪飞
 		"rescue": 0.30,                   # 队友倒地时，有多大概率跳过这次失误
-		"clutch": 0.15,                   # 眼看要撞上时，有多大概率果断冲刺补救
+		"clutch": 0.20,                   # 眼看要撞上时，有多大概率果断冲刺补救
+		"lookahead": 0.35,                # 提前量：按"再过这么多秒会到哪"来预判
 	},
 	{
 		"name": "普通人机",
-		"miss_gap": Vector2(3.0, 5.5),
-		"miss_len": Vector2(0.30, 0.62),
-		"react": 0.13,
-		"rescue": 0.62,
-		"clutch": 0.55,
+		"miss_gap": Vector2(3.4, 6.0),
+		"miss_len": Vector2(0.28, 0.55),
+		"react": 0.11,
+		"rescue": 0.65,
+		"clutch": 0.65,
+		"lookahead": 0.45,
 	},
 	{
+		# 机哥：几乎不失误，反应几乎无延迟，而且会预判。
+		# 但失误率**不是 0** —— 保留一点人性，偶尔还是会晃一下。
 		"name": "机哥",
-		"miss_gap": Vector2(6.5, 11.0),
-		"miss_len": Vector2(0.15, 0.32),
-		"react": 0.05,
-		"rescue": 0.92,
-		"clutch": 0.90,
+		"miss_gap": Vector2(22.0, 40.0),
+		"miss_len": Vector2(0.06, 0.14),
+		"react": 0.02,
+		"rescue": 1.0,
+		"clutch": 1.0,
+		"lookahead": 0.55,
 	},
 ]
 
@@ -45,7 +50,9 @@ const BAND_DOWN: float = 32.0
 ## 没找到路障时的巡航高度
 const CRUISE_Y: float = 300.0
 ## 多近算"要撞上了"
-const PANIC_DIST: float = 260.0
+const PANIC_DIST: float = 340.0
+## 柱子宽度的一半（和 obstacle.gd 的 PILLAR_W 对应），用来判断"这根已经压上去了"
+const HALF_PILLAR: float = 192.0
 
 var level: int = Level.NORMAL
 
@@ -121,19 +128,25 @@ func _physics_process(delta: float) -> void:
 	_try_clutch(c)
 
 
-## 前方最近一根路障的「安全飞行高度」（obstacle.gd 算好的 gap_center）
+## 前方那一根路障的「安全飞行高度」（obstacle.gd 算好的 gap_center）。
+##
+## 关键是**提前量**：不是看"现在最近的那根"，而是按当前速度算"再过 lookahead 秒
+## 我会飞到哪儿"。飞行器升力很强但降下来要靠重力，所以必须提前开始改高度，
+## 否则永远在追着缝隙跑 —— 这正是机哥以前显得笨的原因。
 func _pick_target_y() -> float:
 	if course == null:
 		return CRUISE_Y
+	var lead: float = maxf(absf(player.velocity.x), 200.0) * float(cfg()["lookahead"])
+	var probe_x: float = player.global_position.x + lead
+
 	var best: Node2D = null
 	var best_dx: float = 1.0e9
-	var px: float = player.global_position.x
 	for ch in course.get_children():
 		if not (ch is Node2D) or not ch.is_in_group("obstacle"):
 			continue
-		var dx: float = (ch as Node2D).position.x - px
-		# 只关心前方一点点之外的：太近的已经来不及改，身后的不用管
-		if dx < 60.0 or dx > best_dx:
+		var dx: float = (ch as Node2D).position.x - probe_x
+		# 车头已经压上去的这根不用管（来不及了），只挑还没到的最近一根
+		if dx < -HALF_PILLAR or dx > best_dx:
 			continue
 		best_dx = dx
 		best = ch
@@ -153,11 +166,12 @@ func _try_clutch(c: Dictionary) -> void:
 			continue
 		var ob: Node2D = ch
 		var dx: float = ob.position.x - px
-		if dx < 20.0 or dx > PANIC_DIST:
+		if dx < 10.0 or dx > PANIC_DIST:
 			continue
-		# 只有真的没对准缝隙才慌
+		# 只有真的没对准缝隙才慌。余量从 25 收到 12：柱子判定盒是 156x73 的矩形，
+		# 光看中心点对准还不够，边缘也会蹭到。
 		var y: float = player.global_position.y
-		if y > ob.gap_top_edge + 25.0 and y < ob.gap_bottom_edge - 25.0:
+		if y > ob.gap_top_edge + 12.0 and y < ob.gap_bottom_edge - 12.0:
 			return
 		if _rng.randf() < float(c["clutch"]):
 			player.start_dash()

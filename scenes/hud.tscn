@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://depd38vm2vkvm"]
+[gd_scene load_steps=18 format=3 uid="uid://depd38vm2vkvm"]
 
 [ext_resource type="Script" uid="uid://dd2mfnwednfi" path="res://scripts/hud.gd" id="1_c18ak"]
 [ext_resource type="Script" path="res://scripts/digit_row.gd" id="2_digits"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" path="res://art/ev_sec_label.png" id="10_sec"]
 [ext_resource type="Texture2D" path="res://art/ui_combo_label.png" id="11_combo"]
 [ext_resource type="Texture2D" path="res://art/ui_pu_magnet.png" id="12_pu_mag"]
+[ext_resource type="Texture2D" path="res://art/badge_p1.png" id="13_tag1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
 content_margin_left = 22.0
@@ -282,11 +283,22 @@ theme_override_constants/separation = 10
 
 [node name="Head" type="HBoxContainer" parent="Energy/Plate/Layout"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 
-[node name="Title" type="TextureRect" parent="Energy/Plate/Layout/Head"]
+[node name="Tag" type="TextureRect" parent="Energy/Plate/Layout/Head"]
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("13_tag1")
+
+[node name="Title" type="TextureRect" parent="Energy/Plate/Layout/Head"]
+custom_minimum_size = Vector2(196, 62)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
 texture = ExtResource("6_dash")
 
 [node name="Spacer" type="Control" parent="Energy/Plate/Layout/Head"]
@@ -295,8 +307,11 @@ size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="State" type="TextureRect" parent="Energy/Plate/Layout/Head"]
+custom_minimum_size = Vector2(108, 62)
 layout_mode = 2
 size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
 texture = ExtResource("7_dash_ready")
 
 [node name="Track" type="Panel" parent="Energy/Plate/Layout"]
