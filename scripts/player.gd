@@ -80,6 +80,13 @@ var _act_up: StringName = &"pull_up"
 var _act_dash: StringName = &"dash"
 ## 是否处于双人模式（决定头顶要不要挂 P1/P2 标志）
 var _coop: bool = false
+## 是否由 AI 代打（机哥模式下的二号机）
+var is_bot: bool = false
+
+## 「虚拟按键」：AI 不去伪造 InputEvent，而是直接把意图写在这里。
+## 这样 AI 和真人走的是同一条物理路径，手感、升力、音效完全一致。
+var virtual_up: bool = false
+var _virtual_up_prev: bool = false
 
 var _dash_left: float = 0.0
 ## 「无敌狂飙」事件送的免费冲刺剩余时间：这段时间里冲刺不耗能、不进冷却
@@ -102,20 +109,24 @@ var _tilt: float = 0.0
 
 
 ## 由主场景在生成时调用：指定自己是几号机、出生在哪
-func configure(index: int, spawn: Vector2, coop: bool = false) -> void:
+func configure(index: int, spawn: Vector2, coop: bool = false, bot: bool = false) -> void:
 	player_index = index
 	_coop = coop
-	if coop:
-		# 双人：空格让出来，一号机 W、二号机 ↑
-		_act_up = &"pull_up_p1" if index == 0 else &"pull_up_p2"
-	else:
-		_act_up = &"pull_up"
-	# 冲刺两人共用 ENTER —— 双人模式里一起冲刺反而更有合作感
+	is_bot = bot and index == 1
+	_act_up = &"pull_up"
 	_act_dash = &"dash"
+	if coop:
+		# 双人 / 机哥模式：空格让出来。一号机 W，二号机 ↑。
+		_act_up = &"pull_up_p1" if index == 0 else &"pull_up_p2"
+		# 冲刺也分开：一号机 E，二号机 ENTER。单人模式仍然是 ENTER。
+		_act_dash = &"dash_p1" if index == 0 else &"dash"
 	if _badge != null:
 		_badge.visible = coop
 		if coop:
-			_badge.texture = load("res://art/badge_p%d.png" % (index + 1))
+			if is_bot:
+				_badge.texture = load("res://art/badge_bot.png")
+			else:
+				_badge.texture = load("res://art/badge_p%d.png" % (index + 1))
 	reset_run(spawn)
 
 
@@ -302,8 +313,13 @@ func _apply_gravity(delta: float) -> void:
 func _apply_input(delta: float) -> void:
 	if Input.is_action_just_pressed(_act_dash):
 		start_dash()
-	if Input.is_action_just_pressed(_act_up):
-		# 只在按下的那一瞬播：本作是"按住持续爬升"，每帧都播会变成噪音
+	# AI 靠 virtual_up 驱动，所以"刚按下"要把虚拟键也算进来
+	var up_now: bool = Input.is_action_pressed(_act_up) or virtual_up
+	var up_edge: bool = up_now and not _virtual_up_prev and not is_bot
+	_virtual_up_prev = up_now
+	if Input.is_action_just_pressed(_act_up) or up_edge:
+		# 只在按下的那一瞬播：本作是"按住持续爬升"，每帧都播会变成噪音。
+		# 机哥不播 —— 两台飞行器一起扇翅膀会吵成一团。
 		Audio.play("flap")
 	_apply_lift(delta)
 	_apply_horizontal(delta)
@@ -312,7 +328,7 @@ func _apply_input(delta: float) -> void:
 ## 按住空格 -> 按当前速度产生升力，速度越快爬升越猛。
 ## 接近软天花板时升力线性衰减（"空气变稀"），玩家会自然掉回来，不需要硬墙。
 func _apply_lift(delta: float) -> void:
-	if not Input.is_action_pressed(_act_up) or velocity.x <= lift_min_speed:
+	if not (Input.is_action_pressed(_act_up) or virtual_up) or velocity.x <= lift_min_speed:
 		lift = 0.0
 		return
 	var thin_air: float = 1.0
@@ -437,6 +453,8 @@ func reset_run(spawn: Vector2) -> void:
 	alive = true
 	downed = false
 	revive_left = 0.0
+	virtual_up = false
+	_virtual_up_prev = false
 	collision_layer = 1
 	if _sprite != null:
 		_sprite.modulate = Color.WHITE

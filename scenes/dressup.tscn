@@ -16,10 +16,10 @@
 [ext_resource type="Texture2D" path="res://art/ui_btn_p2_pressed.png" id="14_p2p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dress"]
-content_margin_left = 48.0
-content_margin_top = 28.0
-content_margin_right = 48.0
-content_margin_bottom = 32.0
+content_margin_left = 40.0
+content_margin_top = 22.0
+content_margin_right = 40.0
+content_margin_bottom = 26.0
 bg_color = Color(0.055, 0.075, 0.125, 0.96)
 border_width_left = 5
 border_width_top = 5
@@ -49,21 +49,24 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -800.0
-offset_top = -420.0
-offset_right = 800.0
-offset_bottom = 420.0
+offset_left = -500.0
+offset_top = -350.0
+offset_right = 500.0
+offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_dress")
 
 [node name="Layout" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Title" type="TextureRect" parent="Panel/Layout"]
 layout_mode = 2
+custom_minimum_size = Vector2(280, 88)
+expand_mode = 1
+stretch_mode = 5
 size_flags_horizontal = 4
 texture = ExtResource("2_title")
 
@@ -74,23 +77,35 @@ theme_override_constants/separation = 20
 
 [node name="Editing" type="TextureRect" parent="Panel/Layout/PlayerRow"]
 layout_mode = 2
+custom_minimum_size = Vector2(130, 44)
+expand_mode = 1
+stretch_mode = 5
 size_flags_vertical = 4
 texture = ExtResource("8_edit")
 
 [node name="P1" type="TextureButton" parent="Panel/Layout/PlayerRow"]
 layout_mode = 2
+custom_minimum_size = Vector2(140, 56)
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("9_p1")
 texture_hover = ExtResource("10_p1h")
 texture_pressed = ExtResource("11_p1p")
 
 [node name="P2" type="TextureButton" parent="Panel/Layout/PlayerRow"]
 layout_mode = 2
+custom_minimum_size = Vector2(140, 56)
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("12_p2")
 texture_hover = ExtResource("13_p2h")
 texture_pressed = ExtResource("14_p2p")
 
 [node name="AirLabel" type="TextureRect" parent="Panel/Layout"]
 layout_mode = 2
+custom_minimum_size = Vector2(130, 44)
+expand_mode = 1
+stretch_mode = 5
 size_flags_horizontal = 4
 texture = ExtResource("3_air")
 
@@ -101,6 +116,9 @@ theme_override_constants/separation = 18
 
 [node name="PilotLabel" type="TextureRect" parent="Panel/Layout"]
 layout_mode = 2
+custom_minimum_size = Vector2(130, 44)
+expand_mode = 1
+stretch_mode = 5
 size_flags_horizontal = 4
 texture = ExtResource("4_pilot")
 
@@ -111,6 +129,9 @@ theme_override_constants/separation = 18
 
 [node name="CloseButton" type="TextureButton" parent="Panel/Layout"]
 layout_mode = 2
+custom_minimum_size = Vector2(160, 58)
+ignore_texture_size = true
+stretch_mode = 5
 size_flags_horizontal = 4
 texture_normal = ExtResource("5_close")
 texture_hover = ExtResource("6_close_h")

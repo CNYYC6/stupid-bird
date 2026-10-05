@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://c8kq3vbn2mstart"]
+[gd_scene load_steps=45 format=3 uid="uid://c8kq3vbn2mstart"]
 
 [ext_resource type="Script" path="res://scripts/start_menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" path="res://art/bg_sky.png" id="2_sky"]
@@ -30,6 +30,9 @@
 [ext_resource type="Texture2D" path="res://art/ui_btn_dress_hover.png" id="28_dress_h"]
 [ext_resource type="Texture2D" path="res://art/ui_btn_dress_pressed.png" id="29_dress_p"]
 [ext_resource type="PackedScene" path="res://scenes/dressup.tscn" id="30_dressup"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_lv1.png" id="31_lv"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_lv1_hover.png" id="32_lvh"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_lv1_pressed.png" id="33_lvp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(2400, 480)
@@ -174,40 +177,66 @@ stretch_mode = 5
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -330.0
-offset_top = 450.0
-offset_right = 330.0
-offset_bottom = 870.0
+offset_left = -430.0
+offset_top = 430.0
+offset_right = 430.0
+offset_bottom = 890.0
 grow_horizontal = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="StartButton" type="TextureButton" parent="UI/Buttons"]
+custom_minimum_size = Vector2(430, 132)
 layout_mode = 2
 size_flags_horizontal = 4
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("14_start")
 texture_hover = ExtResource("15_start_hover")
 texture_pressed = ExtResource("16_start_press")
 
-[node name="BottomRow" type="HBoxContainer" parent="UI/Buttons"]
+[node name="TopRow" type="HBoxContainer" parent="UI/Buttons"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_constants/separation = 20
+theme_override_constants/separation = 18
 
-[node name="ModeButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+[node name="ModeButton" type="TextureButton" parent="UI/Buttons/TopRow"]
+custom_minimum_size = Vector2(372, 116)
 layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("24_solo")
 texture_hover = ExtResource("25_solo_h")
 texture_pressed = ExtResource("26_solo_p")
 
-[node name="DressButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+[node name="LevelButton" type="TextureButton" parent="UI/Buttons/TopRow"]
+custom_minimum_size = Vector2(300, 116)
 layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("31_lv")
+texture_hover = ExtResource("32_lvh")
+texture_pressed = ExtResource("33_lvp")
+
+[node name="BottomRow" type="HBoxContainer" parent="UI/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 18
+
+[node name="DressButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+custom_minimum_size = Vector2(330, 124)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("27_dress")
 texture_hover = ExtResource("28_dress_h")
 texture_pressed = ExtResource("29_dress_p")
 
 [node name="QuitButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+custom_minimum_size = Vector2(432, 124)
 layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("17_quit")
 texture_hover = ExtResource("18_quit_hover")
 texture_pressed = ExtResource("19_quit_press")

@@ -262,6 +262,12 @@ def main() -> None:
     save(make_button("返回主菜单", hover=True), "ui_btn_menu_hover.png")
     save(make_button("返回主菜单", pressed=True), "ui_btn_menu_pressed.png")
 
+    # 机哥模式的难度档位（按钮小一号，免得整行超宽）
+    for tag, text in (("lv0", "臭人机"), ("lv1", "普通人机"), ("lv2", "机哥")):
+        save(make_button(text, size=12), f"ui_btn_{tag}.png")
+        save(make_button(text, size=12, hover=True), f"ui_btn_{tag}_hover.png")
+        save(make_button(text, size=12, pressed=True), f"ui_btn_{tag}_pressed.png")
+
     # 换装间
     save(make_button("换装"), "ui_btn_dress.png")
     save(make_button("换装", hover=True), "ui_btn_dress_hover.png")
@@ -279,7 +285,7 @@ def main() -> None:
     save(make_button("返回", pressed=True), "ui_btn_close_pressed.png")
 
     # 模式切换按钮：按钮文字本身就表明当前模式，省掉一行"当前：xxx"的标签
-    for tag, text in (("solo", "模式：单人"), ("coop", "模式：双人")):
+    for tag, text in (("solo", "模式：单人"), ("coop", "模式：双人"), ("bot", "机哥带你飞")):
         save(make_button(text), f"ui_btn_{tag}.png")
         save(make_button(text, hover=True), f"ui_btn_{tag}_hover.png")
         save(make_button(text, pressed=True), f"ui_btn_{tag}_pressed.png")

@@ -31,8 +31,10 @@ const REBASE_STEP: float = 262144.0
 ## 双人模式里倒地后队友要撑住多少秒才能把人拉起来
 @export var coop_revive_seconds: float = 5.0
 
-## 0 = 单人，1 = 双人合作
+## 0 = 单人闯关，1 = 双人合作，2 = 机哥带你飞
 var mode: int = 0
+## 机哥模式下的 AI（挂在二号机上）
+var bot: BotPilot = null
 ## 参战的所有玩家（单人时只有一个）
 var players: Array[CharacterBody2D] = []
 
@@ -86,17 +88,27 @@ func _ready() -> void:
 ## 单人玩家不为它付任何代价（少一个 CharacterBody2D + 一套碰撞）。
 func _setup_players() -> void:
 	players.clear()
-	_player.configure(0, spawn_point, mode == 1)
+	var two_players: bool = mode != 0
+	_player.configure(0, spawn_point, two_players)
 	players.append(_player)
-	if mode == 1:
+	if two_players:
 		var p2 := PLAYER_SCENE.instantiate() as CharacterBody2D
 		p2.name = "Player2"
 		# 一号机的 6 倍像素放大是 main.tscn 里的实例覆盖，不是 player.tscn 自带的；
 		# 代码实例化出来的二号机必须手动抄过来，否则会是一只 1 倍大的迷你鸟。
 		p2.scale = _player.scale
 		add_child(p2)
-		p2.configure(1, spawn_point + coop_offset, true)
+		# mode 2 时二号机由机哥代打（头顶换成 AI 标志）
+		p2.configure(1, spawn_point + coop_offset, true, mode == 2)
 		players.append(p2)
+		if mode == 2:
+			bot = BotPilot.new()
+			bot.name = "BotPilot"
+			bot.level = RunRecord.load_bot_level()
+			bot.player = p2
+			bot.mate = _player
+			bot.course = _course
+			p2.add_child(bot)
 	# 换装：两名玩家分别读各自的存档（菜单里是分开编辑的）
 	for i in players.size():
 		var aircraft: int = RunRecord.load_setting("aircraft%d" % (i + 1), i)

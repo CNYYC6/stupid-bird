@@ -91,6 +91,9 @@ func apply(i: int, announce: bool = true) -> void:
 		# 用 abs 保住原始缩放，重复切换不会把 zoom 累积成 0
 		_cam.zoom.y = -absf(_cam.zoom.y) if bool(d.get("flip", false)) else absf(_cam.zoom.y)
 
+	# 换世界同时换 BGM，Audio 里做交叉淡化，所以听起来是丝滑过去的
+	Audio.play_world_bgm(str(d["id"]))
+
 	if announce:
 		world_changed.emit(index, str(d["id"]))
 		banner_requested.emit(str(d["id"]))

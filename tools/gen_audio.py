@@ -119,19 +119,19 @@ def write_wav(name: str, x: np.ndarray) -> None:
 
 
 # ------------------------------------------------------------------ 背景音乐
-BPM = 128
-STEP = 60.0 / BPM / 4.0          # 一个十六分音符的秒数
-BARS = 16
+# ================================================================== 背景音乐
+# 每个世界一段独立 BGM，全部 8 小节、整数十六分音符，首尾严格对齐，循环无爆音。
+# 风格差异靠这四样：BPM / 和弦进行 / 主旋律 / 音色（脉冲占空比 + 鼓组轻重）。
 
-# 和弦进行：G - Em - C - D 走两遍，后半段用 Bm 加色彩，最后停在属和弦 D 上
-# 好让循环回到开头的 G，听起来是"一段清新的小loop"而不是硬切
-CHORDS = ["G", "Em", "C", "D", "G", "Em", "C", "D",
-          "C", "D", "Bm", "Em", "C", "D", "G", "D"]
 TONES = {"G": ["G", "B", "D"], "Em": ["E", "G", "B"], "C": ["C", "E", "G"],
-         "D": ["D", "F#", "A"], "Bm": ["B", "D", "F#"]}
+         "D": ["D", "F#", "A"], "Bm": ["B", "D", "F#"],
+         "Am": ["A", "C", "E"], "F": ["F", "A", "C"], "E": ["E", "G#", "B"],
+         "Cm": ["C", "D#", "G"], "Gm": ["G", "A#", "D"], "A#": ["A#", "D", "F"],
+         "Dm": ["D", "F", "A"], "Fm": ["F", "G#", "C"], "Cmaj7": ["C", "E", "G", "B"],
+         "Fmaj7": ["F", "A", "C", "E"], "Am7": ["A", "C", "E", "G"]}
 
-# 主旋律（每格 16 个十六分音符）
-MELODY = [
+# 晴空：原来那条清新的 G-Em-C-D 走两遍
+SKY_MELODY = [
     "D5 2 B4 2 G4 4 - 2 A4 2 B4 4",
     "E5 2 D5 2 B4 4 - 4 B4 2 D5 2",
     "C5 2 E5 2 G5 4 E5 2 D5 2 C5 4",
@@ -140,15 +140,90 @@ MELODY = [
     "E5 4 B4 2 D5 2 E5 4 - 2 B4 2",
     "C5 4 E5 4 G5 4 A5 4",
     "F#5 2 E5 2 D5 4 - 2 A4 2 B4 4",
-    "C5 2 D5 2 E5 4 G5 2 E5 2 D5 4",
-    "D5 2 E5 2 F#5 4 A5 2 F#5 2 E5 4",
-    "D5 4 B4 4 D5 2 F#5 2 B5 4",
-    "E5 2 F#5 2 G5 4 E5 4 B4 4",
-    "C5 4 E5 4 G5 2 A5 2 G5 4",
-    "F#5 4 A5 4 D6 4 A5 4",
-    "G5 4 D5 4 B4 4 G4 4",
-    "A4 2 B4 2 D5 4 F#5 4 A5 4",
 ]
+
+WORLDS = {
+    # 太空：慢、空、小调，几乎没有鼓，回声拉很长
+    "space": dict(
+        bpm=84, bars=8, crush_bits=6,
+        chords=["Am", "F", "Cmaj7", "G", "Am", "F", "Dm", "E"],
+        melody=[
+            "A4 8 - 4 C5 4", "F4 8 - 4 A4 4", "C5 4 E5 4 G5 8",
+            "G4 8 B4 4 D5 4", "A4 8 - 4 E5 4", "F4 8 A4 4 C5 4",
+            "D5 4 F5 4 A5 8", "E5 8 - 8",
+        ],
+        lead_duty=0.25, lead_gain=0.30, echo=0.42, echo_step=6,
+        arp_duty=0.5, arp_gain=0.05, arp_octave=5,
+        bass_gain=0.26, kick=0, snare=0, hat=0, hat_gain=0.0,
+    ),
+    # 原始森林：中速五声音阶，重手鼓，三角波为主
+    "jungle": dict(
+        bpm=112, bars=8, crush_bits=5,
+        chords=["Am", "Am", "G", "G", "F", "F", "E", "E"],
+        melody=[
+            "A4 4 C5 4 D5 4 E5 4", "E5 4 D5 4 C5 4 A4 4",
+            "G4 4 A4 4 C5 4 D5 4", "D5 4 C5 4 A4 4 G4 4",
+            "F4 4 A4 4 C5 4 D5 4", "D5 4 C5 4 A4 8",
+            "E5 4 D5 4 B4 4 G#4 4", "A4 8 - 8",
+        ],
+        lead_duty=0.125, lead_gain=0.30, echo=0.20, echo_step=3,
+        arp_duty=0.5, arp_gain=0.06, arp_octave=4,
+        bass_gain=0.34, kick=1, snare=1, hat=1, hat_gain=0.12, tom=1,
+    ),
+    # 梦幻世界：快、大调七和弦、钟琴音色，鼓很轻
+    "dream": dict(
+        bpm=140, bars=8, crush_bits=6,
+        chords=["Cmaj7", "Am7", "Fmaj7", "G", "Cmaj7", "Am7", "Fmaj7", "G"],
+        melody=[
+            "C5 2 E5 2 G5 2 E5 2 C5 4 B4 4", "A4 2 C5 2 E5 2 C5 2 A4 8",
+            "F4 2 A4 2 C5 2 A4 2 F4 4 E5 4", "G4 2 B4 2 D5 2 B4 2 G4 8",
+            "C5 2 E5 2 G5 2 C6 2 G5 4 E5 4", "A4 2 C5 2 E5 2 A5 2 E5 8",
+            "F5 2 E5 2 C5 2 A4 2 F4 4 G4 4", "G5 4 D5 4 B4 4 G4 4",
+        ],
+        lead_duty=0.5, lead_gain=0.26, echo=0.30, echo_step=3,
+        arp_duty=0.25, arp_gain=0.07, arp_octave=6,
+        bass_gain=0.24, kick=1, snare=0, hat=1, hat_gain=0.08,
+    ),
+    # 上下颠倒：把晴空的主旋律做音程倒置，和弦也跟着反着走 —— 听着就是"翻过来"的
+    "upside": dict(
+        bpm=120, bars=8, crush_bits=5,
+        chords=["D", "Bm", "G", "Em", "D", "Bm", "C", "D"],
+        melody=[
+            "G4 2 B4 2 D5 4 - 2 A4 2 G4 4", "C5 2 D5 2 G5 4 - 4 G5 2 D5 2",
+            "E5 2 C5 2 G4 4 B4 2 D5 2 E5 4", "D5 2 A4 2 F#4 4 A4 2 C5 2 D5 4",
+            "D5 4 G4 2 A4 2 B4 4 D5 4", "C5 4 G4 2 B4 2 C5 4 - 2 G4 2",
+            "E5 4 C5 4 G4 4 F#4 4", "B4 2 C5 2 D5 4 - 2 F#4 2 G4 4",
+        ],
+        lead_duty=0.25, lead_gain=0.30, echo=0.34, echo_step=3,
+        arp_duty=0.5, arp_gain=0.06, arp_octave=4,
+        bass_gain=0.30, kick=1, snare=1, hat=1, hat_gain=0.14,
+    ),
+    # 金币维度：快、全是大调琶音、鼓最密 —— 听起来就像在数钱
+    "coin": dict(
+        bpm=160, bars=8, crush_bits=6,
+        chords=["C", "C", "F", "G", "C", "Am", "F", "G"],
+        melody=[
+            "C5 1 E5 1 G5 1 C6 1 G5 2 E5 2 C5 4", "C5 1 E5 1 G5 1 C6 1 C6 4 G5 4",
+            "F4 1 A4 1 C5 1 F5 1 C5 2 A4 2 F4 4", "G4 1 B4 1 D5 1 G5 1 D5 2 B4 2 G4 4",
+            "C5 1 E5 1 G5 1 C6 1 E6 2 C6 2 G5 4", "A4 1 C5 1 E5 1 A5 1 E5 2 C5 2 A4 4",
+            "F5 2 E5 2 C5 2 A4 2 F4 4 C5 4", "G5 2 D5 2 B4 2 G4 2 C5 8",
+        ],
+        lead_duty=0.125, lead_gain=0.28, echo=0.22, echo_step=2,
+        arp_duty=0.25, arp_gain=0.09, arp_octave=6,
+        bass_gain=0.28, kick=1, snare=1, hat=1, hat_gain=0.16,
+    ),
+}
+# 晴空沿用原来的参数
+WORLDS["sky"] = dict(
+    bpm=128, bars=8, crush_bits=6,
+    chords=["G", "Em", "C", "D", "G", "Em", "C", "D"],
+    melody=SKY_MELODY,
+    lead_duty=0.125, lead_gain=0.32, echo=0.26, echo_step=3,
+    arp_duty=0.5, arp_gain=0.075, arp_octave=4,
+    bass_gain=0.30, kick=1, snare=1, hat=1, hat_gain=0.16,
+)
+
+KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 
 def parse(bar: str):
@@ -156,87 +231,111 @@ def parse(bar: str):
     return [(t[i], int(t[i + 1])) for i in range(0, len(t), 2)]
 
 
-def make_bgm() -> np.ndarray:
-    total_n = int(BARS * 16 * STEP * SR)
-    delay = int(STEP * 3 * SR)                 # 主旋律的短回声
-    rng = np.random.default_rng(8)
+def make_bgm(style: dict) -> np.ndarray:
+    """按风格合成一段可无缝循环的 8 小节 chiptune。"""
+    bpm: int = style["bpm"]
+    bars: int = style["bars"]
+    step: float = 60.0 / bpm / 4.0
+    chords: list = style["chords"]
+    total_n: int = int(bars * 16 * step * SR)
+    echo_n: int = int(step * style["echo_step"] * SR)
+    rng = np.random.default_rng(bpm)
     mix = np.zeros(total_n)
 
-    # ---- 主音（12.5% 占空比，细而亮）----
-    lead = np.zeros(total_n + delay)
+    # ---- 主音 ----
+    lead = np.zeros(total_n + echo_n)
     pos = 0
-    for bar in MELODY:
+    for bar in style["melody"]:
         for name, dur in parse(bar):
-            n = int(dur * STEP * SR)
+            n = int(dur * step * SR)
             if name != "-":
                 seg = int(n * 0.92)
-                tone = pulse(nf(name), seg, 0.125) * env(seg, 0.004, 0.05, 0.78, 0.02)
-                lead[pos:pos + seg] += tone * 0.32
+                tone = pulse(nf(name), seg, style["lead_duty"]) * env(seg, 0.004, 0.05, 0.78, 0.02)
+                lead[pos:pos + seg] += tone * style["lead_gain"]
             pos += n
     out = lead[:total_n].copy()
-    out[:delay] += lead[total_n:total_n + delay] * 0.26      # 回声绕回开头，循环无缝
-    out[delay:] += lead[:total_n - delay] * 0.26
+    # 回声绕回开头，循环才接得上
+    out[:echo_n] += lead[total_n:total_n + echo_n] * style["echo"]
+    out[echo_n:] += lead[:total_n - echo_n] * style["echo"]
     mix += out
 
-    # ---- 琶音（50% 占空比，铺底）----
+    # ---- 琶音铺底 ----
     arp = np.zeros(total_n)
-    for b in range(BARS):
-        tones = TONES[CHORDS[b]]
+    for b in range(bars):
+        tones = TONES.get(chords[b], TONES["C"])
         for i in range(16):
-            t = tones[i % 3]
-            octave = 4 if i < 8 else 5
-            name = f"{t}{octave}"
-            st = int((b * 16 + i) * STEP * SR)
-            n = int(STEP * SR * 0.85)
+            t = tones[i % len(tones)]
+            name = f"{t}{style['arp_octave'] if i < 8 else style['arp_octave'] + 1}"
+            st = int((b * 16 + i) * step * SR)
+            n = int(step * SR * 0.85)
             if st + n > total_n:
                 n = total_n - st
-            arp[st:st + n] += pulse(nf(name), n, 0.5) * env(n, 0.003, 0.02, 0.5, 0.01) * 0.075
+            arp[st:st + n] += pulse(nf(name), n, style["arp_duty"]) \
+                * env(n, 0.003, 0.02, 0.5, 0.01) * style["arp_gain"]
     mix += arp
 
-    # ---- 贝斯（三角波）----
-    keys = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-    for b in range(BARS):
-        root = CHORDS[b][0] if CHORDS[b] != "Bm" else "B"
-        idx = keys.index(root)
-        fifth = keys[(idx + 7) % 12]
+    # ---- 贝斯 ----
+    for b in range(bars):
+        root = chords[b][:2] if chords[b][1:2] in ("#", "m") else chords[b][0]
+        if chords[b].endswith("m") or chords[b].endswith("7"):
+            root = chords[b][0] + ("#" if chords[b][1:2] == "#" else "")
+        idx = KEYS.index(root) if root in KEYS else 0
+        fifth = KEYS[(idx + 7) % 12]
         pattern = [(root + "2", 4), (root + "2", 4), (fifth + "2", 4),
                    (root + "2", 2), (root + "3", 2)]
         sp = 0
         for name, dur in pattern:
-            st = int((b * 16 + sp) * STEP * SR)
-            n = int(dur * STEP * SR * 0.9)
+            st = int((b * 16 + sp) * step * SR)
+            n = int(dur * step * SR * 0.9)
             if st + n <= total_n:
-                mix[st:st + n] += triangle(nf(name), n) * env(n, 0.004, 0.05, 0.7, 0.02) * 0.30
+                mix[st:st + n] += triangle(nf(name), n) \
+                    * env(n, 0.004, 0.05, 0.7, 0.02) * style["bass_gain"]
             sp += dur
 
     # ---- 鼓组 ----
     def kick() -> np.ndarray:
         n = int(0.10 * SR)
-        f = np.linspace(130.0, 45.0, n)
-        return triangle(f, n) * env(n, 0.001, 0.04, 0.35, 0.02) * 0.55
+        return triangle(np.linspace(130.0, 45.0, n), n) * env(n, 0.001, 0.04, 0.35, 0.02) * 0.55
 
     def snare() -> np.ndarray:
         n = int(0.10 * SR)
         body = triangle(190.0, n) * 0.35
         return (noise(n, rng, lp=0.55) * 0.8 + body) * env(n, 0.001, 0.05, 0.2, 0.03) * 0.30
 
-    def hat() -> np.ndarray:
+    def hat(gain: float) -> np.ndarray:
         n = int(0.035 * SR)
-        return noise(n, rng, hp=0.55) * env(n, 0.001, 0.02, 0.1, 0.01) * 0.16
+        return noise(n, rng, hp=0.55) * env(n, 0.001, 0.02, 0.1, 0.01) * gain
 
-    k, s, h = kick(), snare(), hat()
-    for b in range(BARS):
-        for step, buf in ((0, k), (4, s), (8, k), (12, s), (14, s)):
-            st = int((b * 16 + step) * STEP * SR)
-            if st + len(buf) <= total_n:
-                mix[st:st + len(buf)] += buf
-        for step in range(0, 16, 2):
-            st = int((b * 16 + step) * STEP * SR)
-            if st + len(h) <= total_n:
-                mix[st:st + len(h)] += h
+    def tom() -> np.ndarray:
+        n = int(0.16 * SR)
+        return triangle(np.linspace(200.0, 90.0, n), n) * env(n, 0.002, 0.07, 0.3, 0.06) * 0.34
 
-    mix = crush(mix / max(np.abs(mix).max(), 1e-9) * 0.86, 6)
-    # 去直流
+    k, s = kick(), snare()
+    h = hat(style["hat_gain"])
+    tm = tom()
+    for b in range(bars):
+        if style["kick"]:
+            for step_i in (0, 8):
+                st = int((b * 16 + step_i) * step * SR)
+                if st + len(k) <= total_n:
+                    mix[st:st + len(k)] += k
+        if style["snare"]:
+            for step_i in (4, 12):
+                st = int((b * 16 + step_i) * step * SR)
+                if st + len(s) <= total_n:
+                    mix[st:st + len(s)] += s
+        if style.get("tom"):
+            for step_i in (7, 15):
+                st = int((b * 16 + step_i) * step * SR)
+                if st + len(tm) <= total_n:
+                    mix[st:st + len(tm)] += tm
+        if style["hat_gain"] > 0.0:
+            for step_i in range(0, 16, 2):
+                st = int((b * 16 + step_i) * step * SR)
+                if st + len(h) <= total_n:
+                    mix[st:st + len(h)] += h
+
+    mix = crush(mix / max(np.abs(mix).max(), 1e-9) * 0.86, style["crush_bits"])
     mix -= mix.mean()
     return mix
 
@@ -415,7 +514,8 @@ def engine(kind: str, dur: float = 0.62) -> np.ndarray:
 def main() -> None:
     os.makedirs(OUT, exist_ok=True)
     print("生成 8bit 音频：")
-    write_wav("bgm_day.wav", make_bgm())
+    for wid, style in WORLDS.items():
+        write_wav(f"bgm_{wid}.wav", make_bgm(style))
     write_wav("sfx_coin.wav", sfx_coin())
     write_wav("sfx_flap.wav", sfx_flap())
     write_wav("sfx_hit.wav", sfx_hit())

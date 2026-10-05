@@ -44,13 +44,22 @@ static func save_setting(key: String, value: int) -> void:
 	cfg.save(RECORD_PATH)
 
 
-## 0 = 单人，1 = 双人合作
+## 0 = 单人闯关，1 = 双人合作，2 = 机哥带你飞
 static func load_mode() -> int:
-	return clampi(load_setting("mode", 0), 0, 1)
+	return clampi(load_setting("mode", 0), 0, 2)
 
 
 static func save_mode(mode: int) -> void:
-	save_setting("mode", clampi(mode, 0, 1))
+	save_setting("mode", clampi(mode, 0, 2))
+
+
+## 机哥模式的难度：0 = 臭人机，1 = 普通人机，2 = 机哥
+static func load_bot_level() -> int:
+	return clampi(load_setting("bot_level", 1), 0, 2)
+
+
+static func save_bot_level(lv: int) -> void:
+	save_setting("bot_level", clampi(lv, 0, 2))
 
 
 static func _read(key: String) -> int:

@@ -263,6 +263,7 @@ def main() -> None:
     print("玩家标志：")
     save_raw(make_badge("P1", "#5AE0FF", "#1B4A63"), "badge_p1.png")
     save_raw(make_badge("P2", "#FFB04A", "#6B3A10"), "badge_p2.png")
+    save_raw(make_badge("AI", "#9AE07A", "#2E5A22"), "badge_bot.png")
 
     print("驾驶员：")
     for name in PILOTS:

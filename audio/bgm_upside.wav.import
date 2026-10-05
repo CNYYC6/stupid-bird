@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://diijwuhm36gyr"
-path="res://.godot/imported/bgm_day.wav-6776358b794238fe76d9b38796942259.sample"
+uid="uid://bj48j218dx3hr"
+path="res://.godot/imported/bgm_upside.wav-cb967ad055e440814bb9a7c1ec22c936.sample"
 
 [deps]
 
-source_file="res://audio/bgm_day.wav"
-dest_files=["res://.godot/imported/bgm_day.wav-6776358b794238fe76d9b38796942259.sample"]
+source_file="res://audio/bgm_upside.wav"
+dest_files=["res://.godot/imported/bgm_upside.wav-cb967ad055e440814bb9a7c1ec22c936.sample"]
 
 [params]
 
