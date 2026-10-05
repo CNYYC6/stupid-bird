@@ -1,13 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://bnwuwhmr01eke"]
+[gd_scene load_steps=5 format=3 uid="uid://bnwuwhmr01eke"]
 
 [ext_resource type="Script" uid="uid://815pkl7802y4" path="res://scripts/player.gd" id="1_t5u2c"]
 [ext_resource type="SpriteFrames" path="res://art/bird_frames.tres" id="2_frames"]
 [ext_resource type="ShaderMaterial" path="res://scenes/gold_material.tres" id="3_gold"]
+[ext_resource type="Texture2D" path="res://art/fx_shield.png" id="4_shield"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(26, 12.25)
 
 [node name="Player" type="CharacterBody2D" unique_id=2015202257 groups=["player"]]
+z_index = 5
+collision_layer = 1
+collision_mask = 2
 process_priority = -200
 script = ExtResource("1_t5u2c")
 
@@ -17,6 +21,17 @@ sprite_frames = ExtResource("2_frames")
 animation = &"fly_bird"
 autoplay = "fly_bird"
 offset = Vector2(0, -2)
+
+[node name="Pilot" type="Sprite2D" parent="AnimatedSprite2D"]
+use_parent_material = true
+scale = Vector2(0.75, 0.75)
+position = Vector2(0, -11)
+visible = false
+
+[node name="Shield" type="Sprite2D" parent="."]
+scale = Vector2(0.58, 0.58)
+visible = false
+texture = ExtResource("4_shield")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1565714899]
 shape = SubResource("RectangleShape2D_body")

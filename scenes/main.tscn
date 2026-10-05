@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cpoyeyl0d4urf"]
+[gd_scene load_steps=18 format=3 uid="uid://cpoyeyl0d4urf"]
 
 [ext_resource type="Script" uid="uid://bwxeh2ecck51s" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://art/bg_sky.png" id="2_sky"]
@@ -14,6 +14,8 @@
 [ext_resource type="Script" path="res://scripts/camera.gd" id="12_camera"]
 [ext_resource type="Script" path="res://scripts/course.gd" id="13_course"]
 [ext_resource type="PackedScene" path="res://scenes/game_over.tscn" id="14_over"]
+[ext_resource type="Script" path="res://scripts/world_director.gd" id="15_worlds"]
+[ext_resource type="Script" path="res://scripts/events.gd" id="16_events"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1936, 420)
@@ -109,6 +111,22 @@ script = ExtResource("12_camera")
 target_path = NodePath("../Player")
 fixed_vertical = true
 fixed_y = 330.0
+
+[node name="WorldDirector" type="Node2D" parent="."]
+script = ExtResource("15_worlds")
+sky_path = NodePath("../Sky/Texture")
+ground_path = NodePath("../Ground")
+camera_path = NodePath("../Camera")
+course_path = NodePath("../Course")
+player_path = NodePath("../Player")
+layer_paths = Array[NodePath]([NodePath("../Background/Clouds"), NodePath("../Background/MountainsFar"), NodePath("../Background/HillsMid"), NodePath("../Background/TreesNear")])
+
+[node name="Events" type="Node2D" parent="."]
+script = ExtResource("16_events")
+course_path = NodePath("../Course")
+player_path = NodePath("../Player")
+worlds_path = NodePath("../WorldDirector")
+camera_path = NodePath("../Camera")
 
 [node name="Hud" parent="." instance=ExtResource("10_hud")]
 

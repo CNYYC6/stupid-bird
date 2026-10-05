@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://depd38vm2vkvm"]
+[gd_scene load_steps=17 format=3 uid="uid://depd38vm2vkvm"]
 
 [ext_resource type="Script" uid="uid://dd2mfnwednfi" path="res://scripts/hud.gd" id="1_c18ak"]
 [ext_resource type="Script" path="res://scripts/digit_row.gd" id="2_digits"]
@@ -9,6 +9,9 @@
 [ext_resource type="Texture2D" path="res://art/ui_dash_ready.png" id="7_dash_ready"]
 [ext_resource type="Texture2D" path="res://art/ui_dash_active.png" id="8_dash_active"]
 [ext_resource type="Texture2D" path="res://art/ui_dash_cool.png" id="9_dash_cool"]
+[ext_resource type="Texture2D" path="res://art/ev_sec_label.png" id="10_sec"]
+[ext_resource type="Texture2D" path="res://art/ui_combo_label.png" id="11_combo"]
+[ext_resource type="Texture2D" path="res://art/ui_pu_magnet.png" id="12_pu_mag"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
 content_margin_left = 22.0
@@ -23,6 +26,18 @@ content_margin_top = 14.0
 content_margin_right = 20.0
 content_margin_bottom = 16.0
 bg_color = Color(0.047, 0.071, 0.125, 0.72)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fever"]
+content_margin_left = 26.0
+content_margin_top = 8.0
+content_margin_right = 26.0
+content_margin_bottom = 8.0
+bg_color = Color(0.36, 0.24, 0.03, 0.82)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.85, 0.25, 0.95)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_track"]
 bg_color = Color(0.027, 0.043, 0.078, 0.9)
@@ -100,6 +115,142 @@ size_flags_vertical = 4
 theme_override_constants/separation = 4
 script = ExtResource("2_digits")
 digits = 4
+
+[node name="Banner" type="Control" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -520.0
+offset_top = 150.0
+offset_right = 520.0
+offset_bottom = 400.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="Title" type="TextureRect" parent="Banner"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -520.0
+offset_right = 520.0
+offset_bottom = 250.0
+grow_horizontal = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Sub" type="TextureRect" parent="Banner"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -520.0
+offset_top = 172.0
+offset_right = 520.0
+offset_bottom = 250.0
+grow_horizontal = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Combo" type="HBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 214.0
+offset_right = 180.0
+offset_bottom = 320.0
+grow_horizontal = 2
+theme_override_constants/separation = 12
+alignment = 1
+mouse_filter = 2
+
+[node name="Label" type="TextureRect" parent="Combo"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("11_combo")
+
+[node name="X" type="Label" parent="Combo"]
+visible = false
+layout_mode = 2
+
+[node name="Digits" type="HBoxContainer" parent="Combo"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 3
+
+[node name="Power" type="HBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 322.0
+offset_right = 260.0
+offset_bottom = 428.0
+grow_horizontal = 2
+theme_override_constants/separation = 10
+alignment = 1
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Power"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("12_pu_mag")
+
+[node name="Digits" type="HBoxContainer" parent="Power"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 2
+
+[node name="Unit" type="TextureRect" parent="Power"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("10_sec")
+
+[node name="Fever" type="Control" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -170.0
+offset_top = 26.0
+offset_right = 170.0
+offset_bottom = 140.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="Plate" type="PanelContainer" parent="Fever"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fever")
+
+[node name="Row" type="HBoxContainer" parent="Fever/Plate"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Digits" type="HBoxContainer" parent="Fever/Plate/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 2
+pad_zeros = true
+
+[node name="Unit" type="TextureRect" parent="Fever/Plate/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("10_sec")
 
 [node name="Energy" type="Control" parent="."]
 anchors_preset = 3

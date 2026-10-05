@@ -57,20 +57,94 @@ enum DashState { READY, ACTIVE, COOLING }
 var lift: float = 0.0
 var alive: bool = true
 
+## 这是第几个玩家（0 = 一号机，1 = 二号机）。决定它听哪一组按键。
+@export var player_index: int = 0
+
 ## 冲刺无敌是否正在生效（不含结束后的缓冲时间）
 var dash_active: bool = false
 
+## 护盾：能挡一次撞击，用完就没了
+var shield: bool = false
+
+## 「倒地」：双人模式里被撞了但队友还活着，处于等待复活的状态。
+## 和 alive = false 的区别是它还有救，所以不能走完整的死亡流程。
+var downed: bool = false
+## 倒地后还要等多久复活
+var revive_left: float = 0.0
+## 倒地复活的基准时长（revive_progress 用它做分母）
+var revive_seconds: float = 5.0
+
+## 本机实际监听的动作名（一号机是空格，二号机是 W / ↑）
+var _act_up: StringName = &"pull_up"
+var _act_dash: StringName = &"dash"
+
 var _dash_left: float = 0.0
+## 「无敌狂飙」事件送的免费冲刺剩余时间：这段时间里冲刺不耗能、不进冷却
+var _turbo_left: float = 0.0
 var _grace_left: float = 0.0
 var _cooldown_left: float = 0.0
 var _golden: bool = false
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
+## 骑在飞行器背上的驾驶员（没有驾驶员时隐藏）
+@onready var _pilot: Sprite2D = $AnimatedSprite2D/Pilot
+## 护盾生效时罩在身上的泡泡（挂在根节点上，所以不会跟着俯仰一起转）
+@onready var _bubble: Sprite2D = $Shield
 
 var _tilt: float = 0.0
 
 
+## 由主场景在生成时调用：指定自己是几号机、出生在哪
+func configure(index: int, spawn: Vector2) -> void:
+	player_index = index
+	if index == 1:
+		_act_up = &"pull_up_p2"
+		# 冲刺两人共用 ENTER —— 双人模式里一起冲刺反而更有合作感
+		_act_dash = &"dash"
+	reset_run(spawn)
+
+
+func is_alive() -> bool:
+	return alive
+
+
+func give_shield() -> void:
+	shield = true
+	if _bubble != null:
+		_bubble.visible = true
+
+
+## 挡下一次撞击。返回 true 表示这次撞击被吃掉了，不该判死。
+func consume_shield() -> bool:
+	if not shield:
+		return false
+	shield = false
+	if _bubble != null:
+		_bubble.visible = false
+	# 破盾之后给一小段无敌，免得贴着柱子连撞两次直接死
+	_grace_left = maxf(_grace_left, 1.2)
+	_refresh_gold()
+	return true
+
+
+## 换装：飞行器换整套 SpriteFrames，驾驶员换一张贴图。
+## 两者都是原生分辨率的像素画（32x32 一帧 / 16x16），整体那层 6 倍放大在场景实例上，
+## 所以这里不需要再缩放，像素颗粒和别的东西一致。
+func apply_skin(aircraft: int, pilot: int) -> void:
+	if _sprite != null:
+		_sprite.sprite_frames = Skins.frames(aircraft)
+		# 换了 SpriteFrames 要重新播一次，否则动画会停在旧帧上
+		_sprite.play("fly_bird")
+	if _pilot != null:
+		var tex: Texture2D = Skins.pilot_texture(pilot)
+		_pilot.texture = tex
+		_pilot.visible = tex != null
+
+
 func _physics_process(delta: float) -> void:
+	if downed:
+		_tick_down(delta)
+		return
 	if not alive:
 		return
 	_tick_dash(delta)
@@ -119,7 +193,25 @@ func start_dash() -> bool:
 	return true
 
 
+## 事件用：白送一段无敌冲刺（能量条不算数）
+func grant_turbo(seconds: float) -> void:
+	_turbo_left = maxf(_turbo_left, seconds)
+	dash_active = true
+	_dash_left = maxf(_dash_left, 0.2)
+	_cooldown_left = 0.0
+
+
 func _tick_dash(delta: float) -> void:
+	if _turbo_left > 0.0:
+		_turbo_left = maxf(_turbo_left - delta, 0.0)
+		# 狂飙期间维持冲刺状态，但结束的那一帧不要触发 grace/冷却
+		dash_active = true
+		_dash_left = maxf(_dash_left, 0.15)
+		_cooldown_left = 0.0
+		if _turbo_left > 0.0:
+			_refresh_gold()
+			return
+		_grace_left = maxf(_grace_left, 0.6)
 	if dash_active:
 		_dash_left -= delta
 		if _dash_left <= 0.0:
@@ -154,17 +246,26 @@ func _refresh_gold() -> void:
 
 
 # ------------------------------------------------------------------ 物理
+## 世界重力倍率（太空 0.62、梦幻 0.78……），由 WorldDirector 设置。
+## 改的是重力而不是初速度，所以低重力世界手感是"飘"，不是"被弹了一下"。
+var gravity_scale: float = 1.0
+
+
+func set_gravity_scale(scale: float) -> void:
+	gravity_scale = maxf(scale, 0.05)
+
+
 func _apply_gravity(delta: float) -> void:
 	if is_on_floor():
 		velocity.y = 0.0
 	elif velocity.y < fall_speed_max:
-		velocity.y = minf(velocity.y + gravity * delta, fall_speed_max)
+		velocity.y = minf(velocity.y + gravity * gravity_scale * delta, fall_speed_max)
 
 
 func _apply_input(delta: float) -> void:
-	if Input.is_action_just_pressed("dash"):
+	if Input.is_action_just_pressed(_act_dash):
 		start_dash()
-	if Input.is_action_just_pressed("pull_up"):
+	if Input.is_action_just_pressed(_act_up):
 		# 只在按下的那一瞬播：本作是"按住持续爬升"，每帧都播会变成噪音
 		Audio.play("flap")
 	_apply_lift(delta)
@@ -174,7 +275,7 @@ func _apply_input(delta: float) -> void:
 ## 按住空格 -> 按当前速度产生升力，速度越快爬升越猛。
 ## 接近软天花板时升力线性衰减（"空气变稀"），玩家会自然掉回来，不需要硬墙。
 func _apply_lift(delta: float) -> void:
-	if not Input.is_action_pressed("pull_up") or velocity.x <= lift_min_speed:
+	if not Input.is_action_pressed(_act_up) or velocity.x <= lift_min_speed:
 		lift = 0.0
 		return
 	var thin_air: float = 1.0
@@ -217,18 +318,76 @@ static func _smoothing(speed: float, delta: float) -> float:
 	return 1.0 - exp(-speed * delta)
 
 
-## 撞上路障：立刻停住，不再响应输入
-func die() -> void:
+## 双人模式：被撞了但队友还活着 —— 进入倒地状态，等队友撑住一段时间再复活。
+## 这段时间里不再吃碰撞（layer 清 0），否则会一直贴着柱子反复触发。
+func go_down(revive_seconds: float) -> void:
 	alive = false
+	downed = true
+	self.revive_seconds = maxf(revive_seconds, 0.001)
+	revive_left = self.revive_seconds
 	dash_active = false
 	_dash_left = 0.0
 	_grace_left = 0.0
 	_cooldown_left = 0.0
 	_refresh_gold()
 	velocity = Vector2.ZERO
+	collision_layer = 0
+	if _sprite != null:
+		_sprite.modulate = Color(0.45, 0.45, 0.5, 0.85)
+
+
+## 倒地中：只受重力往下掉，不响应输入
+func _tick_down(delta: float) -> void:
+	revive_left = maxf(revive_left - delta, 0.0)
+	velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
+	velocity.y = minf(velocity.y + gravity * gravity_scale * delta, fall_speed_max)
+	# 相机跟着还活着的队友飞走了，脚下早就没有地面，不兜住会一路掉到无穷远
+	if global_position.y > 1500.0:
+		global_position.y = 1500.0
+		velocity.y = 0.0
+	move_and_slide()
+	_sprite.rotation = wrapf(_sprite.rotation + delta * 6.0, -PI, PI)
+
+
+## 队友撑住了，复活
+func revive(at: Vector2) -> void:
+	downed = false
+	revive_left = 0.0
+	alive = true
+	global_position = at
+	velocity = Vector2.ZERO
+	collision_layer = 1
+	if _sprite != null:
+		_sprite.modulate = Color.WHITE
+		_sprite.rotation = 0.0
+	# 复活后给一小段无敌，免得刚站起来就又被同一根柱子撞死
+	_grace_left = 1.6
+	_tilt = 0.0
+
+
+## 倒地复活的进度（0 = 刚倒地，1 = 马上复活）
+func revive_progress() -> float:
+	return 1.0 - clampf(revive_left / maxf(revive_seconds, 0.001), 0.0, 1.0)
+
+
+## 撞上路障：立刻停住，不再响应输入
+func die() -> void:
+	alive = false
+	downed = false
+	dash_active = false
+	_dash_left = 0.0
+	_grace_left = 0.0
+	_cooldown_left = 0.0
+	_refresh_gold()
+	velocity = Vector2.ZERO
+	if _sprite != null:
+		_sprite.modulate = Color(0.6, 0.6, 0.6, 0.9)
 
 
 func reset_run(spawn: Vector2) -> void:
+	shield = false
+	if _bubble != null:
+		_bubble.visible = false
 	global_position = spawn
 	velocity = Vector2.ZERO
 	_tilt = 0.0
@@ -236,6 +395,11 @@ func reset_run(spawn: Vector2) -> void:
 		_sprite.rotation = 0.0
 	lift = 0.0
 	alive = true
+	downed = false
+	revive_left = 0.0
+	collision_layer = 1
+	if _sprite != null:
+		_sprite.modulate = Color.WHITE
 	# 新一局能量条是满的，开局就能按 ENTER
 	dash_active = false
 	_dash_left = 0.0

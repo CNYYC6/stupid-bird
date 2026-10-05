@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://c8kq3vbn2mstart"]
+[gd_scene load_steps=42 format=3 uid="uid://c8kq3vbn2mstart"]
 
 [ext_resource type="Script" path="res://scripts/start_menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" path="res://art/bg_sky.png" id="2_sky"]
@@ -23,6 +23,13 @@
 [ext_resource type="Texture2D" path="res://art/ui_best_label.png" id="21_best"]
 [ext_resource type="Texture2D" path="res://art/ui_meter_label.png" id="22_meter"]
 [ext_resource type="Texture2D" path="res://art/ui_coin_label.png" id="23_coin"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_solo.png" id="24_solo"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_solo_hover.png" id="25_solo_h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_solo_pressed.png" id="26_solo_p"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_dress.png" id="27_dress"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_dress_hover.png" id="28_dress_h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_dress_pressed.png" id="29_dress_p"]
+[ext_resource type="PackedScene" path="res://scenes/dressup.tscn" id="30_dressup"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(2400, 480)
@@ -182,9 +189,25 @@ texture_normal = ExtResource("14_start")
 texture_hover = ExtResource("15_start_hover")
 texture_pressed = ExtResource("16_start_press")
 
-[node name="QuitButton" type="TextureButton" parent="UI/Buttons"]
+[node name="BottomRow" type="HBoxContainer" parent="UI/Buttons"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="ModeButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+layout_mode = 2
+texture_normal = ExtResource("24_solo")
+texture_hover = ExtResource("25_solo_h")
+texture_pressed = ExtResource("26_solo_p")
+
+[node name="DressButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+layout_mode = 2
+texture_normal = ExtResource("27_dress")
+texture_hover = ExtResource("28_dress_h")
+texture_pressed = ExtResource("29_dress_p")
+
+[node name="QuitButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+layout_mode = 2
 texture_normal = ExtResource("17_quit")
 texture_hover = ExtResource("18_quit_hover")
 texture_pressed = ExtResource("19_quit_press")
@@ -253,3 +276,9 @@ mouse_filter = 2
 texture = ExtResource("13_hint")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+layer = 30
+
+[node name="Dressup" parent="Overlay" instance=ExtResource("30_dressup")]
+visible = false

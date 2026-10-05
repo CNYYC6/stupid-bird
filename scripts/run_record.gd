@@ -4,6 +4,7 @@ extends RefCounted
 
 const RECORD_PATH: String = "user://record.cfg"
 const SECTION: String = "run"
+const SETTINGS: String = "settings"
 const KEY_METERS: String = "best_meters"
 const KEY_COINS: String = "best_coins"
 
@@ -26,6 +27,30 @@ static func save_best(meters: int, coins: int) -> void:
 		_write(KEY_COINS, coins)
 		changed = true
 	return
+
+
+# ------------------------------------------------------------------ 设置（模式 / 换装）
+static func load_setting(key: String, fallback: int = 0) -> int:
+	var cfg := ConfigFile.new()
+	if cfg.load(RECORD_PATH) != OK:
+		return fallback
+	return int(cfg.get_value(SETTINGS, key, fallback))
+
+
+static func save_setting(key: String, value: int) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(RECORD_PATH)
+	cfg.set_value(SETTINGS, key, value)
+	cfg.save(RECORD_PATH)
+
+
+## 0 = 单人，1 = 双人合作
+static func load_mode() -> int:
+	return clampi(load_setting("mode", 0), 0, 1)
+
+
+static func save_mode(mode: int) -> void:
+	save_setting("mode", clampi(mode, 0, 1))
 
 
 static func _read(key: String) -> int:

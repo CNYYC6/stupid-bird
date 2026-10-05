@@ -23,10 +23,18 @@ extends Node2D
 var _chunks: Array[Node2D] = []
 
 
+## 地面占的物理层。玩家自己的 mask 只认这一层，于是**玩家之间互不碰撞** ——
+## 否则双人模式里二号机会站到一号机头上，而 CharacterBody2D 会把"脚下这块会动的
+## 平台"的速度叠加到自己身上，两个人越跑越快。
+const GROUND_LAYER: int = 2
+
+
 func _ready() -> void:
 	for child in get_children():
 		if child is Node2D:
 			_chunks.append(child)
+			if child is CollisionObject2D:
+				(child as CollisionObject2D).collision_layer = GROUND_LAYER
 	_layout()
 
 

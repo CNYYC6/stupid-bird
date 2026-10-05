@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cmeteor0000001"]
+
+[ext_resource type="Script" path="res://scripts/meteor.gd" id="1_meteor"]
+[ext_resource type="Texture2D" path="res://art/ev_meteor.png" id="2_tex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_meteor"]
+radius = 34.0
+
+[node name="Meteor" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+script = ExtResource("1_meteor")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_meteor")

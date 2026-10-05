@@ -10,11 +10,15 @@ extends Node2D
 ## 间隔用的是「时间」而不是「距离」：这样无论玩家加速还是刹车，
 ## 两次路障之间的反应时间都差不多，速度带来的只是视觉压迫感和容错变小。
 
-signal player_hit
+## 带上撞到的是哪个玩家
+signal player_hit(body: Node2D)
 signal coin_collected
+## 玩家吃到道具（kind 见 powerup.gd 的 Kind 枚举）
+signal powerup_picked(kind: int)
 
 const OBSTACLE_SCENE: PackedScene = preload("res://scenes/obstacle.tscn")
 const COIN_SCENE: PackedScene = preload("res://scenes/coin.tscn")
+const POWERUP_SCENE: PackedScene = preload("res://scenes/powerup.tscn")
 
 enum Kind { GATE, LOW, HIGH }
 
@@ -72,6 +76,20 @@ var _player: Node2D = null
 ## 玩家已推进的距离（米），决定难度
 var traveled_meters: float = 0.0
 
+## 当前世界的路障皮肤（由 WorldDirector 塞进来）
+var skin: Dictionary = {}
+
+## true = 只铺金币、完全不生路障（传送门进金币维度时用）
+var coin_fever: bool = false
+## true = 正常关卡之外再额外多铺一条金币带（金币雨事件）
+var coin_bonus: bool = false
+
+## 道具：每隔这么多根路障放一个（0 = 关闭）
+@export var powerup_every_patterns: int = 4
+var _pattern_count: int = 0
+## 金币维度里的金币密度倍率
+@export var fever_coin_rows: int = 3
+
 
 ## 由主场景在 _ready 里调用
 func begin(player: Node2D, start_x: float) -> void:
@@ -79,6 +97,35 @@ func begin(player: Node2D, start_x: float) -> void:
 	_rng.randomize()
 	_prev_pattern_x = start_x
 	_cursor_x = start_x + first_pattern_x
+
+
+## 换世界：新路障用新皮肤，已经在场上的也一起换，避免同一屏出现两种柱子
+func set_skin(d: Dictionary) -> void:
+	skin = d
+	for child in get_children():
+		if child is Node2D and child.is_in_group("obstacle"):
+			_apply_skin(child)
+
+
+func _apply_skin(ob: Node) -> void:
+	if skin.is_empty() or not ob.has_method("set_skin"):
+		return
+	ob.set_skin(load(skin["pillar"]), load(skin["cap_top"]), load(skin["cap_hang"]))
+
+
+## 进入 / 退出「金币维度」
+func set_coin_fever(on: bool) -> void:
+	coin_fever = on
+	if not on:
+		return
+	# 把已经铺在前面的路障清掉，否则进了传送门还会撞柱
+	for child in get_children():
+		if child is Node2D and child.is_in_group("obstacle"):
+			child.queue_free()
+	# 从镜头前方重新起一段，免得复用旧光标位置
+	var cam := get_viewport().get_camera_2d()
+	if cam != null:
+		_cursor_x = cam.get_screen_center_position().x + 900.0
 
 
 func _physics_process(_delta: float) -> void:
@@ -93,8 +140,27 @@ func _physics_process(_delta: float) -> void:
 func _fill(center_x: float) -> void:
 	var right: float = center_x + get_viewport_rect().size.x * 0.5 + spawn_margin
 	while _cursor_x < right:
-		_spawn_pattern(_cursor_x)
-		_cursor_x += _next_spacing()
+		if coin_fever:
+			_spawn_fever_row(_cursor_x)
+			_cursor_x += 260.0
+		else:
+			_spawn_pattern(_cursor_x)
+			_cursor_x += _next_spacing()
+
+
+## 金币维度：整屏铺满金币，没有路障
+func _spawn_fever_row(x: float) -> void:
+	var count: int = _rng.randi_range(3, 5)
+	var spread: float = coin_spacing * float(count - 1)
+	for row in fever_coin_rows:
+		var center: float = _rng.randf_range(gap_center_top, gap_center_bottom) \
+			if row == 0 else _rng.randf_range(-40.0, gap_center_bottom)
+		for i in count:
+			var f: float = 0.0 if count == 1 else float(i) / float(count - 1)
+			var coin := COIN_SCENE.instantiate()
+			coin.position = Vector2(x + f * spread, center - sin(f * PI) * coin_arc_lift)
+			add_child(coin)
+			coin.collected.connect(_on_coin_collected)
 
 
 func _next_spacing() -> float:
@@ -149,10 +215,37 @@ func _spawn_pattern(x: float) -> void:
 	add_child(obstacle)
 	obstacle.configure(gap_top, gap_bottom, road_y, sky_top)
 	obstacle.hit.connect(_on_obstacle_hit)
+	_apply_skin(obstacle)
 
 	# 金币弧线铺在目标高度上，等于把"该飞哪"直接画给玩家看
 	_spawn_coin_arc(_prev_pattern_x, x, aim)
+	if coin_bonus:
+		# 金币雨：在走廊里再叠一条，密度翻倍但不影响可通过性
+		_spawn_coin_arc(_prev_pattern_x, x, clampf(aim + _rng.randf_range(-90.0, 90.0),
+				gap_center_top, gap_center_bottom))
 	_prev_pattern_x = x
+	_maybe_spawn_powerup(_prev_pattern_x, x, aim)
+
+
+## 道具放在走廊正中、缺口高度上 —— 和金币同一条线，玩家顺手就能吃到。
+## 走廊太窄就不放，免得道具嵌进柱子（金币那边踩过同样的坑）。
+func _maybe_spawn_powerup(prev_x: float, x: float, aim: float) -> void:
+	_pattern_count += 1
+	if powerup_every_patterns <= 0 or _pattern_count % powerup_every_patterns != 0:
+		return
+	var left: float = prev_x + HALF_PILLAR + coin_pad
+	var right: float = x - HALF_PILLAR - coin_pad
+	if right - left < 80.0:
+		return
+	var pu := POWERUP_SCENE.instantiate()
+	pu.kind = _rng.randi_range(0, 2)
+	pu.position = Vector2((left + right) * 0.5, aim)
+	add_child(pu)
+	pu.picked.connect(_on_powerup_picked)
+
+
+func _on_powerup_picked(kind: int) -> void:
+	powerup_picked.emit(kind)
 
 
 ## 在「上一个路障」和「这一个路障」之间的净空走廊里铺一小段弧线金币。
@@ -180,12 +273,12 @@ func _spawn_coin_arc(prev_x: float, obstacle_x: float, center: float) -> void:
 		coin.collected.connect(_on_coin_collected)
 
 
-func _on_obstacle_hit() -> void:
+func _on_obstacle_hit(body: Node2D) -> void:
 	# 无敌冲刺期间柱子只是穿过去，不算撞上。
 	# 这里拦一道而不是改碰撞层：金币靠玩家的 layer 1 判定，动碰撞层会连金币一起废掉。
-	if _player != null and _player.has_method("is_invincible") and _player.is_invincible():
+	if body != null and body.has_method("is_invincible") and body.is_invincible():
 		return
-	player_hit.emit()
+	player_hit.emit(body)
 
 
 func _on_coin_collected() -> void:

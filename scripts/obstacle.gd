@@ -5,7 +5,8 @@ extends Node2D
 ## 一个 Sprite2D，不需要堆一摞节点，也不会出现非整数缩放导致的像素抖动。
 ## 贴图做成 1200 像素高，比关卡里任何一根柱子都高，因此不依赖 region 的重复采样行为。
 
-signal hit
+## 撞到的具体是哪个玩家（双人模式必须分得清）
+signal hit(body: Node2D)
 
 const PILLAR_W: float = 384.0        # 贴图宽度（已是 6 倍放大后的像素）
 const PILLAR_TEX_H: float = 1200.0
@@ -89,4 +90,17 @@ func _setup_column(root: Node2D, shaft: Sprite2D, cap: Sprite2D, shape: Collisio
 func _on_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("player"):
 		return
-	hit.emit()
+	hit.emit(body)
+
+
+## 换一套柱体皮肤（世界切换时用）。
+## 所有世界的柱体贴图都是同一套尺寸（384x1200 柱体 / 384x84 端头），
+## 所以只换 texture 就够了，region_rect 和碰撞盒都不用重算。
+func set_skin(pillar: Texture2D, cap_top: Texture2D, cap_hang: Texture2D) -> void:
+	if pillar != null:
+		_bottom_shaft.texture = pillar
+		_top_shaft.texture = pillar
+	if cap_top != null:
+		_bottom_cap.texture = cap_top
+	if cap_hang != null:
+		_top_cap.texture = cap_hang

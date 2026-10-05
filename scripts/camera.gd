@@ -31,7 +31,37 @@ extends Camera2D
 @export var fixed_y: float = 330.0
 
 var _target: Node2D
+## 多目标模式（双人合作）：相机跟所有"活着"的目标的重心
+var _targets: Array[Node2D] = []
 var _y: float = 0.0
+
+
+## 双人模式：改成跟随一组目标。传空数组则退回单目标 target_path。
+func set_targets(nodes: Array) -> void:
+	_targets.clear()
+	for n in nodes:
+		if n is Node2D:
+			_targets.append(n)
+	if not _targets.is_empty():
+		reset_to(_focus())
+	else:
+		_target = get_node_or_null(target_path) as Node2D
+
+
+## 所有存活目标的重心。全倒了就保持原地，等结算界面接管。
+func _focus() -> Vector2:
+	var sum := Vector2.ZERO
+	var n: int = 0
+	for t in _targets:
+		if not is_instance_valid(t):
+			continue
+		if t.has_method("is_alive") and not t.is_alive():
+			continue
+		sum += t.global_position
+		n += 1
+	if n == 0:
+		return global_position
+	return sum / float(n)
 
 
 func _ready() -> void:
@@ -50,9 +80,14 @@ func reset_to(target_position: Vector2) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _target == null:
+	var focus: Vector2
+	if not _targets.is_empty():
+		focus = _focus()
+	elif _target != null:
+		focus = _target.global_position
+	else:
 		return
-	var desired: Vector2 = _target.global_position + follow_offset
+	var desired: Vector2 = focus + follow_offset
 
 	# 水平硬跟随
 	global_position.x = desired.x

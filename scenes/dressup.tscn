@@ -1,0 +1,88 @@
+[gd_scene load_steps=12 format=3 uid="uid://cdressup000001"]
+
+[ext_resource type="Script" path="res://scripts/dressup.gd" id="1_dress"]
+[ext_resource type="Texture2D" path="res://art/ui_dress_title.png" id="2_title"]
+[ext_resource type="Texture2D" path="res://art/ui_label_aircraft.png" id="3_air"]
+[ext_resource type="Texture2D" path="res://art/ui_label_pilot.png" id="4_pilot"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_close.png" id="5_close"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_close_hover.png" id="6_close_h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_close_pressed.png" id="7_close_p"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dress"]
+content_margin_left = 48.0
+content_margin_top = 28.0
+content_margin_right = 48.0
+content_margin_bottom = 32.0
+bg_color = Color(0.055, 0.075, 0.125, 0.96)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.69, 0.878, 0.9)
+
+[node name="Dressup" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dress")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.031, 0.043, 0.078, 0.72)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -800.0
+offset_top = -420.0
+offset_right = 800.0
+offset_bottom = 420.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dress")
+
+[node name="Layout" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Title" type="TextureRect" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("2_title")
+
+[node name="AirLabel" type="TextureRect" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("3_air")
+
+[node name="AirRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 18
+
+[node name="PilotLabel" type="TextureRect" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_pilot")
+
+[node name="PilotRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 18
+
+[node name="CloseButton" type="TextureButton" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("5_close")
+texture_hover = ExtResource("6_close_h")
+texture_pressed = ExtResource("7_close_p")

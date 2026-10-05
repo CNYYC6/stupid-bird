@@ -1,3 +1,4 @@
+class_name ParallaxStrip
 extends Node2D
 ## 世界空间的无缝横向视差条带。
 ##

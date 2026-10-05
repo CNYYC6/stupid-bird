@@ -250,7 +250,7 @@ def main() -> None:
     save(make_button("退出游戏", hover=True), "ui_btn_quit_hover.png")
     save(make_button("退出游戏", pressed=True), "ui_btn_quit_pressed.png")
     # 本作没有左右操作，A/D 已经删掉：提示里也不要再出现，否则玩家会一直按
-    save(make_label("空格 爬升    ENTER 无敌冲刺    R 重来    ESC 返回", 12), "ui_hint.png")
+    save(make_label("空格 / W 爬升    ENTER 无敌冲刺    R 重来    ESC 返回", 12), "ui_hint.png")
     save(make_label("按住空格爬升，ENTER 无敌冲刺可以硬穿路障。", 12), "ui_tip.png")
     save(make_label("最远记录", 12, "#FBF236"), "ui_best_label.png")
     save(make_label("金币", 12), "ui_coin_label.png")
@@ -261,6 +261,23 @@ def main() -> None:
     save(make_button("返回主菜单"), "ui_btn_menu.png")
     save(make_button("返回主菜单", hover=True), "ui_btn_menu_hover.png")
     save(make_button("返回主菜单", pressed=True), "ui_btn_menu_pressed.png")
+
+    # 换装间
+    save(make_button("换装"), "ui_btn_dress.png")
+    save(make_button("换装", hover=True), "ui_btn_dress_hover.png")
+    save(make_button("换装", pressed=True), "ui_btn_dress_pressed.png")
+    save(make_label("换装间", 26, "#FFB0E0", pad=6, outline=2), "ui_dress_title.png")
+    save(make_label("飞行器", 12, "#FBF236"), "ui_label_aircraft.png")
+    save(make_label("驾驶员", 12, "#9FF8FF"), "ui_label_pilot.png")
+    save(make_button("返回"), "ui_btn_close.png")
+    save(make_button("返回", hover=True), "ui_btn_close_hover.png")
+    save(make_button("返回", pressed=True), "ui_btn_close_pressed.png")
+
+    # 模式切换按钮：按钮文字本身就表明当前模式，省掉一行"当前：xxx"的标签
+    for tag, text in (("solo", "模式：单人"), ("coop", "模式：双人")):
+        save(make_button(text), f"ui_btn_{tag}.png")
+        save(make_button(text, hover=True), f"ui_btn_{tag}_hover.png")
+        save(make_button(text, pressed=True), f"ui_btn_{tag}_pressed.png")
 
     save(make_shade(), "ui_shade.png")
 

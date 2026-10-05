@@ -11,15 +11,35 @@ extends Control
 @export_file("*.tscn") var game_scene: String = "res://scenes/main.tscn"
 
 @onready var _start_button: TextureButton = $UI/Buttons/StartButton
-@onready var _quit_button: TextureButton = $UI/Buttons/QuitButton
+@onready var _quit_button: TextureButton = $UI/Buttons/BottomRow/QuitButton
 @onready var _best_distance: HBoxContainer = $UI/Best/DistanceBest/Digits
 @onready var _best_coins: HBoxContainer = $UI/Best/CoinBest/Digits
+@onready var _mode_button: TextureButton = $UI/Buttons/BottomRow/ModeButton
+@onready var _dress_button: TextureButton = $UI/Buttons/BottomRow/DressButton
+@onready var _dressup: Control = $Overlay/Dressup
+
+## 每种模式对应的一整套按钮贴图（normal / hover / pressed）
+const MODE_TEX: Array[Array] = [
+	["res://art/ui_btn_solo.png", "res://art/ui_btn_solo_hover.png",
+	 "res://art/ui_btn_solo_pressed.png"],
+	["res://art/ui_btn_coop.png", "res://art/ui_btn_coop_hover.png",
+	 "res://art/ui_btn_coop_pressed.png"],
+]
+
+## 0 = 单人闯关，1 = 双人合作
+var _mode: int = 0
 
 
 func _ready() -> void:
 	Audio.start_music()
 	_start_button.pressed.connect(_on_start_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
+	_mode = RunRecord.load_mode()
+	_refresh_mode()
+	_mode_button.pressed.connect(_on_mode_pressed)
+	_dress_button.pressed.connect(_on_dress_pressed)
+	_dressup.closed.connect(func() -> void: _start_button.grab_focus())
+	_dressup.skin_changed.connect(_on_skin_changed)
 	_start_button.grab_focus()
 	_best_distance.set_value(RunRecord.load_best())
 	_best_coins.set_value(RunRecord.load_best_coins())
@@ -29,6 +49,33 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
 		_on_start_pressed()
+
+
+## 切换单人 / 双人，立刻写盘，下一局主场景直接按这个模式摆人
+func _on_mode_pressed() -> void:
+	Audio.play("ui")
+	_mode = 1 - _mode
+	RunRecord.save_mode(_mode)
+	_refresh_mode()
+
+
+## 打开换装间。菜单背景里那 25 只小鸟不跟着换 —— 它们只是氛围，
+## 真正的换装效果在开局之后才看得到（免得每点一下就要重建 25 份贴图）。
+func _on_dress_pressed() -> void:
+	Audio.play("ui")
+	_dressup.open(RunRecord.load_setting("aircraft", 0), RunRecord.load_setting("pilot", 0))
+
+
+func _on_skin_changed(aircraft: int, pilot: int) -> void:
+	RunRecord.save_setting("aircraft", aircraft)
+	RunRecord.save_setting("pilot", pilot)
+
+
+func _refresh_mode() -> void:
+	var set: Array = MODE_TEX[_mode]
+	_mode_button.texture_normal = load(set[0])
+	_mode_button.texture_hover = load(set[1])
+	_mode_button.texture_pressed = load(set[2])
 
 
 func _on_start_pressed() -> void:
