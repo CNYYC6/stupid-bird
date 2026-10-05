@@ -4,7 +4,7 @@ extends HBoxContainer
 ## 数字走贴图而不是字体，是为了和像素美术保持同一套颗粒，
 ## 顺便也避开了 Godot 默认字体不含中文字形的问题。
 
-const DIGIT_PATH: String = "res://art/ui_digit_%d.png"
+const DIGIT_PATH: String = "res://art/ui/en/ui_digit_%d.png"
 
 ## 固定显示几位（多出来的高位隐藏）
 @export var digits: int = 5
@@ -19,7 +19,7 @@ var _value: int = -1
 
 func _ready() -> void:
 	for i in 10:
-		_textures.append(load(DIGIT_PATH % i))
+		_textures.append(load(UiLang.swap_path(DIGIT_PATH % i, UiLang.code())))
 	for i in maxi(digits, 1):
 		var cell := TextureRect.new()
 		cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER

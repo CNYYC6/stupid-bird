@@ -124,11 +124,6 @@ def main() -> None:
     save_raw(make_bubble(), "fx_shield.png")
 
     print("道具标签：")
-    save(make_label("连击", 12, "#FBF236"), "ui_combo_label.png", ART)
-    save(make_label("磁铁", 12, "#FF9A9A"), "ui_pu_magnet.png", ART)
-    save(make_label("护盾", 12, "#9FE8FF"), "ui_pu_shield.png", ART)
-    save(make_label("金币爆发", 12, "#FFF6C0"), "ui_pu_burst.png", ART)
-    save(make_label("护盾已装备", 12, "#9FE8FF"), "ui_shield_ready.png", ART)
 
 
 if __name__ == "__main__":

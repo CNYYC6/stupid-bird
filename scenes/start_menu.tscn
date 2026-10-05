@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://c8kq3vbn2mstart"]
+[gd_scene load_steps=49 format=3 uid="uid://c8kq3vbn2mstart"]
 
 [ext_resource type="Script" path="res://scripts/start_menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" path="res://art/bg_sky.png" id="2_sky"]
@@ -9,30 +9,34 @@
 [ext_resource type="Texture2D" path="res://art/bg_ground.png" id="7_ground"]
 [ext_resource type="Script" path="res://scripts/parallax_strip.gd" id="8_strip"]
 [ext_resource type="Script" path="res://scripts/menu_birds.gd" id="9_flock"]
-[ext_resource type="Texture2D" path="res://art/ui_shade.png" id="10_shade"]
-[ext_resource type="Texture2D" path="res://art/ui_title.png" id="11_title"]
-[ext_resource type="Texture2D" path="res://art/ui_tip.png" id="12_tip"]
-[ext_resource type="Texture2D" path="res://art/ui_hint.png" id="13_hint"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_start.png" id="14_start"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_start_hover.png" id="15_start_hover"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_start_pressed.png" id="16_start_press"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_quit.png" id="17_quit"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_quit_hover.png" id="18_quit_hover"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_quit_pressed.png" id="19_quit_press"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_shade.png" id="10_shade"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_title.png" id="11_title"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_tip.png" id="12_tip"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_hint.png" id="13_hint"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_start.png" id="14_start"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_start_hover.png" id="15_start_hover"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_start_pressed.png" id="16_start_press"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_quit.png" id="17_quit"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_quit_hover.png" id="18_quit_hover"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_quit_pressed.png" id="19_quit_press"]
 [ext_resource type="Script" path="res://scripts/digit_row.gd" id="20_digits"]
-[ext_resource type="Texture2D" path="res://art/ui_best_label.png" id="21_best"]
-[ext_resource type="Texture2D" path="res://art/ui_meter_label.png" id="22_meter"]
-[ext_resource type="Texture2D" path="res://art/ui_coin_label.png" id="23_coin"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_solo.png" id="24_solo"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_solo_hover.png" id="25_solo_h"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_solo_pressed.png" id="26_solo_p"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_dress.png" id="27_dress"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_dress_hover.png" id="28_dress_h"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_dress_pressed.png" id="29_dress_p"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_best_label.png" id="21_best"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_meter_label.png" id="22_meter"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_coin_label.png" id="23_coin"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_solo.png" id="24_solo"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_solo_hover.png" id="25_solo_h"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_solo_pressed.png" id="26_solo_p"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_dress.png" id="27_dress"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_dress_hover.png" id="28_dress_h"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_dress_pressed.png" id="29_dress_p"]
 [ext_resource type="PackedScene" path="res://scenes/dressup.tscn" id="30_dressup"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_lv1.png" id="31_lv"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_lv1_hover.png" id="32_lvh"]
-[ext_resource type="Texture2D" path="res://art/ui_btn_lv1_pressed.png" id="33_lvp"]
+[ext_resource type="PackedScene" path="res://scenes/settings.tscn" id="34_settings"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings.png" id="35_set"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings_hover.png" id="36_seth"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings_pressed.png" id="37_setp"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_lv1.png" id="31_lv"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_lv1_hover.png" id="32_lvh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_lv1_pressed.png" id="33_lvp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(2400, 480)
@@ -232,6 +236,15 @@ texture_normal = ExtResource("27_dress")
 texture_hover = ExtResource("28_dress_h")
 texture_pressed = ExtResource("29_dress_p")
 
+[node name="SettingsButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
+custom_minimum_size = Vector2(330, 124)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("35_set")
+texture_hover = ExtResource("36_seth")
+texture_pressed = ExtResource("37_setp")
+
 [node name="QuitButton" type="TextureButton" parent="UI/Buttons/BottomRow"]
 custom_minimum_size = Vector2(432, 124)
 layout_mode = 2
@@ -310,4 +323,7 @@ stretch_mode = 5
 layer = 30
 
 [node name="Dressup" parent="Overlay" instance=ExtResource("30_dressup")]
+visible = false
+
+[node name="Settings" parent="Overlay" instance=ExtResource("34_settings")]
 visible = false

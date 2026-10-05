@@ -134,12 +134,14 @@ def rgba(h: str, a: int = 255) -> np.ndarray:
     return np.array([int(h[i:i + 2], 16) for i in (0, 2, 4)] + [a], dtype=np.float32)
 
 
-def save(img: np.ndarray, name: str) -> None:
+def save(img: np.ndarray, name: str, sub: str = "") -> None:
     a = np.clip(img, 0, 255).astype(np.uint8)
     im = Image.fromarray(a, "RGBA")
     up = im.resize((im.width * S, im.height * S), Image.NEAREST)
-    up.save(os.path.join(ART, name))
-    print(f"  -> {name:26s} {up.size[0]}x{up.size[1]}")
+    d = os.path.join(ART, "ui", sub) if sub else ART
+    os.makedirs(d, exist_ok=True)
+    up.save(os.path.join(d, name))
+    print(f"  -> {sub + '/' if sub else '':6s}{name:26s} {up.size[0]}x{up.size[1]}")
 
 
 def paste_mask(h: int, w: int, mask: np.ndarray, oy: int, ox: int) -> np.ndarray:
@@ -149,6 +151,16 @@ def paste_mask(h: int, w: int, mask: np.ndarray, oy: int, ox: int) -> np.ndarray
 
 
 # ------------------------------------------------------------------ 各类素材
+def text_mask(text: str, size: int) -> np.ndarray:
+    """纯 ASCII 的文案走自带的 5x7 点阵（笔画均匀，最像游戏像素字）；
+    含中文的走系统黑体二进制化。两种字形在同一个界面上混用不会打架，
+    因为点阵的缩放是按 size 换算的，字高和中文对得上。"""
+    if all(ord(ch) < 128 for ch in text):
+        scale = max(1, int(round(size / 7.0)))
+        return pixel_mask(text, scale)
+    return cjk_mask(text, size)
+
+
 def make_title(text: str = "STUPID BIRD", scale: int = 3) -> np.ndarray:
     mask = pixel_mask(text, scale)
     pad = 4 * scale
@@ -188,7 +200,7 @@ def panel(w: int, h: int, fill: str, fill_a: int, border: str, top_hi: str) -> n
 
 def make_button(label: str, hover: bool = False, pressed: bool = False,
                 size: int = 16, pad_x: int = 18, pad_y: int = 9) -> np.ndarray:
-    mask = cjk_mask(label, size)
+    mask = text_mask(label, size)
     w = mask.shape[1] + pad_x * 2
     h = mask.shape[0] + pad_y * 2
     if pressed:
@@ -208,7 +220,7 @@ def make_button(label: str, hover: bool = False, pressed: bool = False,
 def make_label(text: str, size: int = 12, color: str = "#E4EDF5", pad: int = 3,
                outline: int = 1) -> np.ndarray:
     """带描边的标签贴图，用于 HUD 与提示文字。"""
-    mask = cjk_mask(text, size)
+    mask = text_mask(text, size)
     h, w = mask.shape[0] + pad * 2, mask.shape[1] + pad * 2
     img = np.zeros((h, w, 4), dtype=np.float32)
     body = paste_mask(h, w, mask, pad, pad)
@@ -240,68 +252,160 @@ def make_shade(w: int = 320, h: int = 180) -> np.ndarray:
     return img
 
 
-def main() -> None:
-    print("生成开始界面素材：")
-    save(make_title("STUPID BIRD", 3), "ui_title.png")
-    save(make_button("开始游戏"), "ui_btn_start.png")
-    save(make_button("开始游戏", hover=True), "ui_btn_start_hover.png")
-    save(make_button("开始游戏", pressed=True), "ui_btn_start_pressed.png")
-    save(make_button("退出游戏"), "ui_btn_quit.png")
-    save(make_button("退出游戏", hover=True), "ui_btn_quit_hover.png")
-    save(make_button("退出游戏", pressed=True), "ui_btn_quit_pressed.png")
-    # 本作没有左右操作，A/D 已经删掉：提示里也不要再出现，否则玩家会一直按
-    save(make_label("空格 / W 爬升    ENTER 无敌冲刺    R 重来    ESC 返回", 12), "ui_hint.png")
-    save(make_label("按住空格爬升，ENTER 无敌冲刺可以硬穿路障。", 12), "ui_tip.png")
-    save(make_label("最远记录", 12, "#FBF236"), "ui_best_label.png")
-    save(make_label("金币", 12), "ui_coin_label.png")
-    save(make_label("撞毁了！", 26, "#F2724E", pad=6, outline=2), "ui_over_title.png")
-    save(make_button("再来一次"), "ui_btn_retry.png")
-    save(make_button("再来一次", hover=True), "ui_btn_retry_hover.png")
-    save(make_button("再来一次", pressed=True), "ui_btn_retry_pressed.png")
-    save(make_button("返回主菜单"), "ui_btn_menu.png")
-    save(make_button("返回主菜单", hover=True), "ui_btn_menu_hover.png")
-    save(make_button("返回主菜单", pressed=True), "ui_btn_menu_pressed.png")
+# ------------------------------------------------------------------ 文案表
+# 界面文字全部烘进贴图的时代，多语言就是"同一张图生成两套"。
+# 这里集中放所有文案，跑一次脚本产出 art/ui/en/ 和 art/ui/zh/ 两整套，
+# 运行期按语言换路径即可（见 scripts/ui_lang.gd）。默认英语。
+STRINGS: dict = {
+    "en": {
+        "title": "STUPID BIRD",
+        "btn_start": "START", "btn_quit": "QUIT",
+        "hint": "SPACE/W climb   ENTER dash   R retry   ESC back",
+        "tip": "Hold SPACE to climb. ENTER dashes through obstacles.",
+        "best_label": "BEST", "coin_label": "COINS",
+        "over_title": "CRASHED!",
+        "btn_retry": "RETRY", "btn_menu": "MAIN MENU",
+        "btn_lv0": "ROOKIE", "btn_lv1": "REGULAR", "btn_lv2": "ACE",
+        "btn_dress": "HANGAR", "dress_title": "HANGAR",
+        "label_aircraft": "AIRCRAFT", "label_pilot": "PILOT",
+        "label_editing": "EDITING",
+        "btn_p1": "PLAYER 1", "btn_p2": "PLAYER 2",
+        "btn_close": "BACK",
+        "btn_solo": "MODE: SOLO", "btn_coop": "MODE: CO-OP", "btn_bot": "AI COPILOT",
+        "btn_settings": "SETTINGS", "settings_title": "SETTINGS",
+        "label_language": "LANGUAGE", "label_window": "DISPLAY",
+        "label_resolution": "RESOLUTION",
+        "btn_en": "English", "btn_zh": "\u4e2d\u6587",
+        "btn_windowed": "WINDOWED", "btn_fullscreen": "FULLSCREEN",
+        "res0": "1280 x 720", "res1": "1600 x 900", "res2": "1920 x 1080",
+        "dist_label": "DIST", "meter_label": "M",
+        "dash_label": "DASH", "dash_ready": "READY",
+        "dash_active": "ACTIVE", "dash_cool": "COOLING",
+        "combo_label": "COMBO", "pu_magnet": "MAGNET", "pu_shield": "SHIELD",
+        "pu_burst": "COIN BURST", "shield_ready": "SHIELD ON",
+    },
+    "zh": {
+        "title": "STUPID BIRD",
+        "btn_start": "\u5f00\u59cb\u6e38\u620f", "btn_quit": "\u9000\u51fa\u6e38\u620f",
+        "hint": "\u7a7a\u683c / W \u722c\u5347    ENTER \u65e0\u654c\u51b2\u523a    R \u91cd\u6765    ESC \u8fd4\u56de",
+        "tip": "\u6309\u4f4f\u7a7a\u683c\u722c\u5347\uff0cENTER \u65e0\u654c\u51b2\u523a\u53ef\u4ee5\u786c\u7a7f\u8def\u969c\u3002",
+        "best_label": "\u6700\u8fdc\u8bb0\u5f55", "coin_label": "\u91d1\u5e01",
+        "over_title": "\u649e\u6bc1\u4e86\uff01",
+        "btn_retry": "\u518d\u6765\u4e00\u6b21", "btn_menu": "\u8fd4\u56de\u4e3b\u83dc\u5355",
+        "btn_lv0": "\u81ed\u4eba\u673a", "btn_lv1": "\u666e\u901a\u4eba\u673a",
+        "btn_lv2": "\u673a\u54e5",
+        "btn_dress": "\u6362\u88c5", "dress_title": "\u6362\u88c5\u95f4",
+        "label_aircraft": "\u98de\u884c\u5668", "label_pilot": "\u9a7e\u9a76\u5458",
+        "label_editing": "\u6b63\u5728\u7f16\u8f91",
+        "btn_p1": "\u73a9\u5bb6 1", "btn_p2": "\u73a9\u5bb6 2",
+        "btn_close": "\u8fd4\u56de",
+        "btn_solo": "\u6a21\u5f0f\uff1a\u5355\u4eba",
+        "btn_coop": "\u6a21\u5f0f\uff1a\u53cc\u4eba",
+        "btn_bot": "\u673a\u54e5\u5e26\u4f60\u98de",
+        "btn_settings": "\u8bbe\u7f6e", "settings_title": "\u8bbe\u7f6e",
+        "label_language": "\u8bed\u8a00", "label_window": "\u663e\u793a",
+        "label_resolution": "\u5206\u8fa8\u7387",
+        "btn_en": "English", "btn_zh": "\u4e2d\u6587",
+        "btn_windowed": "\u7a97\u53e3", "btn_fullscreen": "\u5168\u5c4f",
+        "res0": "1280 x 720", "res1": "1600 x 900", "res2": "1920 x 1080",
+        "dist_label": "\u8ddd\u79bb", "meter_label": "\u7c73",
+        "dash_label": "\u65e0\u654c\u51b2\u523a", "dash_ready": "\u5c31\u7eea",
+        "dash_active": "\u53d1\u52a8\u4e2d", "dash_cool": "\u51b7\u5374\u4e2d",
+        "combo_label": "\u8fde\u51fb", "pu_magnet": "\u78c1\u94c1",
+        "pu_shield": "\u62a4\u76fe", "pu_burst": "\u91d1\u5e01\u7206\u53d1",
+        "shield_ready": "\u62a4\u76fe\u5df2\u88c5\u5907",
+    },
+}
+
+
+def emit(t: dict, lang: str) -> None:
+    """按语言产出一整套界面贴图。文件名两套完全一致，只是目录不同 ——
+    这样运行期换语言就是把路径里的 /ui/<lang>/ 换掉，不需要任何映射表。"""
+    print(f"生成界面素材 [{lang}]：")
+    save(make_title(t["title"], 3), "ui_title.png", lang)
+    for key, name in (("btn_start", "start"), ("btn_quit", "quit")):
+        save(make_button(t[key]), f"ui_btn_{name}.png", lang)
+        save(make_button(t[key], hover=True), f"ui_btn_{name}_hover.png", lang)
+        save(make_button(t[key], pressed=True), f"ui_btn_{name}_pressed.png", lang)
+    save(make_label(t["hint"], 12), "ui_hint.png", lang)
+    save(make_label(t["tip"], 12), "ui_tip.png", lang)
+    save(make_label(t["best_label"], 12, "#FBF236"), "ui_best_label.png", lang)
+    save(make_label(t["coin_label"], 12), "ui_coin_label.png", lang)
+    save(make_label(t["over_title"], 26, "#F2724E", pad=6, outline=2), "ui_over_title.png", lang)
+    for key, name in (("btn_retry", "retry"), ("btn_menu", "menu")):
+        save(make_button(t[key]), f"ui_btn_{name}.png", lang)
+        save(make_button(t[key], hover=True), f"ui_btn_{name}_hover.png", lang)
+        save(make_button(t[key], pressed=True), f"ui_btn_{name}_pressed.png", lang)
 
     # 机哥模式的难度档位（按钮小一号，免得整行超宽）
-    for tag, text in (("lv0", "臭人机"), ("lv1", "普通人机"), ("lv2", "机哥")):
-        save(make_button(text, size=12), f"ui_btn_{tag}.png")
-        save(make_button(text, size=12, hover=True), f"ui_btn_{tag}_hover.png")
-        save(make_button(text, size=12, pressed=True), f"ui_btn_{tag}_pressed.png")
+    for tag in ("lv0", "lv1", "lv2"):
+        save(make_button(t[f"btn_{tag}"], size=12), f"ui_btn_{tag}.png", lang)
+        save(make_button(t[f"btn_{tag}"], size=12, hover=True), f"ui_btn_{tag}_hover.png", lang)
+        save(make_button(t[f"btn_{tag}"], size=12, pressed=True), f"ui_btn_{tag}_pressed.png", lang)
 
     # 换装间
-    save(make_button("换装"), "ui_btn_dress.png")
-    save(make_button("换装", hover=True), "ui_btn_dress_hover.png")
-    save(make_button("换装", pressed=True), "ui_btn_dress_pressed.png")
-    save(make_label("换装间", 26, "#FFB0E0", pad=6, outline=2), "ui_dress_title.png")
-    save(make_label("飞行器", 12, "#FBF236"), "ui_label_aircraft.png")
-    save(make_label("驾驶员", 12, "#9FF8FF"), "ui_label_pilot.png")
-    save(make_label("正在编辑", 12), "ui_label_editing.png")
-    for tag, text in (("p1", "玩家 1"), ("p2", "玩家 2")):
-        save(make_button(text, size=12), f"ui_btn_{tag}.png")
-        save(make_button(text, size=12, hover=True), f"ui_btn_{tag}_hover.png")
-        save(make_button(text, size=12, pressed=True), f"ui_btn_{tag}_pressed.png")
-    save(make_button("返回"), "ui_btn_close.png")
-    save(make_button("返回", hover=True), "ui_btn_close_hover.png")
-    save(make_button("返回", pressed=True), "ui_btn_close_pressed.png")
+    save(make_button(t["btn_dress"]), "ui_btn_dress.png", lang)
+    save(make_button(t["btn_dress"], hover=True), "ui_btn_dress_hover.png", lang)
+    save(make_button(t["btn_dress"], pressed=True), "ui_btn_dress_pressed.png", lang)
+    save(make_label(t["dress_title"], 26, "#FFB0E0", pad=6, outline=2), "ui_dress_title.png", lang)
+    save(make_label(t["label_aircraft"], 12, "#FBF236"), "ui_label_aircraft.png", lang)
+    save(make_label(t["label_pilot"], 12, "#9FF8FF"), "ui_label_pilot.png", lang)
+    save(make_label(t["label_editing"], 12), "ui_label_editing.png", lang)
+    for tag in ("p1", "p2"):
+        save(make_button(t[f"btn_{tag}"], size=12), f"ui_btn_{tag}.png", lang)
+        save(make_button(t[f"btn_{tag}"], size=12, hover=True), f"ui_btn_{tag}_hover.png", lang)
+        save(make_button(t[f"btn_{tag}"], size=12, pressed=True), f"ui_btn_{tag}_pressed.png", lang)
+    save(make_button(t["btn_close"]), "ui_btn_close.png", lang)
+    save(make_button(t["btn_close"], hover=True), "ui_btn_close_hover.png", lang)
+    save(make_button(t["btn_close"], pressed=True), "ui_btn_close_pressed.png", lang)
 
     # 模式切换按钮：按钮文字本身就表明当前模式，省掉一行"当前：xxx"的标签
-    for tag, text in (("solo", "模式：单人"), ("coop", "模式：双人"), ("bot", "机哥带你飞")):
-        save(make_button(text), f"ui_btn_{tag}.png")
-        save(make_button(text, hover=True), f"ui_btn_{tag}_hover.png")
-        save(make_button(text, pressed=True), f"ui_btn_{tag}_pressed.png")
+    for tag in ("solo", "coop", "bot"):
+        save(make_button(t[f"btn_{tag}"]), f"ui_btn_{tag}.png", lang)
+        save(make_button(t[f"btn_{tag}"], hover=True), f"ui_btn_{tag}_hover.png", lang)
+        save(make_button(t[f"btn_{tag}"], pressed=True), f"ui_btn_{tag}_pressed.png", lang)
 
-    save(make_shade(), "ui_shade.png")
+    # 设置面板
+    save(make_button(t["btn_settings"]), "ui_btn_settings.png", lang)
+    save(make_button(t["btn_settings"], hover=True), "ui_btn_settings_hover.png", lang)
+    save(make_button(t["btn_settings"], pressed=True), "ui_btn_settings_pressed.png", lang)
+    save(make_label(t["settings_title"], 26, "#9FF8FF", pad=6, outline=2), "ui_set_title.png", lang)
+    save(make_label(t["label_language"], 12, "#FBF236"), "ui_label_language.png", lang)
+    save(make_label(t["label_window"], 12, "#FBF236"), "ui_label_window.png", lang)
+    save(make_label(t["label_resolution"], 12, "#FBF236"), "ui_label_resolution.png", lang)
+    # 选项按钮做成"一组里选一个"，靠 modulate 表示选中（和换装间的 P1/P2 一个套路）
+    for key, name in (("btn_en", "lang_en"), ("btn_zh", "lang_zh"),
+                      ("btn_windowed", "win_off"), ("btn_fullscreen", "win_on"),
+                      ("res0", "res0"), ("res1", "res1"), ("res2", "res2")):
+        save(make_button(t[key], size=13), f"ui_opt_{name}.png", lang)
+        save(make_button(t[key], size=13, hover=True), f"ui_opt_{name}_hover.png", lang)
+        save(make_button(t[key], size=13, pressed=True), f"ui_opt_{name}_pressed.png", lang)
 
-    print("生成 HUD 素材：")
-    save(make_label("距离", 12), "ui_dist_label.png")
-    save(make_label("米", 12), "ui_meter_label.png")
-    # 右下角的无敌冲刺能量条：标题常驻，右侧状态字随冲刺/冷却切换
-    save(make_label("无敌冲刺", 12), "ui_dash_label.png")
-    save(make_label("就绪", 12, "#FBF236"), "ui_dash_ready.png")
-    save(make_label("发动中", 12, "#FFC93C"), "ui_dash_active.png")
-    save(make_label("冷却中", 12, "#93A3B0"), "ui_dash_cool.png")
+    save(make_shade(), "ui_shade.png", lang)
+
+    print(f"生成 HUD 素材 [{lang}]：")
+    save(make_label(t["dist_label"], 12), "ui_dist_label.png", lang)
+    save(make_label(t["meter_label"], 12), "ui_meter_label.png", lang)
+    save(make_label(t["dash_label"], 12), "ui_dash_label.png", lang)
+    save(make_label(t["dash_ready"], 12, "#FBF236"), "ui_dash_ready.png", lang)
+    save(make_label(t["dash_active"], 12, "#FFC93C"), "ui_dash_active.png", lang)
+    save(make_label(t["dash_cool"], 12, "#93A3B0"), "ui_dash_cool.png", lang)
+    # 这几个原本在 gen_powerups.py 里，但它们都是**带文字**的标签，得跟着语言走
+    save(make_label(t["combo_label"], 12, "#FBF236"), "ui_combo_label.png", lang)
+    save(make_label(t["pu_magnet"], 12, "#FF9A9A"), "ui_pu_magnet.png", lang)
+    save(make_label(t["pu_shield"], 12, "#9FE8FF"), "ui_pu_shield.png", lang)
+    save(make_label(t["pu_burst"], 12, "#FFF6C0"), "ui_pu_burst.png", lang)
+    save(make_label(t["shield_ready"], 12, "#9FE8FF"), "ui_shield_ready.png", lang)
+    # 数字和道具图标与语言无关，但为了路径规则统一，两套都放一份
     for d in range(10):
-        save(make_digit(d), f"ui_digit_{d}.png")
+        save(make_digit(d), f"ui_digit_{d}.png", lang)
+
+
+def main() -> None:
+    for lang in ("en", "zh"):
+        emit(STRINGS[lang], lang)
+    # 跟语言无关的图（道具图标、护盾、玩家编号牌）仍留在 art/ 根目录，
+    # ui_lang.gd 只改 art/ui/<lang>/ 下的东西，不会碰它们。
 
 
 if __name__ == "__main__":

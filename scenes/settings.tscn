@@ -1,0 +1,182 @@
+[gd_scene load_steps=23 format=3 uid="uid://csettings00001"]
+
+[ext_resource type="Script" path="res://scripts/settings.gd" id="1_set"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_set_title.png" id="2_title"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_label_language.png" id="3_ll"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_label_window.png" id="4_lw"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_label_resolution.png" id="5_lr"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_lang_en.png" id="6_en"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_lang_en_hover.png" id="7_enh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_lang_zh.png" id="8_zh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_lang_zh_hover.png" id="9_zhh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_win_off.png" id="10_wo"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_win_off_hover.png" id="11_woh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_win_on.png" id="12_wn"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_win_on_hover.png" id="13_wnh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_res0.png" id="14_r0"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_res0_hover.png" id="15_r0h"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_res1.png" id="16_r1"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_res1_hover.png" id="17_r1h"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_res2.png" id="18_r2"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_opt_res2_hover.png" id="19_r2h"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_close.png" id="20_cl"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_close_hover.png" id="21_clh"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_close_pressed.png" id="22_clp"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_set")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.05, 0.09, 0.72)
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -250.0
+offset_right = 480.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Title" type="TextureRect" parent="Panel/Layout"]
+custom_minimum_size = Vector2(300, 92)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("2_title")
+
+[node name="LangRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 14
+
+[node name="LangLabel" type="TextureRect" parent="Panel/Layout/LangRow"]
+custom_minimum_size = Vector2(180, 50)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("3_ll")
+
+[node name="OptEn" type="TextureButton" parent="Panel/Layout/LangRow"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("6_en")
+texture_hover = ExtResource("7_enh")
+texture_pressed = ExtResource("7_enh")
+
+[node name="OptZh" type="TextureButton" parent="Panel/Layout/LangRow"]
+custom_minimum_size = Vector2(170, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("8_zh")
+texture_hover = ExtResource("9_zhh")
+texture_pressed = ExtResource("9_zhh")
+
+[node name="WinRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 14
+
+[node name="WinLabel" type="TextureRect" parent="Panel/Layout/WinRow"]
+custom_minimum_size = Vector2(180, 50)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("4_lw")
+
+[node name="OptWindowed" type="TextureButton" parent="Panel/Layout/WinRow"]
+custom_minimum_size = Vector2(190, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("10_wo")
+texture_hover = ExtResource("11_woh")
+texture_pressed = ExtResource("11_woh")
+
+[node name="OptFullscreen" type="TextureButton" parent="Panel/Layout/WinRow"]
+custom_minimum_size = Vector2(240, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("12_wn")
+texture_hover = ExtResource("13_wnh")
+texture_pressed = ExtResource("13_wnh")
+
+[node name="ResRow" type="HBoxContainer" parent="Panel/Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 14
+
+[node name="ResLabel" type="TextureRect" parent="Panel/Layout/ResRow"]
+custom_minimum_size = Vector2(180, 50)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("5_lr")
+
+[node name="Opt0" type="TextureButton" parent="Panel/Layout/ResRow"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("14_r0")
+texture_hover = ExtResource("15_r0h")
+texture_pressed = ExtResource("15_r0h")
+
+[node name="Opt1" type="TextureButton" parent="Panel/Layout/ResRow"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("16_r1")
+texture_hover = ExtResource("17_r1h")
+texture_pressed = ExtResource("17_r1h")
+
+[node name="Opt2" type="TextureButton" parent="Panel/Layout/ResRow"]
+custom_minimum_size = Vector2(230, 66)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("18_r2")
+texture_hover = ExtResource("19_r2h")
+texture_pressed = ExtResource("19_r2h")
+
+[node name="CloseButton" type="TextureButton" parent="Panel/Layout"]
+custom_minimum_size = Vector2(160, 58)
+layout_mode = 2
+size_flags_horizontal = 4
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("20_cl")
+texture_hover = ExtResource("21_clh")
+texture_pressed = ExtResource("22_clp")

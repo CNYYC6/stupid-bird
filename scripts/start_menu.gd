@@ -17,25 +17,27 @@ extends Control
 @onready var _mode_button: TextureButton = $UI/Buttons/TopRow/ModeButton
 @onready var _level_button: TextureButton = $UI/Buttons/TopRow/LevelButton
 @onready var _dress_button: TextureButton = $UI/Buttons/BottomRow/DressButton
+@onready var _settings_button: TextureButton = $UI/Buttons/BottomRow/SettingsButton
+@onready var _settings: Control = $Overlay/Settings
 @onready var _dressup: Control = $Overlay/Dressup
 
 ## 每种模式对应的一整套按钮贴图（normal / hover / pressed）
 const MODE_TEX: Array[Array] = [
-	["res://art/ui_btn_solo.png", "res://art/ui_btn_solo_hover.png",
-	 "res://art/ui_btn_solo_pressed.png"],
-	["res://art/ui_btn_coop.png", "res://art/ui_btn_coop_hover.png",
-	 "res://art/ui_btn_coop_pressed.png"],
-	["res://art/ui_btn_bot.png", "res://art/ui_btn_bot_hover.png",
-	 "res://art/ui_btn_bot_pressed.png"],
+	["res://art/ui/en/ui_btn_solo.png", "res://art/ui/en/ui_btn_solo_hover.png",
+	 "res://art/ui/en/ui_btn_solo_pressed.png"],
+	["res://art/ui/en/ui_btn_coop.png", "res://art/ui/en/ui_btn_coop_hover.png",
+	 "res://art/ui/en/ui_btn_coop_pressed.png"],
+	["res://art/ui/en/ui_btn_bot.png", "res://art/ui/en/ui_btn_bot_hover.png",
+	 "res://art/ui/en/ui_btn_bot_pressed.png"],
 ]
 ## 机哥的三档难度
 const LEVEL_TEX: Array[Array] = [
-	["res://art/ui_btn_lv0.png", "res://art/ui_btn_lv0_hover.png",
-	 "res://art/ui_btn_lv0_pressed.png"],
-	["res://art/ui_btn_lv1.png", "res://art/ui_btn_lv1_hover.png",
-	 "res://art/ui_btn_lv1_pressed.png"],
-	["res://art/ui_btn_lv2.png", "res://art/ui_btn_lv2_hover.png",
-	 "res://art/ui_btn_lv2_pressed.png"],
+	["res://art/ui/en/ui_btn_lv0.png", "res://art/ui/en/ui_btn_lv0_hover.png",
+	 "res://art/ui/en/ui_btn_lv0_pressed.png"],
+	["res://art/ui/en/ui_btn_lv1.png", "res://art/ui/en/ui_btn_lv1_hover.png",
+	 "res://art/ui/en/ui_btn_lv1_pressed.png"],
+	["res://art/ui/en/ui_btn_lv2.png", "res://art/ui/en/ui_btn_lv2_hover.png",
+	 "res://art/ui/en/ui_btn_lv2_pressed.png"],
 ]
 
 ## 0 = 单人闯关，1 = 双人合作，2 = 机哥带你飞
@@ -45,6 +47,8 @@ var _level: int = 1
 
 
 func _ready() -> void:
+	# 进场先按当前语言把整棵界面树（含换装间和设置面板）刷一遍
+	UiLang.apply(self)
 	Audio.start_music()
 	_start_button.pressed.connect(_on_start_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
@@ -57,6 +61,10 @@ func _ready() -> void:
 	_mode_button.pressed.connect(_on_mode_pressed)
 	_level_button.pressed.connect(_on_level_pressed)
 	_dress_button.pressed.connect(_on_dress_pressed)
+	_settings_button.pressed.connect(_on_settings_pressed)
+	_settings.closed.connect(_start_button.grab_focus)
+	# 换了语言，模式/难度按钮上的文字也要跟着重刷（它们是代码赋的贴图）
+	_settings.changed.connect(_refresh_mode)
 	_dressup.closed.connect(func() -> void: _start_button.grab_focus())
 	_start_button.grab_focus()
 	_best_distance.set_value(RunRecord.load_best())
@@ -95,16 +103,21 @@ func _on_dress_pressed() -> void:
 
 func _refresh_mode() -> void:
 	var set: Array = MODE_TEX[_mode]
-	_mode_button.texture_normal = load(set[0])
-	_mode_button.texture_hover = load(set[1])
-	_mode_button.texture_pressed = load(set[2])
+	_mode_button.texture_normal = load(UiLang.swap_path(set[0], UiLang.code()))
+	_mode_button.texture_hover = load(UiLang.swap_path(set[1], UiLang.code()))
+	_mode_button.texture_pressed = load(UiLang.swap_path(set[2], UiLang.code()))
 	var lv: Array = LEVEL_TEX[_level]
-	_level_button.texture_normal = load(lv[0])
-	_level_button.texture_hover = load(lv[1])
-	_level_button.texture_pressed = load(lv[2])
+	_level_button.texture_normal = load(UiLang.swap_path(lv[0], UiLang.code()))
+	_level_button.texture_hover = load(UiLang.swap_path(lv[1], UiLang.code()))
+	_level_button.texture_pressed = load(UiLang.swap_path(lv[2], UiLang.code()))
 	var is_bot: bool = _mode == 2
 	_level_button.disabled = not is_bot
 	_level_button.modulate = Color(1, 1, 1, 1) if is_bot else Color(0.55, 0.55, 0.6, 1)
+
+
+func _on_settings_pressed() -> void:
+	Audio.play("ui")
+	_settings.open()
 
 
 func _on_start_pressed() -> void:

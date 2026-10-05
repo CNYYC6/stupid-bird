@@ -9,9 +9,9 @@ extends CanvasLayer
 
 ## 状态贴图的下标必须和 player.gd 的 DashState 枚举一致
 const STATE_TEXTURES: Array[String] = [
-	"res://art/ui_dash_ready.png",
-	"res://art/ui_dash_active.png",
-	"res://art/ui_dash_cool.png",
+	"res://art/ui/en/ui_dash_ready.png",
+	"res://art/ui/en/ui_dash_active.png",
+	"res://art/ui/en/ui_dash_cool.png",
 ]
 
 const COLOR_READY := Color(1.0, 0.92, 0.30)
@@ -51,8 +51,9 @@ var _banner_left: float = 0.0
 
 
 func _ready() -> void:
+	UiLang.apply(self)
 	for path in STATE_TEXTURES:
-		_textures.append(load(path))
+		_textures.append(load(UiLang.swap_path(path, UiLang.code())))
 	# 槽的实际尺寸要等容器布局跑完才靠谱，直接挂 resized 信号最稳
 	_track.resized.connect(_refresh_fill)
 	_refresh_fill()
@@ -116,9 +117,9 @@ func set_combo(count: int, multiplier: int) -> void:
 ## 道具状态。kind < 0 = 什么都不显示；
 ## 磁铁带倒计时，护盾/爆发只显示一小会儿。
 const POWER_LABELS: Array[String] = [
-	"res://art/ui_pu_magnet.png",
-	"res://art/ui_pu_shield.png",
-	"res://art/ui_pu_burst.png",
+	"res://art/ui/en/ui_pu_magnet.png",
+	"res://art/ui/en/ui_pu_shield.png",
+	"res://art/ui/en/ui_pu_burst.png",
 ]
 var _power_left: float = 0.0
 
@@ -128,7 +129,7 @@ func set_powerup(kind: int, seconds: float) -> void:
 		_power_left = 0.0
 		_power.visible = false
 		return
-	_power_icon.texture = load(POWER_LABELS[clampi(kind, 0, POWER_LABELS.size() - 1)])
+	_power_icon.texture = load(UiLang.swap_path(POWER_LABELS[clampi(kind, 0, POWER_LABELS.size() - 1)], UiLang.code()))
 	_power.visible = true
 	if seconds > 0.0:
 		_power_left = seconds

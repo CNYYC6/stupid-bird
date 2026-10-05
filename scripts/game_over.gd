@@ -13,6 +13,7 @@ signal menu_requested
 
 
 func _ready() -> void:
+	UiLang.apply(self)
 	hide()
 	_retry_button.pressed.connect(func() -> void:
 		Audio.play("ui")
