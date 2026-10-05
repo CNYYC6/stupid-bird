@@ -40,6 +40,18 @@ extends Node2D
 ## 开始界面用它把「山腰 / 树线 / 地面」这三层一起上下推，做出地面起伏。
 ## 必须是偏移量而不是直接改 position.y —— 下面 _physics_process 每帧都会重算 position.y。
 @export var y_offset: float = 0.0
+## 水平方向的固定偏移。天空靠它把贴图对齐到屏幕正中（-半个屏宽）
+@export var x_offset: float = 0.0
+## 视野之外左右各多铺这么宽。
+## 分屏时子视口的相机在主相机两侧最多能偏出上千像素，天空这类
+## scroll_factor=0（锁死相机）的条带必须多铺一点，否则那半屏顶部会露黑边。
+@export var coverage_margin: float = 0.0
+## 上下翻转整条（"上下颠倒"那个世界用）
+@export var flip_v: bool = false:
+	set(v):
+		flip_v = v
+		for t in _tiles:
+			t.flip_v = v
 
 var _tiles: Array[Sprite2D] = []
 var _auto_offset: float = 0.0
@@ -62,12 +74,13 @@ func _rebuild() -> void:
 		tile_width = float(texture.get_width())
 	if tile_width <= 0.0:
 		return
-	var need: int = int(ceil(_visible_width() / tile_width)) + 2
+	var need: int = int(ceil((_visible_width() + coverage_margin * 2.0) / tile_width)) + 2
 	for i in need:
 		var s := Sprite2D.new()
 		s.texture = texture
 		s.centered = false
 		s.position = Vector2(i * tile_width, 0.0)
+		s.flip_v = flip_v
 		add_child(s)
 		_tiles.append(s)
 
@@ -101,11 +114,11 @@ func _physics_process(delta: float) -> void:
 
 	var center := _camera_center()
 
-	position.x = center.x * (1.0 - scroll_factor) + _auto_offset
+	position.x = center.x * (1.0 - scroll_factor) + _auto_offset + x_offset
 	position.y = _base_y + center.y * vertical_follow + y_offset
 
 	# 把整排贴图对齐到「左边界再往左一个周期」，保证视野内始终被铺满
-	var left: float = center.x - _visible_width() * 0.5
+	var left: float = center.x - _visible_width() * 0.5 - coverage_margin
 	var base: float = floor((left - position.x) / tile_width) * tile_width
 	for i in _tiles.size():
 		_tiles[i].position.x = base + i * tile_width

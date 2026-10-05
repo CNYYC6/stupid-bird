@@ -104,4 +104,6 @@ func _finish() -> void:
 	var ok: bool = _miss[0] > _miss[1] and _miss[1] > _miss[2]
 	print("失误次数：臭人机 %d  >  普通人机 %d  >  机哥 %d   %s"
 		% [_miss[0], _miss[1], _miss[2], "OK" if ok else "**阶梯不成立**"])
+	# 跑完把模式还原成单人，免得留下"下次启动是机哥模式"这种脏状态
+	RunRecord.save_mode(0)
 	get_tree().quit(0 if ok else 1)

@@ -31,8 +31,22 @@ const REBASE_STEP: float = 262144.0
 ## 双人模式里倒地后队友要撑住多少秒才能把人拉起来
 @export var coop_revive_seconds: float = 5.0
 
+## 分屏：两人离得太远、一个屏幕塞不下时，各占半屏。
+## SPLIT_ON/OFF 之间留一段迟滞，免得在临界点反复开关。
+const SPLIT_ON: float = 1500.0
+const SPLIT_OFF: float = 1240.0
+## 分屏画布放在世界之上、HUD（layer 10）之下
+const SPLIT_LAYER: int = 5
+
 ## 0 = 单人闯关，1 = 双人合作，2 = 机哥带你飞
 var mode: int = 0
+## 分屏用的一整套节点（单人模式不建）
+var _split_layer: CanvasLayer = null
+var _split_cams: Array[Camera2D] = []
+var _split_rects: Array[TextureRect] = []
+var _split_on: bool = false
+## 当前把哪名玩家放在左半屏（0/1）
+var _split_behind: int = -1
 ## 机哥模式下的 AI（挂在二号机上）
 var bot: BotPilot = null
 ## 参战的所有玩家（单人时只有一个）
@@ -68,6 +82,7 @@ func _ready() -> void:
 	Audio.start_music()
 	mode = RunRecord.load_mode()
 	_setup_players()
+	_setup_split()
 	_course.begin(_player, spawn_point.x)
 	_course.player_hit.connect(_on_player_hit)
 	_course.coin_collected.connect(_on_coin_collected)
@@ -127,6 +142,7 @@ func _physics_process(delta: float) -> void:
 		_track_distance(delta)
 		_course.traveled_meters = distance_px * METERS_PER_PIXEL
 	_tick_coop(delta)
+	_tick_split()
 	_tick_combo(delta)
 	_tick_magnet(delta)
 	# 能量条每帧跟一次：冲刺 3 秒内要从满放到空，靠信号触发反而要做插值
@@ -137,6 +153,91 @@ func _physics_process(delta: float) -> void:
 
 ## 重力 = 世界自己的倍率 × 事件倍率。集中在这里算，
 ## 就不需要 WorldDirector 和 Events 各自去戳玩家（双人时有不止一个玩家）。
+## 建两套「子视口 + 相机」，各自盯着一名玩家。
+##
+## 关键点：SubViewport.world_2d 指到主视口的 world_2d，两个子视口就渲染同一个
+## 世界（同一批节点），各自只用自己那台相机取景 —— 这就是分屏。
+##
+## 副作用要留意：CanvasLayer 的内容**不会**出现在子视口里，所以天空必须
+## 待在世界里（见 main.tscn 的 Sky 节点）。HUD 留在主视口，正好不受影响。
+func _setup_split() -> void:
+	if mode == 0 or players.size() < 2:
+		return
+	_split_layer = CanvasLayer.new()
+	_split_layer.name = "SplitView"
+	_split_layer.layer = SPLIT_LAYER
+	_split_layer.visible = false
+	add_child(_split_layer)
+
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var half := Vector2(vp.x * 0.5, vp.y)
+
+	# 分隔线，让"这是两个画面"一眼看得出来
+	var divider := ColorRect.new()
+	divider.color = Color(0.05, 0.06, 0.09, 0.9)
+	divider.position = Vector2(half.x - 3.0, 0.0)
+	divider.size = Vector2(6.0, vp.y)
+	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_split_layer.add_child(divider)
+
+	var cam_script: GDScript = load("res://scripts/camera.gd")
+	for i in 2:
+		var sv := SubViewport.new()
+		sv.name = "SplitViewport%d" % (i + 1)
+		sv.size = Vector2i(half)
+		sv.world_2d = get_viewport().world_2d
+		sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+		sv.transparent_bg = false
+		add_child(sv)
+
+		var cam: Camera2D = cam_script.new()
+		cam.name = "SplitCamera"
+		cam.fixed_vertical = true
+		cam.fixed_y = 330.0
+		# 半屏比全屏窄，横向偏移也要收一半，不然人贴在边上
+		cam.follow_offset = Vector2(40.0, -90.0)
+		# 分屏里队友倒了他也得在画面里躺着，不然那半屏直接空了
+		cam.follow_dead = true
+		sv.add_child(cam)
+		_split_cams.append(cam)
+
+		var tr := TextureRect.new()
+		tr.texture = sv.get_texture()
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_SCALE
+		tr.position = Vector2(i * half.x, 0.0)
+		tr.size = half
+		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_split_layer.add_child(tr)
+		_split_rects.append(tr)
+
+	_split_behind = 0
+	for slot in 2:
+		_split_cams[slot].set_targets([players[slot]])
+
+
+## 每帧检查两人距离，决定开不开分屏。
+## 靠后的那名玩家放左半屏、靠前的放右半屏 —— 和"往前跑"的方向一致。
+func _tick_split() -> void:
+	if _split_layer == null or players.size() < 2:
+		return
+	var sep: float = absf(players[0].global_position.x - players[1].global_position.x)
+	if not _split_on and sep > SPLIT_ON:
+		_split_on = true
+		_split_layer.visible = true
+	elif _split_on and sep < SPLIT_OFF:
+		_split_on = false
+		_split_layer.visible = false
+	if not _split_on:
+		return
+	var behind: int = 0 if players[0].global_position.x <= players[1].global_position.x else 1
+	if behind != _split_behind:
+		# 两人前后位置对调了，两条画面跟着换边
+		_split_behind = behind
+		_split_cams[0].set_targets([players[behind]])
+		_split_cams[1].set_targets([players[1 - behind]])
+
+
 func _apply_world_gravity() -> void:
 	var g: float = _worlds.base_gravity_scale() * _events.gravity_multiplier
 	for p in players:

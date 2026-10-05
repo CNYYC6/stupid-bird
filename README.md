@@ -299,6 +299,28 @@ func _on_obstacle_hit() -> void:
 （同一个坑还差点漏掉：一号机的 6 倍像素放大是 `main.tscn` 里的**实例覆盖**，
 `instantiate()` 出来的二号机必须手动抄过来，否则是一只 1 倍大的迷你鸟。）
 
+### 天空为什么从 CanvasLayer 搬进世界
+
+天空原本是 `CanvasLayer` 里的一张全屏 `TextureRect` —— 这在单画面下没问题，
+但分屏用的 `SubViewport` 只共享 `world_2d`，**`CanvasLayer` 是属于视口自己的**，
+子视口里根本看不到它。结果就是左半屏顶部露出一整块黑。
+
+改成世界里的 `ParallaxStrip`：`scroll_factor = 0`（锁死相机所以永远铺满视野）、
+`vertical_follow = 1`（垂直方向完全跟随，效果等同于全屏贴图）、
+`x_offset = -960 / y_offset = -540` 把它对齐到屏幕正中。
+
+但它只按**主相机**铺砖，而分屏时子相机会偏出上千像素 —— 所以又加了
+`coverage_margin`，天空左右各多铺 2400 像素。
+
+### 相机的一个漂移 bug
+
+`_focus()` 在"一个存活目标都没有"时返回自己的 `global_position`，
+而调用方随后还会再加一次 `follow_offset` —— 于是相机每帧往右挪一个 `follow_offset`，
+自己一路飘走。修法是返回 `global_position - follow_offset`。
+
+这个 bug 在分屏里才暴露出来（子相机只有一个目标，那人一倒地就触发），
+但其实主相机也有，只是平时一人倒地整局就结算暂停了，看不出来。
+
 ### 双人模式里"重心跳变"要平滑
 
 相机跟两名玩家的重心。一个人倒地时，`_focus()` 会把他从存活列表里剔除 ——

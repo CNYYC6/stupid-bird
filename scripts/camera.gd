@@ -46,6 +46,11 @@ var _y: float = 0.0
 ## 那个坑是 position_smoothing_speed = 2.0 配 10000 像素/秒的速度，完全不是一回事。
 const FOCUS_SMOOTH: float = 13.0
 
+## 是否连倒地/阵亡的目标也一起跟。
+## 分屏的小画面用 true —— 队友倒了你得看得见他躺哪儿；
+## 主相机用 false —— 有人倒地时视角应该让给还活着的人。
+@export var follow_dead: bool = false
+
 var _focus_pos: Vector2 = Vector2.ZERO
 var _has_focus: bool = false
 
@@ -69,12 +74,15 @@ func _focus() -> Vector2:
 	for t in _targets:
 		if not is_instance_valid(t):
 			continue
-		if t.has_method("is_alive") and not t.is_alive():
+		if not follow_dead and t.has_method("is_alive") and not t.is_alive():
 			continue
 		sum += t.global_position
 		n += 1
 	if n == 0:
-		return global_position
+		# 一个都不剩：保持原地。
+		# 这里必须**减掉 follow_offset** —— 调用方随后还会再加一次，
+		# 不减的话相机每帧都会往右挪一个 follow_offset，自己一路飘走。
+		return global_position - follow_offset
 	return sum / float(n)
 
 

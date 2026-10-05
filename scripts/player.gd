@@ -100,6 +100,7 @@ var _golden: bool = false
 @onready var _pilot: Sprite2D = $AnimatedSprite2D/Pilot
 ## 护盾生效时罩在身上的泡泡（挂在根节点上，所以不会跟着俯仰一起转）
 @onready var _bubble: Sprite2D = $Shield
+
 ## 头顶的玩家编号牌
 @onready var _badge: Sprite2D = $Badge
 ## 这台飞行器自己的循环飞行声
@@ -109,6 +110,14 @@ var _tilt: float = 0.0
 
 
 ## 由主场景在生成时调用：指定自己是几号机、出生在哪
+func _ready() -> void:
+	# player.tscn 里的金色材质是一个**共享的 .tres 资源**：两个玩家实例指向的是
+	# 同一个 ShaderMaterial，改它的 shader 参数会两个人一起变金 —— 冲刺就不分人了。
+	# 每个实例复制一份自己的（Pilot 走 use_parent_material，复制父级即可两处都独立）。
+	if _sprite != null and _sprite.material != null:
+		_sprite.material = _sprite.material.duplicate()
+
+
 func configure(index: int, spawn: Vector2, coop: bool = false, bot: bool = false) -> void:
 	player_index = index
 	_coop = coop

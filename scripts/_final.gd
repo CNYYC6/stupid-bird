@@ -190,4 +190,6 @@ func _finish() -> void:
 		print("=== 失败 %d 项 ===" % _fails.size())
 		for f in _fails:
 			print("  - ", f)
+	# 跑完把模式还原成单人，免得留下"下次启动是机哥模式"这种脏状态
+	RunRecord.save_mode(0)
 	get_tree().quit(_fails.size())

@@ -32,7 +32,7 @@ signal banner_requested(id: String)
 
 var index: int = 0
 
-var _sky: TextureRect
+var _sky: ParallaxStrip
 var _layers: Array[ParallaxStrip] = []
 var _ground: ParallaxStrip
 var _cam: Camera2D
@@ -48,7 +48,7 @@ var _borrowed: bool = false
 
 
 func _ready() -> void:
-	_sky = get_node_or_null(sky_path) as TextureRect
+	_sky = get_node_or_null(sky_path) as ParallaxStrip
 	_ground = get_node_or_null(ground_path) as ParallaxStrip
 	_cam = get_node_or_null(camera_path) as Camera2D
 	_course = get_node_or_null(course_path) as Node2D
@@ -79,7 +79,8 @@ func apply(i: int, announce: bool = true) -> void:
 
 	if _sky != null:
 		_sky.texture = load(d["sky"])
-		# 天空是 CanvasLayer 里的全屏 TextureRect，不受相机翻转影响，得自己翻
+		# 天空现在也是世界里的视差条（相机锁死、垂直完全跟随），
+		# 所以相机翻转不会带上它，得自己翻
 		_sky.flip_v = bool(d.get("flip", false))
 
 	var keys: Array = ["clouds", "far", "mid", "near"]

@@ -23,17 +23,15 @@ size = Vector2(1936, 420)
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 
-[node name="Sky" type="CanvasLayer" parent="."]
-layer = -100
-
-[node name="Texture" type="TextureRect" parent="Sky"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Sky" type="Node2D" parent="."]
+script = ExtResource("8_strip")
 texture = ExtResource("2_sky")
-expand_mode = 1
+scroll_factor = 0.0
+auto_speed = 0.0
+vertical_follow = 1.0
+x_offset = -960.0
+y_offset = -540.0
+coverage_margin = 2400.0
 
 [node name="Background" type="Node2D" parent="."]
 
@@ -114,7 +112,7 @@ fixed_y = 330.0
 
 [node name="WorldDirector" type="Node2D" parent="."]
 script = ExtResource("15_worlds")
-sky_path = NodePath("../Sky/Texture")
+sky_path = NodePath("../Sky")
 ground_path = NodePath("../Ground")
 camera_path = NodePath("../Camera")
 course_path = NodePath("../Course")

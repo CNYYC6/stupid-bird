@@ -48,7 +48,10 @@ func _ready() -> void:
 	Audio.start_music()
 	_start_button.pressed.connect(_on_start_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
-	_mode = RunRecord.load_mode()
+	# 每次启动都从「单人闯关」开始：模式不跨启动记忆。
+	# 难度和换装仍然记着 —— 那两个是"口味"，模式是"这一局想怎么玩"。
+	_mode = 0
+	RunRecord.save_mode(_mode)
 	_level = RunRecord.load_bot_level()
 	_refresh_mode()
 	_mode_button.pressed.connect(_on_mode_pressed)
