@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmenubird00001"]
+
+[ext_resource type="Script" path="res://scripts/menu_bird.gd" id="1_mbird"]
+[ext_resource type="SpriteFrames" path="res://art/bird_frames.tres" id="2_frames"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mbird"]
+size = Vector2(78, 54)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mbird"]
+friction = 0.15
+bounce = 0.85
+
+[node name="MenuBird" type="RigidBody2D"]
+collision_layer = 2
+collision_mask = 3
+mass = 1.0
+physics_material_override = SubResource("PhysicsMaterial_mbird")
+continuous_cd = 1
+can_sleep = false
+linear_damp = 0.2
+angular_damp = 0.9
+script = ExtResource("1_mbird")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(3, 3)
+sprite_frames = ExtResource("2_frames")
+animation = &"fly_bird"
+autoplay = "fly_bird"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(3, 4.5)
+shape = SubResource("RectangleShape2D_mbird")

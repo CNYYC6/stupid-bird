@@ -1,10 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://depd38vm2vkvm"]
+[gd_scene load_steps=13 format=3 uid="uid://depd38vm2vkvm"]
 
-[ext_resource type="Script" uid="uid://dd2mfnwednfi" path="res://gd/hud.gd" id="1_c18ak"]
-[ext_resource type="Script" path="res://gd/digit_row.gd" id="2_digits"]
-[ext_resource type="Texture2D" path="res://pic/ui_dist_label.png" id="3_dist"]
-[ext_resource type="Texture2D" path="res://pic/ui_coin_label.png" id="4_coin"]
-[ext_resource type="Texture2D" path="res://pic/ui_meter_label.png" id="5_meter"]
+[ext_resource type="Script" uid="uid://dd2mfnwednfi" path="res://scripts/hud.gd" id="1_c18ak"]
+[ext_resource type="Script" path="res://scripts/digit_row.gd" id="2_digits"]
+[ext_resource type="Texture2D" path="res://art/ui_dist_label.png" id="3_dist"]
+[ext_resource type="Texture2D" path="res://art/ui_coin_label.png" id="4_coin"]
+[ext_resource type="Texture2D" path="res://art/ui_meter_label.png" id="5_meter"]
+[ext_resource type="Texture2D" path="res://art/ui_dash_label.png" id="6_dash"]
+[ext_resource type="Texture2D" path="res://art/ui_dash_ready.png" id="7_dash_ready"]
+[ext_resource type="Texture2D" path="res://art/ui_dash_active.png" id="8_dash_active"]
+[ext_resource type="Texture2D" path="res://art/ui_dash_cool.png" id="9_dash_cool"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
 content_margin_left = 22.0
@@ -12,6 +16,21 @@ content_margin_top = 10.0
 content_margin_right = 22.0
 content_margin_bottom = 10.0
 bg_color = Color(0.047, 0.071, 0.125, 0.66)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_energy"]
+content_margin_left = 20.0
+content_margin_top = 14.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0.047, 0.071, 0.125, 0.72)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_track"]
+bg_color = Color(0.027, 0.043, 0.078, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.353, 0.424, 0.522, 0.9)
 
 [node name="Hud" type="CanvasLayer"]
 layer = 10
@@ -81,3 +100,64 @@ size_flags_vertical = 4
 theme_override_constants/separation = 4
 script = ExtResource("2_digits")
 digits = 4
+
+[node name="Energy" type="Control" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -568.0
+offset_top = -226.0
+offset_right = -48.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Plate" type="PanelContainer" parent="Energy"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_energy")
+
+[node name="Layout" type="VBoxContainer" parent="Energy/Plate"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Head" type="HBoxContainer" parent="Energy/Plate/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="TextureRect" parent="Energy/Plate/Layout/Head"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("6_dash")
+
+[node name="Spacer" type="Control" parent="Energy/Plate/Layout/Head"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="State" type="TextureRect" parent="Energy/Plate/Layout/Head"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("7_dash_ready")
+
+[node name="Track" type="Panel" parent="Energy/Plate/Layout"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_track")
+
+[node name="Fill" type="ColorRect" parent="Energy/Plate/Layout/Track"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 24.0
+mouse_filter = 2
+color = Color(1, 0.92, 0.302, 1)

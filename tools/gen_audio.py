@@ -17,7 +17,7 @@ import numpy as np
 
 SR = 22050
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.abspath(os.path.join(HERE, "..", "stupid-bird_副本", "audio"))
+OUT = os.path.abspath(os.path.join(HERE, "..", "audio"))
 
 SEMI = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5,
         "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
@@ -316,6 +316,22 @@ def sfx_wow(seed: int = 5) -> np.ndarray:
     return crush(voice, 5) * 0.95
 
 
+def sfx_dash() -> np.ndarray:
+    """无敌冲刺：一路向上扫的方波 + 一层风声。
+
+    音高用 geomspace 做等比上扫（听感上"加速"才是线性的），
+    再叠一个中间鼓起来的风噪，做出"窜出去"的推力感。
+    """
+    n = int(0.42 * SR)
+    rng = np.random.default_rng(31)
+    t = np.linspace(0.0, 1.0, n)
+    sweep = pulse(np.geomspace(210.0, 1720.0, n), n, 0.35)
+    body = sweep * env(n, 0.006, 0.10, 0.55, 0.16)
+    wind = noise(n, rng, lp=0.30) * env(n, 0.02, 0.14, 0.40, 0.20)
+    x = (body * 0.75 + wind * 0.55) * (0.45 + 0.55 * np.sin(np.pi * t))
+    return crush(np.tanh(x * 1.8) * 0.85, 5) * 0.9
+
+
 def main() -> None:
     os.makedirs(OUT, exist_ok=True)
     print("生成 8bit 音频：")
@@ -325,6 +341,7 @@ def main() -> None:
     write_wav("sfx_hit.wav", sfx_hit())
     write_wav("sfx_ui.wav", sfx_ui())
     write_wav("sfx_wow.wav", sfx_wow())
+    write_wav("sfx_dash.wav", sfx_dash())
 
 
 if __name__ == "__main__":

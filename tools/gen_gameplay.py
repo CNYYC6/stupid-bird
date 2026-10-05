@@ -13,7 +13,7 @@ from __future__ import annotations
 import os
 import numpy as np
 
-from gen_ui import S, PIC, rgba, save, dilate
+from gen_ui import S, ART, rgba, save, dilate
 
 # ------------------------------------------------------------------ 调色板
 C_DARK = "#343A42"
@@ -28,7 +28,9 @@ WARN_W = "#F2F2F0"
 
 PILLAR_W, PILLAR_H = 64, 200   # 200 逻辑像素 = 1200 屏幕像素，比任何单根柱子都高，不用依赖 region 重复采样
 CAP_H = 14
-COIN = 24
+# 金币的逻辑直径。放大 6 倍后是 84 屏幕像素，大约是小鸟可视宽度的 6 成 ——
+# 原来 24（144 屏幕像素）几乎和小鸟一样大，挡视线又显得廉价。
+COIN = 14
 
 
 def band(w: int) -> np.ndarray:
@@ -100,14 +102,19 @@ def make_cap(w: int = PILLAR_W, h: int = CAP_H, flip: bool = False) -> np.ndarra
     return img
 
 
-def make_coin(index: int) -> np.ndarray:
-    """金币旋转动画的 4 帧：用椭圆宽度模拟翻转。"""
-    widths = (COIN - 2, 17, 8, 17)
+def make_coin(index: int, size: int = COIN) -> np.ndarray:
+    """金币旋转动画的 4 帧：用椭圆宽度模拟翻转。
+
+    几何全部按 size/24 缩放，所以改 COIN 一个常数就能整组放大缩小，
+    不用再去手调每一帧的椭圆半径（描边粗细、高光位置会跟着一起缩）。
+    """
+    s = size / 24.0
+    widths = ((24 - 2) * s, 17 * s, 8 * s, 17 * s)
     cw = widths[index % 4]
-    img = np.zeros((COIN, COIN, 4), dtype=np.float32)
-    yy, xx = np.mgrid[0:COIN, 0:COIN]
-    cx = cy = (COIN - 1) / 2.0
-    rx, ry = cw / 2.0, 11.0
+    img = np.zeros((size, size, 4), dtype=np.float32)
+    yy, xx = np.mgrid[0:size, 0:size]
+    cx = cy = (size - 1) / 2.0
+    rx, ry = cw / 2.0, 11.0 * s
     d = ((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2
 
     outline = (d > 1.0) & (d <= 1.45)
@@ -115,7 +122,8 @@ def make_coin(index: int) -> np.ndarray:
     img[(d <= 1.0) & (d > 0.66)] = rgba("#D9A62E")
     img[d <= 0.66] = rgba("#FBF236")
     # 左上高光
-    hi = ((xx - cx + rx * 0.32) / max(rx * 0.42, 0.6)) ** 2 + ((yy - cy + ry * 0.3) / 4.0) ** 2 <= 1.0
+    hi = (((xx - cx + rx * 0.32) / max(rx * 0.42, 0.6)) ** 2
+          + ((yy - cy + ry * 0.3) / (4.0 * s)) ** 2) <= 1.0
     img[hi & (d <= 0.66)] = rgba("#FFF6CE")
     img[:, :, 3] = np.where(outline | (d <= 1.0), 255.0, 0.0)
     return img

@@ -17,8 +17,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 S = 6
 HERE = os.path.dirname(os.path.abspath(__file__))
-PROJ = os.path.abspath(os.path.join(HERE, "..", "stupid-bird_副本"))
-PIC = os.path.join(PROJ, "pic")
+PROJ = os.path.abspath(os.path.join(HERE, ".."))
+ART = os.path.join(PROJ, "art")
 
 # ------------------------------------------------------------------ 中文字形
 CJK_CANDIDATES = [
@@ -138,7 +138,7 @@ def save(img: np.ndarray, name: str) -> None:
     a = np.clip(img, 0, 255).astype(np.uint8)
     im = Image.fromarray(a, "RGBA")
     up = im.resize((im.width * S, im.height * S), Image.NEAREST)
-    up.save(os.path.join(PIC, name))
+    up.save(os.path.join(ART, name))
     print(f"  -> {name:26s} {up.size[0]}x{up.size[1]}")
 
 
@@ -249,8 +249,9 @@ def main() -> None:
     save(make_button("退出游戏"), "ui_btn_quit.png")
     save(make_button("退出游戏", hover=True), "ui_btn_quit_hover.png")
     save(make_button("退出游戏", pressed=True), "ui_btn_quit_pressed.png")
-    save(make_label("A / D 前进    空格 爬升    R 重来    ESC 返回", 12), "ui_hint.png")
-    save(make_label("按住空格爬升，速度越快升力越大。", 12), "ui_tip.png")
+    # 本作没有左右操作，A/D 已经删掉：提示里也不要再出现，否则玩家会一直按
+    save(make_label("空格 爬升    ENTER 无敌冲刺    R 重来    ESC 返回", 12), "ui_hint.png")
+    save(make_label("按住空格爬升，ENTER 无敌冲刺可以硬穿路障。", 12), "ui_tip.png")
     save(make_label("最远记录", 12, "#FBF236"), "ui_best_label.png")
     save(make_label("金币", 12), "ui_coin_label.png")
     save(make_label("撞毁了！", 26, "#F2724E", pad=6, outline=2), "ui_over_title.png")
@@ -266,6 +267,11 @@ def main() -> None:
     print("生成 HUD 素材：")
     save(make_label("距离", 12), "ui_dist_label.png")
     save(make_label("米", 12), "ui_meter_label.png")
+    # 右下角的无敌冲刺能量条：标题常驻，右侧状态字随冲刺/冷却切换
+    save(make_label("无敌冲刺", 12), "ui_dash_label.png")
+    save(make_label("就绪", 12, "#FBF236"), "ui_dash_ready.png")
+    save(make_label("发动中", 12, "#FFC93C"), "ui_dash_active.png")
+    save(make_label("冷却中", 12, "#93A3B0"), "ui_dash_cool.png")
     for d in range(10):
         save(make_digit(d), f"ui_digit_{d}.png")
 

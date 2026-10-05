@@ -1,10 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://c2coin00runner"]
 
-[ext_resource type="Script" path="res://gd/coin.gd" id="1_coin"]
-[ext_resource type="Texture2D" path="res://pic/coin_0.png" id="2_frame"]
+[ext_resource type="Script" path="res://scripts/coin.gd" id="1_coin"]
+[ext_resource type="Texture2D" path="res://art/coin_0.png" id="2_frame"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
-radius = 62.0
+radius = 38.0
 
 [node name="Coin" type="Area2D"]
 collision_layer = 4

@@ -1,9 +1,9 @@
 [gd_scene load_steps=8 format=3 uid="uid://b1obstacle0road"]
 
-[ext_resource type="Script" path="res://gd/obstacle.gd" id="1_obs"]
-[ext_resource type="Texture2D" path="res://pic/obs_pillar.png" id="2_pillar"]
-[ext_resource type="Texture2D" path="res://pic/obs_cap_top.png" id="3_cap_top"]
-[ext_resource type="Texture2D" path="res://pic/obs_cap_hang.png" id="4_cap_hang"]
+[ext_resource type="Script" path="res://scripts/obstacle.gd" id="1_obs"]
+[ext_resource type="Texture2D" path="res://art/obs_pillar.png" id="2_pillar"]
+[ext_resource type="Texture2D" path="res://art/obs_cap_top.png" id="3_cap_top"]
+[ext_resource type="Texture2D" path="res://art/obs_cap_hang.png" id="4_cap_hang"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom"]
 size = Vector2(384, 200)

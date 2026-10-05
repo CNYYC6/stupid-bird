@@ -1,17 +1,17 @@
 [gd_scene load_steps=13 format=3 uid="uid://d3gameover0panel"]
 
-[ext_resource type="Script" path="res://gd/game_over.gd" id="1_over"]
-[ext_resource type="Script" path="res://gd/digit_row.gd" id="2_digits"]
-[ext_resource type="Texture2D" path="res://pic/ui_over_title.png" id="3_title"]
-[ext_resource type="Texture2D" path="res://pic/ui_dist_label.png" id="4_dist"]
-[ext_resource type="Texture2D" path="res://pic/ui_meter_label.png" id="5_meter"]
-[ext_resource type="Texture2D" path="res://pic/ui_coin_label.png" id="6_coin"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_retry.png" id="7_retry"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_retry_hover.png" id="8_retry_h"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_retry_pressed.png" id="9_retry_p"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_menu.png" id="10_menu"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_menu_hover.png" id="11_menu_h"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_menu_pressed.png" id="12_menu_p"]
+[ext_resource type="Script" path="res://scripts/game_over.gd" id="1_over"]
+[ext_resource type="Script" path="res://scripts/digit_row.gd" id="2_digits"]
+[ext_resource type="Texture2D" path="res://art/ui_over_title.png" id="3_title"]
+[ext_resource type="Texture2D" path="res://art/ui_dist_label.png" id="4_dist"]
+[ext_resource type="Texture2D" path="res://art/ui_meter_label.png" id="5_meter"]
+[ext_resource type="Texture2D" path="res://art/ui_coin_label.png" id="6_coin"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_retry.png" id="7_retry"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_retry_hover.png" id="8_retry_h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_retry_pressed.png" id="9_retry_p"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_menu.png" id="10_menu"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_menu_hover.png" id="11_menu_h"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_menu_pressed.png" id="12_menu_p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 64.0
@@ -114,7 +114,6 @@ size_flags_horizontal = 4
 texture_normal = ExtResource("7_retry")
 texture_hover = ExtResource("8_retry_h")
 texture_pressed = ExtResource("9_retry_p")
-texture_focused = ExtResource("8_retry_h")
 
 [node name="MenuButton" type="TextureButton" parent="Panel/Layout/Buttons"]
 layout_mode = 2
@@ -122,4 +121,3 @@ size_flags_horizontal = 4
 texture_normal = ExtResource("10_menu")
 texture_hover = ExtResource("11_menu_h")
 texture_pressed = ExtResource("12_menu_p")
-texture_focused = ExtResource("11_menu_h")

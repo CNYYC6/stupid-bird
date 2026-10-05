@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cgoldmat0bird1"]
+
+[sub_resource type="Shader" id="Shader_gold"]
+code = "shader_type canvas_item;\n\n// 无敌冲刺的\"全身镀金\"。\n// 用亮度重新映射成金属色，而不是直接 modulate 一个金色：\n// 直接乘金色会把蓝鸟压成泥巴色，亮度映射出来的才是真正的金属反光。\n// 暗端也不能压太黑，否则高速下整只鸟看起来是脏橄榄色而不是金子。\nuniform bool golden = false;\n// 0~1 的呼吸脉冲，由 player.gd 每帧写入\nuniform float pulse = 0.0;\n\nvoid fragment() {\n\tvec4 tex = texture(TEXTURE, UV);\n\tif (golden && tex.a > 0.01) {\n\t\tfloat l = dot(tex.rgb, vec3(0.299, 0.587, 0.114));\n\t\t// pow(<1) 抬高中间调，让鸟身主体落在明亮金段上\n\t\tl = pow(clamp(l * 1.35, 0.0, 1.0), 0.72);\n\t\tvec3 dark = vec3(0.62, 0.36, 0.04);\n\t\tvec3 bright = vec3(1.0, 0.97, 0.60);\n\t\tvec3 gold = mix(dark, bright, l);\n\t\tgold += vec3(0.30, 0.24, 0.02) * pulse;\n\t\ttex.rgb = clamp(gold, 0.0, 1.0);\n\t}\n\tCOLOR = tex * COLOR;\n}\n"
+
+[resource]
+shader = SubResource("Shader_gold")
+shader_parameter/golden = false
+shader_parameter/pulse = 0.0

@@ -1,28 +1,37 @@
-[gd_scene load_steps=24 format=3 uid="uid://c8kq3vbn2mstart"]
+[gd_scene load_steps=34 format=3 uid="uid://c8kq3vbn2mstart"]
 
-[ext_resource type="Script" path="res://gd/start_menu.gd" id="1_menu"]
-[ext_resource type="Texture2D" path="res://pic/bg_sky.png" id="2_sky"]
-[ext_resource type="Texture2D" path="res://pic/bg_clouds.png" id="3_clouds"]
-[ext_resource type="Texture2D" path="res://pic/bg_mountains_far.png" id="4_mtn"]
-[ext_resource type="Texture2D" path="res://pic/bg_hills_mid.png" id="5_hills"]
-[ext_resource type="Texture2D" path="res://pic/bg_trees_near.png" id="6_trees"]
-[ext_resource type="Texture2D" path="res://pic/bg_ground.png" id="7_ground"]
-[ext_resource type="Script" path="res://gd/parallax_strip.gd" id="8_strip"]
-[ext_resource type="SpriteFrames" path="res://pic/bird_frames.tres" id="9_frames"]
-[ext_resource type="Texture2D" path="res://pic/ui_shade.png" id="10_shade"]
-[ext_resource type="Texture2D" path="res://pic/ui_title.png" id="11_title"]
-[ext_resource type="Texture2D" path="res://pic/ui_tip.png" id="12_tip"]
-[ext_resource type="Texture2D" path="res://pic/ui_hint.png" id="13_hint"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_start.png" id="14_start"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_start_hover.png" id="15_start_hover"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_start_pressed.png" id="16_start_press"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_quit.png" id="17_quit"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_quit_hover.png" id="18_quit_hover"]
-[ext_resource type="Texture2D" path="res://pic/ui_btn_quit_pressed.png" id="19_quit_press"]
-[ext_resource type="Script" path="res://gd/digit_row.gd" id="20_digits"]
-[ext_resource type="Texture2D" path="res://pic/ui_best_label.png" id="21_best"]
-[ext_resource type="Texture2D" path="res://pic/ui_meter_label.png" id="22_meter"]
-[ext_resource type="Texture2D" path="res://pic/ui_coin_label.png" id="23_coin"]
+[ext_resource type="Script" path="res://scripts/start_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" path="res://art/bg_sky.png" id="2_sky"]
+[ext_resource type="Texture2D" path="res://art/bg_clouds.png" id="3_clouds"]
+[ext_resource type="Texture2D" path="res://art/bg_mountains_far.png" id="4_mtn"]
+[ext_resource type="Texture2D" path="res://art/bg_hills_mid.png" id="5_hills"]
+[ext_resource type="Texture2D" path="res://art/bg_trees_near.png" id="6_trees"]
+[ext_resource type="Texture2D" path="res://art/bg_ground.png" id="7_ground"]
+[ext_resource type="Script" path="res://scripts/parallax_strip.gd" id="8_strip"]
+[ext_resource type="Script" path="res://scripts/menu_birds.gd" id="9_flock"]
+[ext_resource type="Texture2D" path="res://art/ui_shade.png" id="10_shade"]
+[ext_resource type="Texture2D" path="res://art/ui_title.png" id="11_title"]
+[ext_resource type="Texture2D" path="res://art/ui_tip.png" id="12_tip"]
+[ext_resource type="Texture2D" path="res://art/ui_hint.png" id="13_hint"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_start.png" id="14_start"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_start_hover.png" id="15_start_hover"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_start_pressed.png" id="16_start_press"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_quit.png" id="17_quit"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_quit_hover.png" id="18_quit_hover"]
+[ext_resource type="Texture2D" path="res://art/ui_btn_quit_pressed.png" id="19_quit_press"]
+[ext_resource type="Script" path="res://scripts/digit_row.gd" id="20_digits"]
+[ext_resource type="Texture2D" path="res://art/ui_best_label.png" id="21_best"]
+[ext_resource type="Texture2D" path="res://art/ui_meter_label.png" id="22_meter"]
+[ext_resource type="Texture2D" path="res://art/ui_coin_label.png" id="23_coin"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(2400, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ceiling"]
+size = Vector2(2400, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(120, 3000)
 
 [node name="StartMenu" type="Control"]
 anchors_preset = 15
@@ -59,31 +68,56 @@ script = ExtResource("8_strip")
 texture = ExtResource("4_mtn")
 auto_speed = 16.0
 
-[node name="HillsMid" type="Node2D" parent="World"]
+[node name="HillsMid" type="Node2D" parent="World" groups=["menu_ground"]]
 position = Vector2(0, 424)
 script = ExtResource("8_strip")
 texture = ExtResource("5_hills")
 auto_speed = 28.0
 
-[node name="TreesNear" type="Node2D" parent="World"]
+[node name="TreesNear" type="Node2D" parent="World" groups=["menu_ground"]]
 position = Vector2(0, 520)
 script = ExtResource("8_strip")
 texture = ExtResource("6_trees")
 auto_speed = 46.0
 
-[node name="Ground" type="Node2D" parent="World"]
+[node name="Ground" type="Node2D" parent="World" groups=["menu_ground"]]
 position = Vector2(0, 700)
 script = ExtResource("8_strip")
 texture = ExtResource("7_ground")
 scroll_factor = 1.0
 auto_speed = 70.0
 
-[node name="Bird" type="AnimatedSprite2D" parent="World"]
-position = Vector2(1640, 620)
-scale = Vector2(6, 6)
-sprite_frames = ExtResource("9_frames")
-animation = &"fly_bird"
-autoplay = "fly_bird"
+[node name="Birds" type="Node2D" parent="World"]
+script = ExtResource("9_flock")
+
+[node name="Physics" type="Node2D" parent="World"]
+
+[node name="Floor" type="AnimatableBody2D" parent="World/Physics"]
+position = Vector2(960, 700)
+sync_to_physics = true
+
+[node name="Shape" type="CollisionShape2D" parent="World/Physics/Floor"]
+position = Vector2(0, 240)
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Ceiling" type="StaticBody2D" parent="World/Physics"]
+position = Vector2(960, -900)
+
+[node name="Shape" type="CollisionShape2D" parent="World/Physics/Ceiling"]
+position = Vector2(0, 100)
+shape = SubResource("RectangleShape2D_ceiling")
+
+[node name="WallLeft" type="StaticBody2D" parent="World/Physics"]
+position = Vector2(-60, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="World/Physics/WallLeft"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallRight" type="StaticBody2D" parent="World/Physics"]
+position = Vector2(1980, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="World/Physics/WallRight"]
+shape = SubResource("RectangleShape2D_wall")
 
 [node name="Shade" type="CanvasLayer" parent="."]
 layer = 5
@@ -147,7 +181,6 @@ size_flags_horizontal = 4
 texture_normal = ExtResource("14_start")
 texture_hover = ExtResource("15_start_hover")
 texture_pressed = ExtResource("16_start_press")
-texture_focused = ExtResource("15_start_hover")
 
 [node name="QuitButton" type="TextureButton" parent="UI/Buttons"]
 layout_mode = 2
@@ -155,7 +188,6 @@ size_flags_horizontal = 4
 texture_normal = ExtResource("17_quit")
 texture_hover = ExtResource("18_quit_hover")
 texture_pressed = ExtResource("19_quit_press")
-texture_focused = ExtResource("18_quit_hover")
 
 [node name="Best" type="HBoxContainer" parent="UI"]
 anchors_preset = 5

@@ -13,13 +13,13 @@ pip install numpy pillow
 在仓库根目录执行：
 
 ```bash
-python tools/gen_backgrounds.py   # 6 张背景图层 -> pic/bg_*.png
-python tools/gen_ui.py            # 标题/按钮/提示/HUD 数字 -> pic/ui_*.png
-python tools/gen_gameplay.py      # 路障与金币 -> pic/obs_*.png, pic/coin_*.png
+python tools/gen_backgrounds.py   # 6 张背景图层 -> art/bg_*.png
+python tools/gen_ui.py            # 标题/按钮/提示/HUD 数字 -> art/ui_*.png
+python tools/gen_gameplay.py      # 路障与金币 -> art/obs_*.png, art/coin_*.png
 python tools/gen_audio.py         # BGM 与音效 -> audio/*.wav
 ```
 
-每个脚本都会直接覆盖 `pic/` 和 `audio/` 下的产物，改完参数重跑即可，不需要手绘。
+每个脚本都会直接覆盖 `art/` 和 `audio/` 下的产物，改完参数重跑即可，不需要手绘。
 
 ## 设计分辨率
 

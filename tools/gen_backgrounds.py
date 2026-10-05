@@ -25,8 +25,8 @@ CAM = np.array([231.0, 567.0])
 GROUND_SURFACE_Y = 693.0   # 地面碰撞面的世界坐标 y
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PROJ = os.path.abspath(os.path.join(HERE, "..", "stupid-bird_副本"))
-PIC = os.path.join(PROJ, "pic")
+PROJ = os.path.abspath(os.path.join(HERE, ".."))
+ART = os.path.join(PROJ, "art")
 
 # 各图层逻辑高度（放大 S 倍即世界像素高度）
 H_CLOUDS, H_MTN, H_HILLS, H_TREES, H_GROUND = 70, 80, 46, 30, 80
@@ -490,7 +490,7 @@ def main() -> None:
     }
     print("生成背景图层：")
     for key, arr in layers.items():
-        save(arr, files[key], PIC)
+        save(arr, files[key], ART)
     preview(layers)
     seam_report(layers)
     tiling_sheet(layers)
