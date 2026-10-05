@@ -447,7 +447,9 @@ func _burst_coins() -> void:
 		for i in BURST_COINS:
 			var a: float = TAU * float(i) / float(BURST_COINS)
 			var coin := COIN_SCENE.instantiate()
-			coin.position = p.global_position + Vector2(cos(a), sin(a)) * randf_range(140.0, 260.0)
+			# 爆发金币是就地撒一圈的，可能正好落在柱子里 —— 推出来
+			var at: Vector2 = p.global_position + Vector2(cos(a), sin(a)) * randf_range(140.0, 260.0)
+			coin.position = _course.push_out_of_pillars(at)
 			_course.add_child(coin)
 			coin.collected.connect(_on_coin_collected)
 

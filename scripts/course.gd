@@ -65,6 +65,13 @@ enum Kind { GATE, LOW, HIGH }
 
 ## 柱子贴图宽度的一半。金币必须待在这条线以外，否则就嵌进柱子里了
 const HALF_PILLAR: float = 192.0
+## 柱子贴图宽度。
+##
+## 关键：`obstacle.position.x` 是柱子的**左边缘**，不是中心 ——
+## obstacle.gd 的 _setup_column 里贴图和判定盒都是 centered = false、
+## 从节点原点往右铺 PILLAR_W 宽。以前这里按"中心"算走廊，
+## 于是左边界整整少算了 192 像素，金币会刷进上一根柱子的右半边。
+const PILLAR_W: float = HALF_PILLAR * 2.0
 
 var _cursor_x: float = 0.0
 var _prev_aim: float = 240.0
@@ -243,8 +250,8 @@ func _maybe_spawn_powerup(prev_x: float, x: float, aim: float) -> void:
 	_pattern_count += 1
 	if powerup_every_patterns <= 0 or _pattern_count % powerup_every_patterns != 0:
 		return
-	var left: float = prev_x + HALF_PILLAR + coin_pad
-	var right: float = x - HALF_PILLAR - coin_pad
+	var left: float = prev_x + PILLAR_W + coin_pad
+	var right: float = x - coin_pad
 	if right - left < 80.0:
 		return
 	var pu := POWERUP_SCENE.instantiate()
@@ -264,8 +271,10 @@ func _on_powerup_picked(kind: int) -> void:
 ## 那几枚金币看得见、吃不到。现在先算出走廊的左右边界，再按间距反推最多能放几枚，
 ## 放不下就少放，保证每一枚都真的在两柱之间的空气里。
 func _spawn_coin_arc(prev_x: float, obstacle_x: float, center: float) -> void:
-	var left: float = prev_x + HALF_PILLAR + coin_pad
-	var right: float = obstacle_x - HALF_PILLAR - coin_pad
+	# prev_x 是上一根柱子的左边缘，所以它的右边缘在 prev_x + PILLAR_W；
+	# obstacle_x 是下一根柱子的左边缘。中间这段才是真正能放金币的走廊。
+	var left: float = prev_x + PILLAR_W + coin_pad
+	var right: float = obstacle_x - coin_pad
 	var width: float = right - left
 	if width < coin_spacing * 0.5:
 		return
@@ -281,6 +290,38 @@ func _spawn_coin_arc(prev_x: float, obstacle_x: float, center: float) -> void:
 		coin.position = Vector2(start_x + f * spread, center - sin(f * PI) * coin_arc_lift)
 		add_child(coin)
 		coin.collected.connect(_on_coin_collected)
+
+
+## 把一个坐标从柱子的实心部分里推出来（横着推到最近的边上）。
+##
+## 「就地生成」的金币必须过一遍这个 —— 爆发金币是以玩家为圆心撒一圈的，
+## 贴着柱子用道具时就会有幾枚埋在柱子里，看得见却吃不到。
+## 注意只对**实心判定盒**判断：柱子中间那道缝本来就是给玩家过的，缝里的金币没问题。
+func push_out_of_pillars(pos: Vector2, radius: float = 38.0) -> Vector2:
+	# 一遍不够：从 A 柱推出来可能正好落进 B 柱，所以反复过直到不再变化。
+	# 柱子间距最小 700、柱宽 384，空闲段 316 像素，两边各留 46 的余量，几次就收敛。
+	for _pass in 8:
+		var moved: bool = false
+		for ch in get_children():
+			if not (ch is Node2D) or not ch.is_in_group("obstacle"):
+				continue
+			for node in (ch as Node2D).find_children("*", "CollisionShape2D", true, false):
+				var cs := node as CollisionShape2D
+				if cs.disabled or not (cs.shape is RectangleShape2D):
+					continue
+				var sz: Vector2 = (cs.shape as RectangleShape2D).size
+				if sz.x < 1.0 or sz.y < 1.0:
+					continue
+				var rc: Rect2 = Rect2(cs.global_position - sz * 0.5, sz).grow(radius)
+				if not rc.has_point(pos):
+					continue
+				# 多留 8 像素：贴着边相切虽然不算重叠，但视觉上金币像是嵌在柱子上
+				pos.x = (rc.position.x - 8.0) if (pos.x - rc.position.x) < (rc.end.x - pos.x) \
+					else (rc.end.x + 8.0)
+				moved = true
+		if not moved:
+			break
+	return pos
 
 
 func _on_obstacle_hit(body: Node2D) -> void:
