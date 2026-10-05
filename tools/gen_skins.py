@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Stupid Bird —— 换装素材生成器（飞行器 + 驾驶员）
+"""Stupid Bird —— 皮肤素材生成器（飞行器 + 驾驶员）
 
 飞行器沿用现有的 64x64 图集约定：4 帧 32x32 横向排布（左上、右上、左下、右下），
 这样引擎侧可以用同一段代码切 AtlasTexture，不用为每种飞机单独做 .tres。

@@ -47,13 +47,13 @@ var _level: int = 1
 
 
 func _ready() -> void:
-	# 进场先按当前语言把整棵界面树（含换装间和设置面板）刷一遍
+	# 进场先按当前语言把整棵界面树（含皮肤面板和设置面板）刷一遍
 	UiLang.apply(self)
 	Audio.start_music()
 	_start_button.pressed.connect(_on_start_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 	# 每次启动都从「单人闯关」开始：模式不跨启动记忆。
-	# 难度和换装仍然记着 —— 那两个是"口味"，模式是"这一局想怎么玩"。
+	# 难度和皮肤仍然记着 —— 那两个是"口味"，模式是"这一局想怎么玩"。
 	_mode = 0
 	RunRecord.save_mode(_mode)
 	_level = RunRecord.load_bot_level()
@@ -94,8 +94,8 @@ func _on_level_pressed() -> void:
 	_refresh_mode()
 
 
-## 打开换装间。菜单背景里那 25 只小鸟不跟着换 —— 它们只是氛围，
-## 真正的换装效果在开局之后才看得到（免得每点一下就要重建 25 份贴图）。
+## 打开皮肤面板。菜单背景里那 25 只小鸟不跟着换 —— 它们只是氛围，
+## 真正的换肤效果在开局之后才看得到（免得每点一下就要重建 25 份贴图）。
 func _on_dress_pressed() -> void:
 	Audio.play("ui")
 	_dressup.open()

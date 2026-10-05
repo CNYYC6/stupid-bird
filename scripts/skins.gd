@@ -1,6 +1,6 @@
 class_name Skins
 extends RefCounted
-## 换装注册表：飞行器（图集）+ 驾驶员（单帧小人）。
+## 皮肤注册表：飞行器（图集）+ 驾驶员（单帧小人）。
 ##
 ## 飞行器沿用 64x64 图集约定（4 帧 32x32），引擎侧用同一段代码切 AtlasTexture，
 ## 所以新增一种飞机不需要额外的 .tres 资源文件，改这里的表就行。
@@ -63,7 +63,7 @@ static func preview_path(kind: String, i: int) -> String:
 
 
 ## 把图集切成 4 帧的 SpriteFrames。结果按飞机 index 缓存，
-## 25 只菜单小鸟 + 两个玩家共用同一份，不会每次换装都重建。
+## 25 只菜单小鸟 + 两个玩家共用同一份，不会每次换皮肤都重建。
 static func frames(i: int) -> SpriteFrames:
 	var idx: int = clamp_aircraft(i)
 	if _frame_cache.has(idx):

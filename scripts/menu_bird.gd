@@ -12,7 +12,7 @@ const MAX_SPEED: float = 1400.0
 const MAX_SPIN: float = 14.0
 
 
-## 开始界面那只鸟也换装：飞行器换整套 SpriteFrames，驾驶员换贴图。
+## 开始界面那只鸟也用皮肤：飞行器换整套 SpriteFrames，驾驶员换贴图。
 ## 和 player.gd 的 apply_skin 是同一套 Skins 数据，所以菜单里看到的
 ## 就是游戏里能选到的样子。
 func apply_skin(aircraft: int, pilot: int) -> void:

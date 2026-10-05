@@ -374,7 +374,7 @@ def emit(t: dict, lang: str) -> None:
         save(make_button(t[f"btn_{tag}"], size=12, hover=True), f"ui_btn_{tag}_hover.png", lang)
         save(make_button(t[f"btn_{tag}"], size=12, pressed=True), f"ui_btn_{tag}_pressed.png", lang)
 
-    # 换装间
+    # 皮肤面板
     save(make_button(t["btn_dress"]), "ui_btn_dress.png", lang)
     save(make_button(t["btn_dress"], hover=True), "ui_btn_dress_hover.png", lang)
     save(make_button(t["btn_dress"], pressed=True), "ui_btn_dress_pressed.png", lang)
@@ -404,7 +404,7 @@ def emit(t: dict, lang: str) -> None:
     save(make_label(t["label_language"], 12, "#FBF236"), "ui_label_language.png", lang)
     save(make_label(t["label_window"], 12, "#FBF236"), "ui_label_window.png", lang)
     save(make_label(t["label_resolution"], 12, "#FBF236"), "ui_label_resolution.png", lang)
-    # 选项按钮做成"一组里选一个"，靠 modulate 表示选中（和换装间的 P1/P2 一个套路）
+    # 选项按钮做成"一组里选一个"，靠 modulate 表示选中（和皮肤面板的 P1/P2 一个套路）
     for key, name in (("btn_en", "lang_en"), ("btn_zh", "lang_zh"),
                       ("btn_windowed", "win_off"), ("btn_fullscreen", "win_on"),
                       ("res0", "res0"), ("res1", "res1"), ("res2", "res2")):

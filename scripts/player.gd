@@ -181,7 +181,7 @@ func consume_shield() -> bool:
 	return true
 
 
-## 换装：飞行器换整套 SpriteFrames，驾驶员换一张贴图。
+## 皮肤：飞行器换整套 SpriteFrames，驾驶员换一张贴图。
 ## 两者都是原生分辨率的像素画（32x32 一帧 / 16x16），整体那层 6 倍放大在场景实例上，
 ## 所以这里不需要再缩放，像素颗粒和别的东西一致。
 func apply_skin(aircraft: int, pilot: int) -> void:

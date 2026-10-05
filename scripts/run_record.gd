@@ -29,7 +29,7 @@ static func save_best(meters: int, coins: int) -> void:
 	return
 
 
-# ------------------------------------------------------------------ 设置（模式 / 换装）
+# ------------------------------------------------------------- 设置（模式 / 皮肤）
 static func load_setting(key: String, fallback: int = 0) -> int:
 	var cfg := ConfigFile.new()
 	if cfg.load(RECORD_PATH) != OK:

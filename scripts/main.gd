@@ -129,7 +129,7 @@ func _setup_players() -> void:
 			bot.mate = _player
 			bot.course = _course
 			p2.add_child(bot)
-	# 换装：两名玩家分别读各自的存档（菜单里是分开编辑的）
+	# 皮肤：两名玩家分别读各自的存档（菜单里是分开编辑的）
 	for i in players.size():
 		var aircraft: int = RunRecord.load_setting("aircraft%d" % (i + 1), i)
 		var pilot: int = RunRecord.load_setting("pilot%d" % (i + 1), 0)
