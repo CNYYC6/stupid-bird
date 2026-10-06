@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://c8kq3vbn2mstart"]
+[gd_scene load_steps=50 format=3 uid="uid://c8kq3vbn2mstart"]
 
 [ext_resource type="Script" path="res://scripts/start_menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" path="res://art/bg_sky.png" id="2_sky"]
@@ -31,6 +31,7 @@
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_skins_pressed.png" id="29_skins_p"]
 [ext_resource type="PackedScene" path="res://scenes/skins_panel.tscn" id="30_skins"]
 [ext_resource type="PackedScene" path="res://scenes/settings.tscn" id="34_settings"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_also_try.png" id="38_also"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings.png" id="35_set"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings_hover.png" id="36_seth"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_btn_settings_pressed.png" id="37_setp"]
@@ -176,6 +177,17 @@ mouse_filter = 2
 texture = ExtResource("12_tip")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="AlsoTry" type="TextureRect" parent="UI"]
+offset_left = 1230.0
+offset_top = 262.0
+offset_right = 1710.0
+offset_bottom = 300.0
+pivot_offset = Vector2(240, 19)
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("38_also")
 
 [node name="Buttons" type="VBoxContainer" parent="UI"]
 anchors_preset = 5

@@ -11,6 +11,8 @@ extends Control
 @export_file("*.tscn") var game_scene: String = "res://scenes/main.tscn"
 
 @onready var _start_button: TextureButton = $UI/Buttons/StartButton
+## 标题右下角那行推广文案，绕自己的中心循环缩放
+@onready var _also_try: TextureRect = $UI/AlsoTry
 @onready var _quit_button: TextureButton = $UI/Buttons/BottomRow/QuitButton
 @onready var _best_distance: HBoxContainer = $UI/Best/DistanceBest/Digits
 @onready var _best_coins: HBoxContainer = $UI/Best/CoinBest/Digits
@@ -49,6 +51,12 @@ var _level: int = 1
 func _ready() -> void:
 	# 进场先按当前语言把整棵界面树（含皮肤面板和设置面板）刷一遍
 	UiLang.apply(self)
+	# 绕中心点循环放大缩小 —— 静态的话很容易被当成装饰忽略掉
+	var tw := create_tween().set_loops()
+	tw.tween_property(_also_try, "scale", Vector2(1.16, 1.16), 0.62) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(_also_try, "scale", Vector2.ONE, 0.62) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	Audio.start_music()
 	_start_button.pressed.connect(_on_start_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
