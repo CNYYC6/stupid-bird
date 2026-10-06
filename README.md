@@ -3,7 +3,7 @@
 ![Godot](https://img.shields.io/badge/Godot-4.6.2-478CBF?logo=godot-engine&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)
-![Status](https://img.shields.io/badge/%E7%8A%B6%E6%80%81-%E5%BC%80%E5%8F%91%E4%B8%AD-orange)
+![Release](https://img.shields.io/badge/release-v1.0.1-brightgreen)
 
 > 逐版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
 
