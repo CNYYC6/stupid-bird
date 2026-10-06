@@ -258,8 +258,17 @@ func _tick_revive_hud() -> void:
 	_hud.set_revive(-1, 0.0)
 
 
+## 重力倍数的硬上限。
+## 按住爬升时的升力是 巡航速度 x lift_gain，正常是 660 x 5.2 = 3432 px/s^2。
+## 有效重力一旦超过这个值，玩家按着键也会往下掉 —— 从"难"变成"没法玩"。
+## 1800 x 1.7 = 3060，留了约 370 的净爬升余量。
+const MAX_GRAVITY_SCALE: float = 1.7
+
+
 func _apply_world_gravity() -> void:
-	var g: float = _worlds.base_gravity_scale() * _events.gravity_multiplier
+	# 世界基础重力 x 事件倍数，再兜一道上限，避免以后加新世界/新事件时又把操控压死
+	var g: float = minf(_worlds.base_gravity_scale() * _events.gravity_multiplier,
+			MAX_GRAVITY_SCALE)
 	for p in players:
 		if is_instance_valid(p):
 			p.set_gravity_scale(g)

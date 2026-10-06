@@ -129,7 +129,11 @@ func _fire() -> void:
 			banner.emit("low_g")
 		Ev.HIGH_G:
 			_begin(Ev.HIGH_G, high_g_seconds)
-			_apply_gravity(2.3)
+			# 倍数不能随便加大：按住爬升时的升力是 巡航速度 x lift_gain（660 x 5.2 = 3432），
+			# 而重力是 1800 x 倍数。乘到 2.3 时重力 4140 > 升力，玩家按着键也会一路掉，
+			# 完全没法操作。1.65 时净加速度 +462，爬得动但明显发沉，正好是"重力暴涨"该有的手感。
+			# 详见 player.gd 的 lift_gain / gravity。
+			_apply_gravity(1.65)
 			banner.emit("high_g")
 		Ev.TURBO:
 			_begin(Ev.TURBO, turbo_seconds)
