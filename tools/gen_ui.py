@@ -283,7 +283,7 @@ STRINGS: dict = {
         "dash_active": "ACTIVE", "dash_cool": "COOLING",
         "combo_label": "COMBO", "pu_magnet": "MAGNET", "pu_shield": "SHIELD",
         "revive_label": "REVIVE IN", "skip_hint": "PRESS ANY KEY TO SKIP",
-        "also_try": "Also try Bililearn",
+        "also_try": "Also try Bililearn-AI",
         "pu_burst": "COIN BURST", "shield_ready": "SHIELD ON",
         # 事件横幅与换场横幅也是带文字的，同样要出两套
         "ev_portal_t": "PORTAL!", "ev_portal_s": "Jump in - it's all coins",
@@ -331,7 +331,7 @@ STRINGS: dict = {
         "dash_active": "\u53d1\u52a8\u4e2d", "dash_cool": "\u51b7\u5374\u4e2d",
         "combo_label": "\u8fde\u51fb", "pu_magnet": "\u78c1\u94c1",
         "revive_label": "\u590d\u6d3b\u5012\u8ba1\u65f6", "skip_hint": "\u6309\u4efb\u610f\u952e\u8df3\u8fc7",
-        "also_try": "Also try Bililearn",
+        "also_try": "Also try Bililearn-AI",
         "pu_shield": "\u62a4\u76fe", "pu_burst": "\u91d1\u5e01\u7206\u53d1",
         "shield_ready": "\u62a4\u76fe\u5df2\u88c5\u5907",
         "ev_portal_t": "\u4f20\u9001\u95e8\uff01", "ev_portal_s": "\u94bb\u8fdb\u53bb\uff0c\u5168\u662f\u91d1\u5e01",
