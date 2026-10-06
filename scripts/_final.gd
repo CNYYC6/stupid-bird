@@ -88,11 +88,11 @@ func _static_checks() -> void:
 func _solo_checks() -> void:
 	var p1: CharacterBody2D = _boot(0)
 	_ck(_main.players.size() == 1, "单人模式玩家数不是 1：%d" % _main.players.size())
-	_ck(p1._act_up == &"pull_up", "单人爬升键不是空格：%s" % p1._act_up)
-	_ck(p1._act_dash == &"dash", "单人冲刺键不是 ENTER：%s" % p1._act_dash)
+	_ck(p1._act_up == &"pull_up_p1", "单人爬升键不是 W：%s" % p1._act_up)
+	_ck(p1._act_dash == &"dash_p1", "单人冲刺键不是 E：%s" % p1._act_dash)
 	_ck(not p1._badge.visible, "单人模式不该显示编号牌")
 	_ck(_main.bot == null, "单人模式不该创建 AI")
-	print("  1 名玩家，空格 + ENTER，无编号牌")
+	print("  1 名玩家，W + E，无编号牌")
 
 
 # ---------------------------------------------------------------- 双人

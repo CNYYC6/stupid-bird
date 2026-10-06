@@ -125,13 +125,10 @@ func configure(index: int, spawn: Vector2, coop: bool = false, bot: bool = false
 	player_index = index
 	_coop = coop
 	is_bot = bot and index == 1
-	_act_up = &"pull_up"
-	_act_dash = &"dash"
-	if coop:
-		# 双人 / 机哥模式：空格让出来。一号机 W，二号机 ↑。
-		_act_up = &"pull_up_p1" if index == 0 else &"pull_up_p2"
-		# 冲刺也分开：一号机 E，二号机 ENTER。单人模式仍然是 ENTER。
-		_act_dash = &"dash_p1" if index == 0 else &"dash"
+	# 一号机一律 W 爬升 / E 冲刺 —— 单人模式也用这一套，和双人合作手感一致。
+	# 只有二号机不同：↑ 爬升 / ENTER 冲刺。空格不再使用。
+	_act_up = &"pull_up_p1" if index == 0 else &"pull_up_p2"
+	_act_dash = &"dash_p1" if index == 0 else &"dash"
 	if _badge != null:
 		_badge.visible = coop
 		if coop:

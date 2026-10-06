@@ -260,8 +260,8 @@ STRINGS: dict = {
     "en": {
         "title": "STUPID BIRD",
         "btn_start": "START", "btn_quit": "QUIT",
-        "hint": "SPACE/W climb   ENTER dash   R retry   ESC back",
-        "tip": "Hold SPACE to climb. ENTER dashes through obstacles.",
+        "hint": "W climb    E dash    R retry    ESC back",
+        "tip": "Hold W to climb. E dashes through obstacles.",
         "best_label": "BEST", "coin_label": "COINS",
         "over_title": "CRASHED!",
         "btn_retry": "RETRY", "btn_menu": "MAIN MENU",
@@ -305,8 +305,8 @@ STRINGS: dict = {
     "zh": {
         "title": "STUPID BIRD",
         "btn_start": "\u5f00\u59cb\u6e38\u620f", "btn_quit": "\u9000\u51fa\u6e38\u620f",
-        "hint": "\u7a7a\u683c / W \u722c\u5347    ENTER \u65e0\u654c\u51b2\u523a    R \u91cd\u6765    ESC \u8fd4\u56de",
-        "tip": "\u6309\u4f4f\u7a7a\u683c\u722c\u5347\uff0cENTER \u65e0\u654c\u51b2\u523a\u53ef\u4ee5\u786c\u7a7f\u8def\u969c\u3002",
+        "hint": "W \u722c\u5347    E \u65e0\u654c\u51b2\u523a    R \u91cd\u6765    ESC \u8fd4\u56de",
+        "tip": "\u6309\u4f4f W \u722c\u5347\uff0cE \u65e0\u654c\u51b2\u523a\u53ef\u4ee5\u786c\u7a7f\u8def\u969c\u3002",
         "best_label": "\u6700\u8fdc\u8bb0\u5f55", "coin_label": "\u91d1\u5e01",
         "over_title": "\u649e\u6bc1\u4e86\uff01",
         "btn_retry": "\u518d\u6765\u4e00\u6b21", "btn_menu": "\u8fd4\u56de\u4e3b\u83dc\u5355",
