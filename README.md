@@ -5,7 +5,22 @@
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)
 ![Status](https://img.shields.io/badge/%E7%8A%B6%E6%80%81-%E5%BC%80%E5%8F%91%E4%B8%AD-orange)
 
-> **开发中，尚未发布。** 逐版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
+> 逐版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 下载
+
+**➡️ [点这里下载最新版](https://github.com/CNYYC6/stupid-bird/releases/latest)**
+
+| 平台 | 说明 |
+|---|---|
+| **Windows** | 解压后直接运行 `StupidBird.exe` |
+| **macOS** | 通用二进制，Intel 与 Apple Silicon 都能跑 |
+
+**macOS 用户注意**：构建没有做苹果签名与公证，首次打开会被 Gatekeeper 拦下。
+**右键点 `Stupid Bird.app` → 打开**，在弹窗里再点一次「打开」即可，之后就能正常双击。
+
+> 上面那个链接指向 `releases/latest`，**永远解析到最新版本**，不会过期。
+> 想从源码运行的话见下面的「运行」一节。
 
 > 8bit 像素风反应型跑酷。**三种玩法**：单人闯关、双人合作（离得远了自动分屏）、
 > 以及「机哥带你飞」—— 让 AI 顶二号机，三档难度从「臭人机」到「机哥」。
