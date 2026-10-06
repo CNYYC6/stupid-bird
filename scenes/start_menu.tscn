@@ -179,11 +179,12 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="AlsoTry" type="TextureRect" parent="UI"]
-offset_left = 1230.0
-offset_top = 262.0
-offset_right = 1710.0
-offset_bottom = 300.0
-pivot_offset = Vector2(240, 19)
+offset_left = 1420.0
+offset_top = 213.0
+offset_right = 1780.0
+offset_bottom = 251.0
+rotation = -0.5236
+pivot_offset = Vector2(180, 19)
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5

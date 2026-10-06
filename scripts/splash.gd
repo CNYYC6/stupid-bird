@@ -13,16 +13,15 @@ const HOLD: float = 0.30         ## 全部出现后停留多久
 const FADE: float = 0.25         ## 淡出时长
 ## 合计 ≈ 7*0.15 + 0.28 + 0.30 + 0.25 = 1.88 秒
 
-const CLOUD_SPEED: float = 30.0
-const COIN_COUNT: int = 9
-const COIN_SPEED: float = 46.0
+## 金币的数量和下落速度 —— 要的就是"下金币雨"的密度
+const COIN_COUNT: int = 46
+const COIN_SPEED_MIN: float = 190.0
+const COIN_SPEED_MAX: float = 430.0
 
 var _letters: Array[TextureRect] = []
-var _clouds: Array[TextureRect] = []
 var _coins: Array[Sprite2D] = []
 var _coin_vy: Array[float] = []
 var _coin_spin: Array[float] = []
-var _cloud_x: float = 0.0
 var _elapsed: float = 0.0
 var _done: bool = false
 
@@ -40,7 +39,7 @@ func _ready() -> void:
 	_pulse()
 
 
-## 蓝天 + 两层飘动的云
+## 蓝天背景 + 从天而降的金币雨
 func _build_backdrop(vp: Vector2) -> void:
 	var sky := TextureRect.new()
 	sky.texture = load("res://art/bg_sky.png")
@@ -52,33 +51,23 @@ func _build_backdrop(vp: Vector2) -> void:
 	add_child(sky)
 	move_child(sky, 0)
 
-	var cloud_tex: Texture2D = load("res://art/bg_clouds.png")
-	var cw: float = cloud_tex.get_width()
-	for i in 2:
-		var c := TextureRect.new()
-		c.texture = cloud_tex
-		c.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		c.stretch_mode = TextureRect.STRETCH_SCALE
-		c.size = Vector2(cw, cloud_tex.get_height())
-		c.position = Vector2(cw * i, vp.y * 0.30)
-		c.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		c.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(c)
-		_clouds.append(c)
-
-	# 上升的金币，给画面添点"这是游戏"的信息
+	# 金币雨：从屏幕上方落下来，出了下边界就从顶上重新开始。
+	# 起始 y 随机散布在"屏幕上方一屏"的范围内，所以一开始就是满屏在下，
+	# 而不是等它们慢慢落进来。
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	for i in COIN_COUNT:
 		var s := Sprite2D.new()
 		s.texture = load("res://art/coin_%d.png" % (i % 4))
-		s.position = Vector2(rng.randf_range(60.0, vp.x - 60.0), vp.y + rng.randf_range(0.0, 500.0))
-		s.scale = Vector2.ONE * rng.randf_range(0.5, 0.95)
-		s.modulate.a = rng.randf_range(0.45, 0.8)
+		s.position = Vector2(rng.randf_range(20.0, vp.x - 20.0),
+			rng.randf_range(-vp.y, vp.y))
+		s.scale = Vector2.ONE * rng.randf_range(0.42, 1.0)
+		s.modulate.a = rng.randf_range(0.6, 1.0)
+		s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		add_child(s)
 		_coins.append(s)
-		_coin_vy.append(COIN_SPEED * rng.randf_range(0.7, 1.5))
-		_coin_spin.append(rng.randf_range(-2.2, 2.2))
+		_coin_vy.append(rng.randf_range(COIN_SPEED_MIN, COIN_SPEED_MAX))
+		_coin_spin.append(rng.randf_range(-2.6, 2.6))
 
 
 ## 七个字母摆到屏幕中间，先缩到 0.72 倍并全透明
@@ -123,20 +112,14 @@ func _pulse() -> void:
 
 
 func _process(delta: float) -> void:
-	# 云：向左飘，走出屏幕就绕回右侧，永远无缝
-	var w: float = 1920.0
-	_cloud_x = fmod(_cloud_x - CLOUD_SPEED * delta, w)
-	for i in _clouds.size():
-		_clouds[i].position.x = _cloud_x + w * i
-
-	# 金币：慢慢上升 + 自转，飘出顶部就从底下重生
+	# 金币：下落 + 自转，穿出底部就回到顶上，循环不停
 	var vh: float = get_viewport().get_visible_rect().size.y
 	for i in _coins.size():
 		var s: Sprite2D = _coins[i]
-		s.position.y -= _coin_vy[i] * delta
+		s.position.y += _coin_vy[i] * delta
 		s.rotation += _coin_spin[i] * delta
-		if s.position.y < -90.0:
-			s.position.y = vh + 90.0
+		if s.position.y > vh + 100.0:
+			s.position.y = -100.0
 
 	if _done:
 		return
