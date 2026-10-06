@@ -29,6 +29,9 @@ const ENERGY_STACK: float = 190.0
 @onready var _fill: ColorRect = $Energy/Plate/Layout/Track/Fill
 @onready var _state: TextureRect = $Energy/Plate/Layout/Head/State
 @onready var _tag: TextureRect = $Energy/Plate/Layout/Head/Tag
+@onready var _revive: HBoxContainer = $Revive
+@onready var _revive_tag: TextureRect = $Revive/Tag
+@onready var _revive_digits: HBoxContainer = $Revive/Digits
 @onready var _energy: Control = $Energy
 @onready var _banner: Control = $Banner
 @onready var _banner_title: TextureRect = $Banner/Title
@@ -60,6 +63,8 @@ func _ready() -> void:
 	_bars = [{"track": _track, "fill": _fill, "state": _state, "ratio": 1.0, "index": -1}]
 	# 单人模式不挂编号牌，双人模式由 setup_players 补上
 	_tag.visible = false
+	# 没人在倒地状态时，复活倒计时整块不出现
+	_revive.visible = false
 	_banner.visible = false
 	_fever.visible = false
 	_combo.visible = false
@@ -187,6 +192,17 @@ func setup_players(count: int) -> void:
 	t.resized.connect(func() -> void: _refresh_bar(_bars[1]))
 	_bars.append({"track": t, "fill": f, "state": st, "ratio": 1.0, "index": -1})
 	_refresh_bar(_bars[1])
+
+
+## 显示某个玩家的复活倒计时（index 从 0 起）。seconds <= 0 或 index < 0 就整块隐藏。
+func set_revive(index: int, seconds: float, bot: bool = false) -> void:
+	if index < 0 or seconds <= 0.0:
+		_revive.visible = false
+		return
+	_revive.visible = true
+	_revive_tag.texture = load("res://art/badge_%s.png" % ("bot" if bot else "p%d" % (index + 1)))
+	# 数字是"还剩几秒"，向上取整 —— 显示 1 的时候真的还有最后一秒
+	_revive_digits.set_value(maxi(int(ceil(seconds)), 0))
 
 
 ## 把某一条能量条的编号牌换成别的图（机哥模式把二号机换成 AI 标志）

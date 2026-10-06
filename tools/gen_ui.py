@@ -282,6 +282,7 @@ STRINGS: dict = {
         "dash_label": "DASH", "dash_ready": "READY",
         "dash_active": "ACTIVE", "dash_cool": "COOLING",
         "combo_label": "COMBO", "pu_magnet": "MAGNET", "pu_shield": "SHIELD",
+        "revive_label": "REVIVE IN", "skip_hint": "PRESS ANY KEY TO SKIP",
         "pu_burst": "COIN BURST", "shield_ready": "SHIELD ON",
         # 事件横幅与换场横幅也是带文字的，同样要出两套
         "ev_portal_t": "PORTAL!", "ev_portal_s": "Jump in - it's all coins",
@@ -328,6 +329,7 @@ STRINGS: dict = {
         "dash_label": "\u65e0\u654c\u51b2\u523a", "dash_ready": "\u5c31\u7eea",
         "dash_active": "\u53d1\u52a8\u4e2d", "dash_cool": "\u51b7\u5374\u4e2d",
         "combo_label": "\u8fde\u51fb", "pu_magnet": "\u78c1\u94c1",
+        "revive_label": "\u590d\u6d3b\u5012\u8ba1\u65f6", "skip_hint": "\u6309\u4efb\u610f\u952e\u8df3\u8fc7",
         "pu_shield": "\u62a4\u76fe", "pu_burst": "\u91d1\u5e01\u7206\u53d1",
         "shield_ready": "\u62a4\u76fe\u5df2\u88c5\u5907",
         "ev_portal_t": "\u4f20\u9001\u95e8\uff01", "ev_portal_s": "\u94bb\u8fdb\u53bb\uff0c\u5168\u662f\u91d1\u5e01",
@@ -423,6 +425,8 @@ def emit(t: dict, lang: str) -> None:
     save(make_label(t["dash_cool"], 12, "#93A3B0"), "ui_dash_cool.png", lang)
     # 这几个原本在 gen_powerups.py 里，但它们都是**带文字**的标签，得跟着语言走
     save(make_label(t["combo_label"], 12, "#FBF236"), "ui_combo_label.png", lang)
+    save(make_label(t["revive_label"], 12, "#FF9A9A"), "ui_revive_label.png", lang)
+    save(make_label(t["skip_hint"], 12, "#8FA0A8"), "ui_skip_hint.png", lang)
     save(make_label(t["pu_magnet"], 12, "#FF9A9A"), "ui_pu_magnet.png", lang)
     save(make_label(t["pu_shield"], 12, "#9FE8FF"), "ui_pu_shield.png", lang)
     save(make_label(t["pu_burst"], 12, "#FFF6C0"), "ui_pu_burst.png", lang)

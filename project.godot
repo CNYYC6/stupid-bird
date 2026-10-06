@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Stupid Bird"
-run/main_scene="res://scenes/start_menu.tscn"
+run/main_scene="res://scenes/splash.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://art/icon.svg"
 

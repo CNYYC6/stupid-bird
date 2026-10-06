@@ -86,6 +86,9 @@ var is_bot: bool = false
 ## 「虚拟按键」：AI 不去伪造 InputEvent，而是直接把意图写在这里。
 ## 这样 AI 和真人走的是同一条物理路径，手感、升力、音效完全一致。
 var virtual_up: bool = false
+## 倒地那一刻的水平速度。复活时还给玩家 —— 否则一复活就失速，
+## 只能眼睁睁往下掉，得重新加速才能跟上队友。
+var _down_vx: float = 0.0
 var _virtual_up_prev: bool = false
 
 var _dash_left: float = 0.0
@@ -403,6 +406,8 @@ static func _smoothing(speed: float, delta: float) -> float:
 ## 双人模式：被撞了但队友还活着 —— 进入倒地状态，等队友撑住一段时间再复活。
 ## 这段时间里不再吃碰撞（layer 清 0），否则会一直贴着柱子反复触发。
 func go_down(revive_seconds: float) -> void:
+	# 在速度被清零之前先记下来
+	_down_vx = maxf(velocity.x, 0.0)
 	alive = false
 	downed = true
 	self.revive_seconds = maxf(revive_seconds, 0.001)
@@ -438,7 +443,8 @@ func revive(at: Vector2) -> void:
 	revive_left = 0.0
 	alive = true
 	global_position = at
-	velocity = Vector2.ZERO
+	# 继承倒地前的水平速度，复活瞬间就和队友同速，不会往下掉一截
+	velocity = Vector2(_down_vx, 0.0)
 	collision_layer = 1
 	if _sprite != null:
 		_sprite.modulate = Color.WHITE

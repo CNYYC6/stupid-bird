@@ -1,0 +1,41 @@
+[gd_scene load_steps=4 format=3 uid="uid://csplash0000001"]
+
+[ext_resource type="Script" path="res://scripts/splash.gd" id="1_splash"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_skip_hint.png" id="2_hint"]
+
+[node name="Splash" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_splash")
+
+[node name="Bg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.043, 0.059, 0.098, 1)
+mouse_filter = 2
+
+[node name="Hint" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -120.0
+offset_right = 240.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("2_hint")

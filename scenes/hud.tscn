@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://depd38vm2vkvm"]
+[gd_scene load_steps=19 format=3 uid="uid://depd38vm2vkvm"]
 
 [ext_resource type="Script" uid="uid://dd2mfnwednfi" path="res://scripts/hud.gd" id="1_c18ak"]
 [ext_resource type="Script" path="res://scripts/digit_row.gd" id="2_digits"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_combo_label.png" id="11_combo"]
 [ext_resource type="Texture2D" path="res://art/ui/en/ui_pu_magnet.png" id="12_pu_mag"]
 [ext_resource type="Texture2D" path="res://art/badge_p1.png" id="13_tag1"]
+[ext_resource type="Texture2D" path="res://art/ui/en/ui_revive_label.png" id="14_rev"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
 content_margin_left = 22.0
@@ -329,3 +330,38 @@ offset_right = 40.0
 offset_bottom = 24.0
 mouse_filter = 2
 color = Color(1, 0.92, 0.302, 1)
+
+[node name="Revive" type="HBoxContainer" parent="."]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -700.0
+offset_top = 196.0
+offset_right = -60.0
+offset_bottom = 302.0
+grow_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="Label" type="TextureRect" parent="Revive"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("14_rev")
+
+[node name="Tag" type="TextureRect" parent="Revive"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("13_tag1")
+
+[node name="Digits" type="HBoxContainer" parent="Revive"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+script = ExtResource("2_digits")
+digits = 1

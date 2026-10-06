@@ -145,6 +145,7 @@ func _physics_process(delta: float) -> void:
 		_course.traveled_meters = distance_px * METERS_PER_PIXEL
 	_tick_coop(delta)
 	_tick_split()
+	_tick_revive_hud()
 	_tick_combo(delta)
 	_tick_magnet(delta)
 	# 能量条每帧跟一次：冲刺 3 秒内要从满放到空，靠信号触发反而要做插值
@@ -244,6 +245,17 @@ func _tick_split() -> void:
 		_split_behind = behind
 		_split_cams[0].set_targets([players[behind]])
 		_split_cams[1].set_targets([players[1 - behind]])
+
+
+## 有人倒地时在右上角显示他的复活倒计时；没人倒地就把整块收起来。
+## 双人同时倒地的情况不存在 —— 两人都倒就直接结算了，所以只需要显示一个。
+func _tick_revive_hud() -> void:
+	for i in players.size():
+		var p: CharacterBody2D = players[i]
+		if is_instance_valid(p) and p.downed:
+			_hud.set_revive(i, p.revive_left, p.is_bot)
+			return
+	_hud.set_revive(-1, 0.0)
 
 
 func _apply_world_gravity() -> void:
