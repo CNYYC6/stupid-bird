@@ -188,21 +188,31 @@ godot --headless --path . res://scenes/_final.tscn --fixed-fps 60
 
 ## 截图
 
-| 跑酷起步 | 无敌冲刺（镀金穿柱） |
-|---|---|
-| ![起步](docs/screenshots/02_start.png) | ![冲刺](docs/screenshots/03_dash.png) |
+![开屏](docs/screenshots/00_splash.png)
 
-**五个世界轮换**（晴空 / 太空 / 原始森林 / 梦幻世界 / 上下颠倒 / 金币维度）：
+*开屏：手写体像素风的标志逐字浮现，蓝天白云下飘着云和金币。*
+
+| 开始界面 | 跑酷起步 |
+|---|---|
+| ![菜单](docs/screenshots/01_menu.png) | ![起步](docs/screenshots/02_start.png) |
+
+| 无敌冲刺（镀金穿柱） | 道具与连击 |
+|---|---|
+| ![冲刺](docs/screenshots/03_dash.png) | ![道具](docs/screenshots/08_powerup.png) |
+
+**六个生物群系每 30 秒轮换**：
 
 ![世界](docs/screenshots/05_worlds.png)
 
-| 双人合作（一人倒地，队友来救） | 皮肤 |
+| 双人合作 | 复活倒计时 |
 |---|---|
-| ![双人](docs/screenshots/06_coop.png) | ![皮肤](docs/screenshots/07_skins_panel.png) |
+| ![双人](docs/screenshots/06_coop.png) | ![复活](docs/screenshots/09_revive.png) |
 
-| 道具与连击 | 撞毁结算 |
+| 双人分屏 | 皮肤 |
 |---|---|
-| ![道具](docs/screenshots/08_powerup.png) | ![结算](docs/screenshots/04_gameover.png) |
+| ![分屏](docs/screenshots/10_split.png) | ![皮肤](docs/screenshots/07_skins.png) |
+
+![结算](docs/screenshots/04_gameover.png)
 
 ## 运行
 
