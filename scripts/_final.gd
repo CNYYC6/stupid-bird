@@ -83,8 +83,47 @@ func _static_checks() -> void:
 		"皮肤组合数不对：%d" % seen.size())
 	print("  皮肤组合 %d 种（6 飞行器 x 6 驾驶员）" % seen.size())
 
+	check_gravity_budget()
+
 
 # ---------------------------------------------------------------- 单人
+## 重力预算：任何「世界基础重力 x 重力类事件倍率」都必须小于升力能顶住的值。
+##
+## 按住爬升时向上的加速度是 `cruise_speed * lift_gain`，而向下的重力是 `gravity * 倍率`。
+## 一旦重力反超，玩家按着爬升键也会一路直线下坠 —— 那不是"难"，是没法玩。
+## 这里把整个世界 x 事件的组合都算一遍，调参数调过头时立刻就能发现。
+##
+## 数值直接读场景与脚本里的真实默认值，不写死 —— 免得改了 player.tscn 这里还对不上。
+func check_gravity_budget() -> void:
+	var probe: CharacterBody2D = (load("res://scenes/player.tscn") as PackedScene).instantiate()
+	var lift_speed: float = probe.cruise_speed
+	var lift_gain: float = probe.lift_gain
+	var lift: float = lift_speed * lift_gain
+	var g: float = probe.gravity
+	probe.free()
+	var cap: float = load("res://scripts/main.gd").get_script_constant_map()["MAX_GRAVITY_SCALE"]
+	var gevents: Dictionary = load("res://scripts/events.gd").get_script_constant_map()["GRAVITY_EVENTS"]
+
+	print("  重力预算：升力 %.0f（= %.0f x %.1f），有效重力上限 %.0f x %.2f = %.0f"
+		% [lift, lift_speed, lift_gain, g, cap, g * cap])
+	var worst: float = 0.0
+	for i in Worlds.LIST.size():
+		var def: Dictionary = Worlds.get_def(i)
+		var base: float = def.get("gravity", 1.0)
+		for key in gevents:
+			var eff: float = base * float(gevents[key])
+			worst = maxf(worst, eff)
+			_ck(eff <= cap + 0.001,
+				"世界 %s x %s = 有效重力 %.2f，超过上限 %.2f（靠 clamp 兜着，该调小倍率）"
+				% [def.get("id", str(i)), key, eff, cap])
+			_ck(g * eff < lift,
+				"世界 %s x %s：重力 %.0f 反超升力 %.0f，按着爬升键也会掉"
+				% [def.get("id", str(i)), key, g * eff, lift])
+	var net: float = lift - g * worst
+	print("  最重组合：有效重力倍率 %.2f -> 净爬升 %+.0f（必须为正）" % [worst, net])
+	_ck(net > 0.0, "最重组合下净爬升为负：%.0f" % net)
+
+
 func _solo_checks() -> void:
 	var p1: CharacterBody2D = _boot(0)
 	_ck(_main.players.size() == 1, "单人模式玩家数不是 1：%d" % _main.players.size())

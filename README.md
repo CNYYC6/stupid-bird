@@ -1,9 +1,11 @@
 # Stupid Bird
 
+*[English →](README.en.md)*
+
 ![Godot](https://img.shields.io/badge/Godot-4.6.2-478CBF?logo=godot-engine&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)
-![Release](https://img.shields.io/badge/release-v1.0.1-brightgreen)
+![Release](https://img.shields.io/badge/release-v1.0.3-brightgreen)
 
 > 逐版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
 

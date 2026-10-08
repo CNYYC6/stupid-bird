@@ -54,6 +54,13 @@ const WEIGHTS: Dictionary = {
 ## 所以这里不再直接去戳玩家。
 var gravity_multiplier: float = 1.0
 
+## 重力类事件的倍率。集中放在这里是为了让验收脚本能读到它们，
+## 拿去和"升力能顶住多少重力"对照 —— 详见 _final.gd 的 check_gravity_budget。
+const GRAVITY_EVENTS: Dictionary = {
+	"low_g": 0.32,
+	"high_g": 1.65,
+}
+
 var enabled: bool = true
 
 var _course: Node2D
@@ -125,15 +132,14 @@ func _fire() -> void:
 			banner.emit("coin_rain")
 		Ev.LOW_G:
 			_begin(Ev.LOW_G, low_g_seconds)
-			_apply_gravity(0.32)
+			_apply_gravity(GRAVITY_EVENTS["low_g"])
 			banner.emit("low_g")
 		Ev.HIGH_G:
 			_begin(Ev.HIGH_G, high_g_seconds)
-			# 倍数不能随便加大：按住爬升时的升力是 巡航速度 x lift_gain（660 x 5.2 = 3432），
-			# 而重力是 1800 x 倍数。乘到 2.3 时重力 4140 > 升力，玩家按着键也会一路掉，
-			# 完全没法操作。1.65 时净加速度 +462，爬得动但明显发沉，正好是"重力暴涨"该有的手感。
-			# 详见 player.gd 的 lift_gain / gravity。
-			_apply_gravity(1.65)
+			# 倍率不能随便加大：按住爬升时的升力是 巡航速度 x lift_gain（660 x 5.2 = 3432），
+			# 而重力是 1800 x 倍率。乘到 2.3 时重力 4140 > 升力，玩家按着键也会一路掉。
+			# 具体上限由 _final.gd 的 check_gravity_budget 把关。
+			_apply_gravity(GRAVITY_EVENTS["high_g"])
 			banner.emit("high_g")
 		Ev.TURBO:
 			_begin(Ev.TURBO, turbo_seconds)
