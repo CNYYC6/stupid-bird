@@ -22,3 +22,6 @@ Thumbs.db
 # Python（tools/ 下的素材生成脚本）
 __pycache__/
 *.pyc
+
+# 给 AI 助手的交接说明：含内部踩坑记录，不进公开仓库
+AGENTS.md
